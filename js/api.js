@@ -18,7 +18,7 @@ class APIService {
     //this.environment = this.detectEnvironment();
     
     console.log('🚀 API Service initialized');
-    console.log('🌐 Environment:', this.environment);
+    //console.log('🌐 Environment:', this.environment);
     console.log('🔗 Base URL:', this.baseURL);
   }
   
