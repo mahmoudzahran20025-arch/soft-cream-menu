@@ -15,7 +15,7 @@ class APIService {
     this.retries = options.retries || 3;
     this.allowedOrigins = options.allowedOrigins || [];
     this.authToken = options.authToken || null;
-    this.environment = this.detectEnvironment();
+    //this.environment = this.detectEnvironment();
     
     console.log('🚀 API Service initialized');
     console.log('🌐 Environment:', this.environment);
@@ -45,21 +45,19 @@ class APIService {
     return 'https://script.google.com/macros/s/AKfycbxkAXCOjoBDMyyA72Y-KbIj4YHLBNk_nrYrHMiyAuv97knRWJknyE63d3aBUVizltnq/exec';
   }*/
   detectBaseURL() {
-    // ✅ حط الـ Netlify URL الجديد
-    if (window.location.hostname.includes('netlify.app')) {
-      // Use the LATEST deployment URL from Apps Script
-      return 'https://script.google.com/macros/s/AKfycbxkAXCOjoBDMyyA72Y-KbIj4YHLBNk_nrYrHMiyAuv97knRWJknyE63d3aBUVizltnq/exec';
-    }
-    
-    // For local development
-    if (window.location.hostname === 'localhost') {
-      return 'https://script.google.com/macros/s/AKfycbxkAXCOjoBDMyyA72Y-KbIj4YHLBNk_nrYrHMiyAuv97knRWJknyE63d3aBUVizltnq/exec';
-    }
-    
-    // Default
-    return 'https://script.google.com/macros/s/AKfycbxkAXCOjoBDMyyA72Y-KbIj4YHLBNk_nrYrHMiyAuv97knRWJknyE63d3aBUVizltnq/exec';
-  }  
-  
+      // ✅ Netlify Production
+      if (window.location.hostname.includes('netlify.app')) {
+        return 'https://softcream-api.mahmoud-zahran20025.workers.dev';
+      }
+      
+      // ✅ Local Development
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        return 'http://localhost:8787'; // أو الـ URL الحقيقي
+      }
+      
+      // ✅ Default - Cloudflare Worker
+      return 'https://softcream-api.mahmoud-zahran20025.workers.dev';
+  }
   // ================================================================
   // Configuration
   // ================================================================
