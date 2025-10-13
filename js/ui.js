@@ -460,6 +460,7 @@ export async function renderProducts() {
 // ================================================================
 // ===== نافذة المنتج =====
 // ================================================================
+/*
 export async function openProductModal(productId) {
   // ✅ الحصول على المنتج من productsManager
   let product;
@@ -488,6 +489,60 @@ export async function openProductModal(productId) {
   const modalImage = document.getElementById('modalImage');
   if (modalImage) {
     modalImage.src = product.image;
+  }
+  
+  updateModalAddButton();
+  
+  // عرض الاقتراحات
+  renderSuggestions(productId, product.category);
+  
+  const modal = document.getElementById('productModal');
+  if (modal) {
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+  
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
+}*/
+
+export async function openProductModal(productId) {
+  // ✅ الحصول على المنتج من productsManager
+  let product;
+  try {
+    product = await productsManager.getProduct(productId);
+  } catch (error) {
+    console.error('Failed to load product:', error);
+    return;
+  }
+  
+  if (!product) return;
+  
+  currentProduct = product;
+  modalQuantity = 1;
+  
+  // ✅ تفادي undefined/null
+  const name = currentLang === 'ar' 
+    ? (product.name || 'بدون اسم')
+    : (product.nameEn || product.name || 'No name');
+  
+  const description = currentLang === 'ar' 
+    ? (product.description || '')
+    : (product.descriptionEn || product.description || '');
+  
+  const currency = window.translations[currentLang]?.currency || 'ج.م';
+  const price = product.price || 0;
+  const imageUrl = product.image || 'path/to/default-image.png';
+  
+  updateElement('modalTitle', name);
+  updateElement('modalDescription', description);
+  updateElement('modalPrice', `${price} ${currency}`);
+  updateElement('modalQuantity', '1');
+  
+  const modalImage = document.getElementById('modalImage');
+  if (modalImage) {
+    modalImage.src = imageUrl;
   }
   
   updateModalAddButton();
@@ -540,7 +595,7 @@ export function addModalToCart() {
   addToCart(null, currentProduct.id, modalQuantity);
   closeProductModal();
 }
-
+/*
 function renderSuggestions(productId, category) {
   // ✅ الحصول على المنتجات من productsManager
   const allProducts = productsManager.getAllProducts();
@@ -564,6 +619,48 @@ function renderSuggestions(productId, category) {
         <div class="suggestion-info">
           <p class="suggestion-name">${sugName}</p>
           <p class="suggestion-price">${sug.price} ${currency}</p>
+        </div>
+      </div>
+    `;
+  });
+  
+  suggestionsGrid.innerHTML = html;
+}*/
+// في دالة renderSuggestions - استبدل بالكود الصحيح:
+
+function renderSuggestions(productId, category) {
+  // ✅ الحصول على المنتجات من productsManager
+  const allProducts = productsManager.getAllProducts();
+  
+  const suggestions = allProducts
+    .filter(p => p.id !== productId && p.category === category)
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 4);
+  
+  const suggestionsGrid = document.getElementById('suggestionsGrid');
+  if (!suggestionsGrid) return;
+  
+  const currency = window.translations[currentLang]?.currency || 'ج.م';
+  
+  let html = '';
+  suggestions.forEach(sug => {
+    // ✅ الحل: تفادي undefined/null في الاقتراحات
+    const sugName = currentLang === 'ar' 
+      ? (sug.name || 'بدون اسم')
+      : (sug.nameEn || sug.name || 'No name');
+    
+    // ✅ التحقق من وجود الصورة
+    const sugImage = sug.image || 'path/to/default-image.png';
+    
+    // ✅ التحقق من السعر
+    const sugPrice = sug.price || 0;
+    
+    html += `
+      <div class="suggestion-card" onclick="window.uiModule.openProductModal('${sug.id}')">
+        <img src="${sugImage}" alt="${sugName}" class="suggestion-image" loading="lazy">
+        <div class="suggestion-info">
+          <p class="suggestion-name">${sugName}</p>
+          <p class="suggestion-price">${sugPrice} ${currency}</p>
         </div>
       </div>
     `;

@@ -7,6 +7,7 @@ import { productsManager } from './products.js';
 // ================================================================
 // ===== أيقونات التصنيفات =====
 // ================================================================
+
 const iconMap = {
   'كلاسيك': 'ice-cream-cone',
   'فواكه': 'apple',
@@ -29,6 +30,7 @@ export function renderCategories() {
   // إذا لم تكن المنتجات محملة بعد
   if (products.length === 0) {
     console.warn('⚠️ No products loaded yet. Categories will be empty.');
+    
     const container = document.getElementById('categoriesScroll');
     if (container) {
       container.innerHTML = `
