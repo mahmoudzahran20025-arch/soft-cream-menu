@@ -1,9 +1,11 @@
 // ================================================================
-// cart.js - إدارة السلة
+// cart.js - إدارة السلة (آمن - بدون أسعار)
+// CRITICAL: Prices are NEVER stored, always fetched from productsManager
 // ================================================================
 
-import { products } from './products.js';
+import { productsManager } from './products.js';
 import { showToast } from './utils.js';
+import { storage } from './storage.js';
 
 // ================================================================
 // ===== متغيرات السلة =====
@@ -13,29 +15,56 @@ export let cart = [];
 // ================================================================
 // ===== إضافة منتج للسلة =====
 // ================================================================
-export function addToCart(event, productId, quantity = 1) {
+export async function addToCart(event, productId, quantity = 1) {
   if (event) {
     event.stopPropagation();
   }
   
-  const product = products.find(p => p.id === productId);
-  if (!product) return;
+  // ✅ الحصول على المنتج من productsManager (للتحقق فقط)
+  let product;
+  try {
+    product = await productsManager.getProduct(productId);
+  } catch (error) {
+    console.error('Failed to get product:', error);
+    const lang = window.currentLang || 'ar';
+    showToast(
+      lang === 'ar' ? 'خطأ' : 'Error',
+      lang === 'ar' ? 'فشل إضافة المنتج' : 'Failed to add product',
+      'error'
+    );
+    return;
+  }
   
-  const existing = cart.find(item => item.id === productId);
+  if (!product) {
+    console.error('Product not found:', productId);
+    return;
+  }
+  
+  // ✅ التحقق من الحد الأقصى
+  const MAX_QUANTITY = 50;
+  
+  const existing = cart.find(item => item.productId === productId);
   if (existing) {
+    if (existing.quantity + quantity > MAX_QUANTITY) {
+      const lang = window.currentLang || 'ar';
+      showToast(
+        lang === 'ar' ? 'خطأ' : 'Error',
+        lang === 'ar' ? `الحد الأقصى ${MAX_QUANTITY} قطعة` : `Maximum ${MAX_QUANTITY} items`,
+        'error'
+      );
+      return;
+    }
     existing.quantity += quantity;
   } else {
+    // ✅ CRITICAL: نحفظ فقط productId و quantity - بدون أسعار!
     cart.push({
-      id: product.id,
-      name: product.name,
-      nameEn: product.nameEn,
-      price: product.price,
+      productId: productId,
       quantity: quantity
     });
   }
   
   saveCart();
-  updateCartUI();
+  await updateCartUI();
   
   // إظهار إشعار
   try {
@@ -51,22 +80,35 @@ export function addToCart(event, productId, quantity = 1) {
 // ================================================================
 // ===== تحديث كمية منتج =====
 // ================================================================
-export function updateQuantity(productId, delta) {
-  const item = cart.find(i => i.id === productId);
+export async function updateQuantity(productId, delta) {
+  const item = cart.find(i => i.productId === productId);
   if (!item) return;
   
-  item.quantity = Math.max(1, item.quantity + delta);
+  const MAX_QUANTITY = 50;
+  const newQuantity = item.quantity + delta;
+  
+  if (newQuantity > MAX_QUANTITY) {
+    const lang = window.currentLang || 'ar';
+    showToast(
+      lang === 'ar' ? 'خطأ' : 'Error',
+      lang === 'ar' ? `الحد الأقصى ${MAX_QUANTITY} قطعة` : `Maximum ${MAX_QUANTITY} items`,
+      'error'
+    );
+    return;
+  }
+  
+  item.quantity = Math.max(1, newQuantity);
   saveCart();
-  updateCartUI();
+  await updateCartUI();
 }
 
 // ================================================================
 // ===== حذف منتج من السلة =====
 // ================================================================
-export function removeFromCart(productId) {
-  cart = cart.filter(item => item.id !== productId);
+export async function removeFromCart(productId) {
+  cart = cart.filter(item => item.productId !== productId);
   saveCart();
-  updateCartUI();
+  await updateCartUI();
   
   try {
     const currentLang = window.currentLang || 'ar';
@@ -80,19 +122,34 @@ export function removeFromCart(productId) {
 
 // ================================================================
 // ===== حساب الإجماليات =====
+// ✅ الأسعار تُجلب من productsManager (ديناميكياً)
 // ================================================================
-export function calculateCartTotals() {
+export async function calculateCartTotals() {
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  
+  // ✅ جلب الأسعار من productsManager
+  let total = 0;
+  
+  for (const item of cart) {
+    try {
+      const product = await productsManager.getProduct(item.productId);
+      if (product && product.price) {
+        total += product.price * item.quantity;
+      }
+    } catch (error) {
+      console.warn(`Failed to get price for product ${item.productId}:`, error);
+    }
+  }
   
   return { totalItems, total };
 }
 
 // ================================================================
 // ===== تحديث واجهة السلة =====
+// ✅ الأسعار تُجلب من productsManager عند العرض
 // ================================================================
-export function updateCartUI() {
-  const { totalItems, total } = calculateCartTotals();
+export async function updateCartUI() {
+  const { totalItems, total } = await calculateCartTotals();
   const currentLang = window.currentLang || 'ar';
   const translations = window.translations || {};
   const t = translations[currentLang] || {};
@@ -105,14 +162,15 @@ export function updateCartUI() {
   });
   
   // تحديث السلة في Desktop و Mobile
-  updateSingleCartUI('cartItemsDesktop', 'cartTotalDesktop', 'cartFooterDesktop', total, t);
-  updateSingleCartUI('cartItemsMobile', 'cartTotalMobile', 'cartFooterMobile', total, t);
+  await updateSingleCartUI('cartItemsDesktop', 'cartTotalDesktop', 'cartFooterDesktop', total, t);
+  await updateSingleCartUI('cartItemsMobile', 'cartTotalMobile', 'cartFooterMobile', total, t);
 }
 
 // ================================================================
 // ===== تحديث واجهة سلة واحدة =====
+// ✅ الأسعار تُجلب من productsManager
 // ================================================================
-function updateSingleCartUI(itemsId, totalId, footerId, total, translations) {
+async function updateSingleCartUI(itemsId, totalId, footerId, total, translations) {
   const cartItems = document.getElementById(itemsId);
   const cartTotal = document.getElementById(totalId);
   const cartFooter = document.getElementById(footerId);
@@ -123,7 +181,7 @@ function updateSingleCartUI(itemsId, totalId, footerId, total, translations) {
   const currency = translations.currency || 'ج.م';
   
   if (cartTotal) {
-    cartTotal.textContent = `${total} ${currency}`;
+    cartTotal.textContent = `${total.toFixed(2)} ${currency}`;
   }
   
   if (cart.length === 0) {
@@ -155,31 +213,47 @@ function updateSingleCartUI(itemsId, totalId, footerId, total, translations) {
   }
   
   let html = '';
-  cart.forEach(item => {
-    const name = currentLang === 'ar' ? item.name : item.nameEn;
-    html += `
-      <div class="cart-item">
-        <div class="cart-item-header">
-          <span class="cart-item-name">${name}</span>
-          <button class="cart-item-remove" onclick="window.cartModule.removeFromCart('${item.id}')">
-            <i data-lucide="x"></i>
-          </button>
-        </div>
-        <div class="cart-item-footer">
-          <div class="quantity-controls">
-            <button class="quantity-btn" onclick="window.cartModule.updateQuantity('${item.id}', -1)">
-              <i data-lucide="minus"></i>
-            </button>
-            <span class="quantity-value">${item.quantity}</span>
-            <button class="quantity-btn" onclick="window.cartModule.updateQuantity('${item.id}', 1)">
-              <i data-lucide="plus"></i>
+  
+  // ✅ جلب بيانات المنتجات من productsManager
+  for (const item of cart) {
+    try {
+      const product = await productsManager.getProduct(item.productId);
+      
+      if (!product) {
+        console.warn('Product not found in cart:', item.productId);
+        continue;
+      }
+      
+      const name = currentLang === 'ar' ? product.name : (product.nameEn || product.name);
+      const price = product.price || 0;
+      const itemTotal = price * item.quantity;
+      
+      html += `
+        <div class="cart-item">
+          <div class="cart-item-header">
+            <span class="cart-item-name">${name}</span>
+            <button class="cart-item-remove" onclick="window.cartModule.removeFromCart('${item.productId}')">
+              <i data-lucide="x"></i>
             </button>
           </div>
-          <span class="cart-item-price">${item.price * item.quantity} ${currency}</span>
+          <div class="cart-item-footer">
+            <div class="quantity-controls">
+              <button class="quantity-btn" onclick="window.cartModule.updateQuantity('${item.productId}', -1)">
+                <i data-lucide="minus"></i>
+              </button>
+              <span class="quantity-value">${item.quantity}</span>
+              <button class="quantity-btn" onclick="window.cartModule.updateQuantity('${item.productId}', 1)">
+                <i data-lucide="plus"></i>
+              </button>
+            </div>
+            <span class="cart-item-price">${itemTotal.toFixed(2)} ${currency}</span>
+          </div>
         </div>
-      </div>
-    `;
-  });
+      `;
+    } catch (error) {
+      console.error('Error rendering cart item:', error);
+    }
+  }
   
   cartItems.innerHTML = html;
   
@@ -190,38 +264,33 @@ function updateSingleCartUI(itemsId, totalId, footerId, total, translations) {
 
 // ================================================================
 // ===== حفظ السلة =====
+// ✅ استخدام storage module (sessionStorage)
 // ================================================================
 export function saveCart() {
-  try {
-    localStorage.setItem('cart', JSON.stringify(cart));
-  } catch (e) {
-    console.warn('Could not save cart:', e);
-  }
+  storage.setCart(cart);
 }
 
 // ================================================================
 // ===== تحميل السلة =====
+// ✅ استخدام storage module (sessionStorage)
 // ================================================================
 export function loadCart() {
-  const savedCart = localStorage.getItem('cart');
-  if (savedCart) {
-    try {
-      cart = JSON.parse(savedCart);
-      console.log('✅ Cart loaded:', cart.length, 'items');
-    } catch (e) {
-      cart = [];
-      console.warn('Could not load cart:', e);
-    }
+  const savedCart = storage.getCart();
+  if (savedCart && Array.isArray(savedCart)) {
+    cart = savedCart;
+    console.log('✅ Cart loaded:', cart.length, 'items');
+  } else {
+    cart = [];
   }
 }
 
 // ================================================================
 // ===== تفريغ السلة =====
 // ================================================================
-export function clearCart() {
+export async function clearCart() {
   cart = [];
   saveCart();
-  updateCartUI();
+  await updateCartUI();
 }
 
 // ================================================================
@@ -261,4 +330,4 @@ if (typeof window !== 'undefined') {
   };
 }
 
-console.log('✅ Cart module loaded');
+console.log('✅ Cart module loaded (Secure - No Prices Stored)');

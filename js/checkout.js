@@ -6,6 +6,7 @@
 import { cart, calculateCartTotals, clearCart, closeCartModal } from './cart.js';
 import { showToast, generateUUID, calculateDistance, setupFocusTrap } from './utils.js';
 import { api } from './api.js';
+import { storage } from './storage.js';
 
 // ================================================================
 // ===== متغيرات عامة =====
@@ -194,8 +195,9 @@ function resetFormFields() {
 // ================================================================
 // ===== ملء بيانات المستخدم المحفوظة =====
 // ================================================================
+// في fillSavedUserData():
 function fillSavedUserData() {
-  const userData = window.userData || window.appModule?.getUserData();
+  const userData = storage.getUserData(); // ✅ استخدام storage
   
   if (userData) {
     const nameField = document.getElementById('customerName');
@@ -909,11 +911,9 @@ export async function confirmOrder() {
       visitCount: newVisitCount
     };
     
-    try {
-      localStorage.setItem('userData', JSON.stringify(window.userData));
-    } catch (e) {
-      console.warn('Could not save to localStorage:', e);
-    }
+    
+    // ✅ بهذا:
+    storage.setUserData(window.userData);
     
     // تفريغ السلة
     clearCart();
@@ -1364,6 +1364,7 @@ export function setupCheckoutEventHandlers() {
 // ================================================================
 // ===== حفظ بيانات النموذج =====
 // ================================================================
+// ✅ الجديد:
 function saveFormData() {
   const nameField = document.getElementById('customerName');
   const phoneField = document.getElementById('customerPhone');
@@ -1377,37 +1378,37 @@ function saveFormData() {
     notes: notesField?.value || ''
   };
   
-  try {
-    sessionStorage.setItem('checkoutFormData', JSON.stringify(formData));
-  } catch (e) {
-    console.warn('Could not save form data:', e);
-  }
+  storage.setCheckoutFormData(formData);
 }
 
-// ================================================================
-// ===== استعادة بيانات النموذج =====
-// ================================================================
 export function restoreFormData() {
-  try {
-    const savedData = sessionStorage.getItem('checkoutFormData');
-    if (!savedData) return;
-    
-    const formData = JSON.parse(savedData);
-    
+  const formData = storage.getCheckoutFormData();
+  
+  if (!formData) return;
+  
+  const nameField = document.getElementById('customerName');
+  const phoneField = document.getElementById('customerPhone');
+  const addressField = document.getElementById('customerAddress');
+  const notesField = document.getElementById('orderNotes');
+  
+  if (formData.name && nameField) nameField.value = formData.name;
+  if (formData.phone && phoneField) phoneField.value = formData.phone;
+  if (formData.address && addressField) addressField.value = formData.address;
+  if (formData.notes && notesField) notesField.value = formData.notes;
+}
+
+// في fillSavedUserData():
+function fillSavedUserData() {
+  const userData = storage.getUserData(); // ✅ استخدام storage
+  
+  if (userData) {
     const nameField = document.getElementById('customerName');
     const phoneField = document.getElementById('customerPhone');
-    const addressField = document.getElementById('customerAddress');
-    const notesField = document.getElementById('orderNotes');
     
-    if (formData.name && nameField) nameField.value = formData.name;
-    if (formData.phone && phoneField) phoneField.value = formData.phone;
-    if (formData.address && addressField) addressField.value = formData.address;
-    if (formData.notes && notesField) notesField.value = formData.notes;
-  } catch (e) {
-    console.warn('Error restoring form data:', e);
+    if (nameField && userData.name) nameField.value = userData.name;
+    if (phoneField && userData.phone) phoneField.value = userData.phone;
   }
 }
-
 // ================================================================
 // ===== إغلاق جميع نوافذ الدفع =====
 // ================================================================

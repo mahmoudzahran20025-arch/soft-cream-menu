@@ -5,6 +5,7 @@
 import { productsManager } from './products.js';
 import { addToCart } from './cart.js';
 import { getCategoryIcon, getCategoryName } from './categories.js';
+import { storage } from './storage.js';
 
 // ================================================================
 // ===== متغيرات عامة =====
@@ -21,7 +22,7 @@ export let modalQuantity = 1;
 // ================================================================
 export function toggleLanguage() {
   currentLang = currentLang === 'ar' ? 'en' : 'ar';
-  localStorage.setItem('language', currentLang);
+  storage.setLang(currentLang); // ✅ بدل localStorage
   
   document.documentElement.setAttribute('lang', currentLang);
   document.documentElement.setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
@@ -104,18 +105,18 @@ function updateCheckoutModal(t) {
 // ================================================================
 // ===== تبديل الثيم =====
 // ================================================================
-export function toggleTheme() {
-  document.body.classList.toggle('dark');
-  const isDark = document.body.classList.contains('dark');
-  const icon = document.getElementById('theme-icon');
-  if (icon) {
-    icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
-    if (typeof lucide !== 'undefined') {
-      lucide.createIcons();
+  export function toggleTheme() {
+    document.body.classList.toggle('dark');
+    const isDark = document.body.classList.contains('dark');
+    const icon = document.getElementById('theme-icon');
+    if (icon) {
+      icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      }
     }
+    storage.setTheme(isDark ? 'dark' : 'light'); // ✅ بدل localStorage
   }
-  localStorage.setItem('theme', isDark ? 'dark' : 'light');
-}
 
 // ================================================================
 // ===== تبديل التابات =====

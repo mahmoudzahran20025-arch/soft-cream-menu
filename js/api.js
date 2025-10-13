@@ -3,634 +3,639 @@
 // CRITICAL: Never send prices from frontend - backend calculates all prices
 // ================================================================
 
+// ================================================================
+// api.js - Enhanced API Service
+// ✅ Request Cancellation + Rate Limiting + Dynamic URLs
+// CRITICAL: Never send prices from frontend - backend calculates all prices
+// ================================================================
+
 import { generateUUID } from './utils.js';
+import { storage } from './storage.js';
 
 // ================================================================
-// API Service Class
+// ===== API Configuration =====
+// ================================================================
+const API_CONFIG = {
+    // ✅ Dynamic base URLs (no hardcoding)
+    urls: {
+        production: 'https://softcream-api.mahmoud-zahran20025.workers.dev',
+        netlify: 'https://softcream-api.mahmoud-zahran20025.workers.dev',
+        local: 'http://localhost:8787'
+    },
+    timeout: 30000,
+    retries: 3,
+    // ✅ Rate limiting config
+    rateLimit: {
+        enabled: true,
+        maxRequests: 60, // 60 requests
+        window: 60000    // per minute
+    }
+};
+
+// ================================================================
+// ===== API Service Class =====
 // ================================================================
 class APIService {
-  constructor(options = {}) {
-    this.baseURL = options.baseURL || this.detectBaseURL();
-    this.timeout = options.timeout || 30000;
-    this.retries = options.retries || 3;
-    this.allowedOrigins = options.allowedOrigins || [];
-    this.authToken = options.authToken || null;
-    //this.environment = this.detectEnvironment();
-    
-    console.log('🚀 API Service initialized');
-    //console.log('🌐 Environment:', this.environment);
-    console.log('🔗 Base URL:', this.baseURL);
-  }
-  
-  // ================================================================
-  // Environment Detection
-  // ================================================================
-  /*
-  detectEnvironment() {
-    if (window.location.hostname.includes('firebaseapp.com') || 
-        window.location.hostname.includes('web.app')) {
-      return 'firebase';
+    constructor(options = {}) {
+        this.baseURL = options.baseURL || this.detectBaseURL();
+        this.timeout = options.timeout || API_CONFIG.timeout;
+        this.retries = options.retries || API_CONFIG.retries;
+        this.authToken = options.authToken || null;
+
+        // ✅ Active requests tracking (للـ cancellation)
+        this.activeRequests = new Map();
+
+        // ✅ Rate limiting state
+        this.requestTimestamps = [];
+        this.rateLimitEnabled = API_CONFIG.rateLimit.enabled;
+
+        console.log('🚀 API Service initialized');
+        console.log('🔗 Base URL:', this.baseURL);
     }
-    
-    if (window.location.hostname === 'localhost' || 
-        window.location.hostname === '127.0.0.1') {
-      return 'development';
+
+    // ================================================================
+    // ===== Environment Detection (Dynamic URLs) =====
+    // ================================================================
+    detectBaseURL() {
+        const hostname = window.location.hostname;
+
+        // ✅ Netlify Production
+        if (hostname.includes('netlify.app')) {
+            return API_CONFIG.urls.netlify;
+        }
+
+        // ✅ Local Development
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return API_CONFIG.urls.local;
+        }
+
+        // ✅ Default - Production
+        return API_CONFIG.urls.production;
     }
-    
-    return 'production';
-  }
-  
-  detectBaseURL() {
-    // Default to empty - must be configured with GAS Web App URL
-    return 'https://script.google.com/macros/s/AKfycbxkAXCOjoBDMyyA72Y-KbIj4YHLBNk_nrYrHMiyAuv97knRWJknyE63d3aBUVizltnq/exec';
-  }*/
-  detectBaseURL() {
-      // ✅ Netlify Production
-      if (window.location.hostname.includes('netlify.app')) {
-        return 'https://softcream-api.mahmoud-zahran20025.workers.dev';
-      }
-      
-      // ✅ Local Development
-      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        return 'http://localhost:8787'; // أو الـ URL الحقيقي
-      }
-      
-      // ✅ Default - Cloudflare Worker
-      return 'https://softcream-api.mahmoud-zahran20025.workers.dev';
-  }
-  // ================================================================
-  // Configuration
-  // ================================================================
-  configure(options) {
-    if (options.baseURL) this.baseURL = options.baseURL;
-    if (options.timeout) this.timeout = options.timeout;
-    if (options.retries) this.retries = options.retries;
-    if (options.authToken) this.authToken = options.authToken;
-    
-    console.log('✅ API Service configured with:', options);
-  }
-  
-  // ================================================================
-  // Main Request Method
-  // ================================================================
-  async request(method, endpoint, data = null, options = {}) {
-    const {
-      timeout = this.timeout,
-      retries = this.retries,
-      idempotencyKey = null,
-      authToken = this.authToken
-    } = options;
-    
-    let lastError;
-    
-    for (let attempt = 1; attempt <= retries; attempt++) {
-      try {
-        console.log(`📡 API Request [Attempt ${attempt}/${retries}]:`, method, endpoint);
-        
-        return await this.httpRequest(method, endpoint, data, {
-          timeout,
-          idempotencyKey,
-          authToken
+
+    // ================================================================
+    // ===== Configuration =====
+    // ================================================================
+    configure(options) {
+        if (options.baseURL) this.baseURL = options.baseURL;
+        if (options.timeout) this.timeout = options.timeout;
+        if (options.retries) this.retries = options.retries;
+        if (options.authToken) this.authToken = options.authToken;
+        if (options.rateLimitEnabled !== undefined) {
+            this.rateLimitEnabled = options.rateLimitEnabled;
+        }
+
+        console.log('✅ API Service configured');
+    }
+
+    // ================================================================
+    // ===== Rate Limiting Check =====
+    // ✅ Frontend rate limiting لمنع spam
+    // ================================================================
+    checkRateLimit() {
+        if (!this.rateLimitEnabled) return true;
+
+        const now = Date.now();
+        const { maxRequests, window: timeWindow } = API_CONFIG.rateLimit;
+
+        // إزالة الـ timestamps القديمة
+        this.requestTimestamps = this.requestTimestamps.filter(
+            timestamp => now - timestamp < timeWindow
+        );
+
+        // التحقق من الحد
+        if (this.requestTimestamps.length >= maxRequests) {
+            const oldestRequest = this.requestTimestamps[0];
+            const timeUntilReset = timeWindow - (now - oldestRequest);
+
+            console.warn(`⚠️ Rate limit exceeded. Try again in ${Math.ceil(timeUntilReset / 1000)}s`);
+            return false;
+        }
+
+        // إضافة timestamp الحالي
+        this.requestTimestamps.push(now);
+        return true;
+    }
+
+    // ================================================================
+    // ===== Request Cancellation =====
+    // ✅ إلغاء الطلبات القديمة عند التنقل
+    // ================================================================
+    cancelRequest(requestId) {
+        const controller = this.activeRequests.get(requestId);
+        if (controller) {
+            controller.abort();
+            this.activeRequests.delete(requestId);
+            console.log('🚫 Request cancelled:', requestId);
+        }
+    }
+
+    cancelAllRequests() {
+        this.activeRequests.forEach((controller, requestId) => {
+            controller.abort();
+            console.log('🚫 Request cancelled:', requestId);
         });
-        
-      } catch (error) {
-        lastError = error;
-        console.warn(`⚠️ Attempt ${attempt} failed:`, error.message);
-        
-        // Don't retry on client errors (4xx)
-        if (error.status >= 400 && error.status < 500) {
-          throw error;
-        }
-        
-        if (attempt < retries) {
-          const backoff = Math.min(Math.pow(2, attempt) * 1000, 10000);
-          console.log(`⏳ Retrying in ${backoff}ms...`);
-          await this.delay(backoff);
-        }
-      }
+        this.activeRequests.clear();
     }
-    
-    console.error('❌ All attempts failed:', lastError);
-    throw lastError;
-  }
-  
-  // ================================================================
-  // HTTP Request with Enhanced Error Handling
-  // ================================================================
-  async httpRequest(method, endpoint, data, options) {
-    if (!this.baseURL) {
-      throw new Error('API baseURL not configured. Please call api.configure({ baseURL: "YOUR_GAS_URL" })');
-    }
-    
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), options.timeout);
-    
-    try {
-      const headers = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      };
-      
-      // Add idempotency key
-      if (options.idempotencyKey) {
-        headers['Idempotency-Key'] = options.idempotencyKey;
-      }
-      
-      // Add authentication
-      const token = options.authToken || this.getAuthToken();
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-      
-      // Add origin for CORS
-      headers['Origin'] = window.location.origin;
-      
-      const config = {
-        method,
-        headers,
-        signal: controller.signal,
-        mode: 'cors'
-      };
-      
-      // Build URL with path parameter for GAS
-      let url = this.baseURL;
-      
-      if (method === 'GET' && data && Object.keys(data).length > 0) {
-        const params = new URLSearchParams({
-          path: endpoint,
-          ...data
-        });
-        url += '?' + params.toString();
-      } else {
-        url += '?path=' + encodeURIComponent(endpoint);
-        if (data && method !== 'GET') {
-          config.body = JSON.stringify(data);
+
+    // ================================================================
+    // ===== Main Request Method =====
+    // ================================================================
+    async request(method, endpoint, data = null, options = {}) {
+        // ✅ التحقق من Rate Limit
+        if (!this.checkRateLimit()) {
+            throw new Error('Rate limit exceeded. Please try again later.');
         }
-      }
-      
-      console.log(`📤 ${method}:`, url);
-      if (data && method !== 'GET') {
-        console.log('📦 Body:', data);
-      }
-      
-      const response = await fetch(url, config);
-      
-      console.log(`📥 Response Status: ${response.status}`);
-      
-      // Handle 204 No Content
-      if (response.status === 204) {
-        return { success: true, data: null };
-      }
-      
-      // Try to parse response
-      let result;
-      const contentType = response.headers.get('content-type');
-      
-      if (contentType && contentType.includes('application/json')) {
+
+        const {
+            timeout = this.timeout,
+            retries = this.retries,
+            idempotencyKey = null,
+            authToken = this.authToken,
+            cancelable = true // New option for cancellation
+        } = options;
+
+        let lastError;
+
+        for (let attempt = 1; attempt <= retries; attempt++) {
+            try {
+                console.log(`📡 API Request [Attempt ${attempt}/${retries}]:`, method, endpoint);
+
+                return await this.httpRequest(method, endpoint, data, {
+                    timeout,
+                    idempotencyKey,
+                    authToken,
+                    cancelable
+                });
+
+            } catch (error) {
+                lastError = error;
+
+                // ✅ لا تعيد المحاولة إذا تم إلغاء الطلب
+                if (error.name === 'AbortError') {
+                    console.log('🚫 Request was cancelled');
+                    throw error;
+                }
+
+                console.warn(`⚠️ Attempt ${attempt} failed:`, error.message);
+
+                // Don't retry on client errors (4xx)
+                if (error.status >= 400 && error.status < 500) {
+                    throw error;
+                }
+
+                if (attempt < retries) {
+                    const backoff = Math.min(Math.pow(2, attempt) * 1000, 10000);
+                    console.log(`⏳ Retrying in ${backoff}ms...`);
+                    await this.delay(backoff);
+                }
+            }
+        }
+
+        console.error('❌ All attempts failed:', lastError);
+        throw lastError;
+    }
+
+    // ================================================================
+    // ===== HTTP Request with Enhanced Error Handling and Cancellation =====
+    // ================================================================
+    async httpRequest(method, endpoint, data, options) {
+        if (!this.baseURL) {
+            throw new Error('API baseURL not configured');
+        }
+
+        // ✅ إنشاء AbortController للـ cancellation
+        const requestId = generateUUID();
+        const controller = new AbortController();
+
+        if (options.cancelable) {
+            this.activeRequests.set(requestId, controller);
+        }
+
+        const timeoutId = setTimeout(() => {
+            // Check if the request is still active before aborting timeout
+            if(this.activeRequests.has(requestId)) {
+                controller.abort();
+            }
+        }, options.timeout);
+
         try {
-          result = await response.json();
-        } catch (parseError) {
-          console.warn('Failed to parse JSON response:', parseError);
-          result = { success: false, error: 'Invalid JSON response' };
+            const headers = {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            };
+
+            // Add idempotency key
+            if (options.idempotencyKey) {
+                headers['Idempotency-Key'] = options.idempotencyKey;
+            }
+
+            // Add authentication
+            const token = options.authToken || this.getAuthToken();
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            // Add origin for CORS
+            headers['Origin'] = window.location.origin;
+
+            const config = {
+                method,
+                headers,
+                signal: controller.signal,
+                mode: 'cors'
+            };
+
+            // Build URL
+            let url = this.baseURL;
+
+            if (method === 'GET' && data && Object.keys(data).length > 0) {
+                const params = new URLSearchParams({
+                    path: endpoint,
+                    ...data
+                });
+                url += '?' + params.toString();
+            } else {
+                url += '?path=' + encodeURIComponent(endpoint);
+                if (data && method !== 'GET') {
+                    config.body = JSON.stringify(data);
+                }
+            }
+
+            console.log(`📤 ${method}:`, url);
+            if (data && method !== 'GET') {
+                console.log('📦 Body:', data);
+            }
+
+            const response = await fetch(url, config);
+
+            console.log(`📥 Response Status: ${response.status}`);
+
+            // Handle 204 No Content
+            if (response.status === 204) {
+                return { success: true, data: null };
+            }
+
+            // Parse response
+            let result;
+            const contentType = response.headers.get('content-type');
+
+            if (contentType && contentType.includes('application/json')) {
+                try {
+                    result = await response.json();
+                } catch (parseError) {
+                    console.warn('Failed to parse JSON response:', parseError);
+                    result = { success: false, error: 'Invalid JSON response' };
+                }
+            } else {
+                const text = await response.text();
+                console.warn('Non-JSON response:', text);
+                result = { success: false, error: 'Expected JSON response', rawResponse: text };
+            }
+
+            // Handle error responses
+            if (!response.ok) {
+                const error = new Error(result.error || `HTTP ${response.status}: ${response.statusText}`);
+                error.status = response.status;
+                error.data = result;
+                throw error;
+            }
+
+            console.log('✅ Response:', result);
+
+            return result;
+
+        } catch (error) {
+            // Check if the error is a timeout and re-throw with better message
+            if (error.name === 'AbortError') {
+                 // Check if it was canceled manually or by timeout
+                if (!this.activeRequests.has(requestId)) {
+                    throw new Error(`Request timeout after ${options.timeout}ms`);
+                }
+                // If the request is still in the active map, it means it was a manual cancellation
+                throw error;
+            }
+            throw error;
+        } finally {
+            clearTimeout(timeoutId);
+            // ✅ تنظيف الـ active request
+            if (options.cancelable) {
+                this.activeRequests.delete(requestId);
+            }
         }
-      } else {
-        const text = await response.text();
-        console.warn('Non-JSON response:', text);
-        result = { success: false, error: 'Expected JSON response', rawResponse: text };
-      }
-      
-      // Handle error responses
-      if (!response.ok) {
-        const error = new Error(result.error || `HTTP ${response.status}: ${response.statusText}`);
-        error.status = response.status;
-        error.data = result;
-        throw error;
-      }
-      
-      console.log('✅ Response:', result);
-      
-      return result;
-      
-    } catch (error) {
-      if (error.name === 'AbortError') {
-        throw new Error(`Request timeout after ${options.timeout}ms`);
-      }
-      throw error;
-    } finally {
-      clearTimeout(timeoutId);
     }
-  }
-  
-  // ================================================================
-  // Authentication
-  // ================================================================
-  getAuthToken() {
-    try {
-      return localStorage.getItem('authToken');
-    } catch (e) {
-      return null;
+
+    // ================================================================
+    // ===== Authentication =====
+    // ✅ استخدام storage module
+    // ================================================================
+    getAuthToken() {
+        return storage.getAuthToken();
     }
-  }
-  
-  setAuthToken(token) {
-    try {
-      if (token) {
-        localStorage.setItem('authToken', token);
-      } else {
-        localStorage.removeItem('authToken');
-      }
-    } catch (e) {
-      console.warn('Failed to save auth token:', e);
+
+    setAuthToken(token) {
+        if (token) {
+            storage.setAuthToken(token);
+        } else {
+            storage.clearAuthToken();
+        }
     }
-  }
-  
-  // ================================================================
-  // Helper Methods
-  // ================================================================
-  delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-  
-  generateIdempotencyKey() {
-    return generateUUID();
-  }
-  
-  // ================================================================
-  // ORDER ENDPOINTS
-  // CRITICAL: Frontend sends only product IDs + quantities
-  // Backend calculates all prices
-  // ================================================================
-  
-  /**
-   * Submit Order - CRITICAL: Only send product IDs and quantities
-   * Backend calculates prices, applies promotions, and returns totals
-   * @param {Object} orderData - { items: [{productId, quantity}], customer, deliveryMethod, promoCode }
-   * @returns {Promise<Object>} - { orderId, eta, calculatedPrices }
-   */
-  async submitOrder(orderData) {
-    // Validate that frontend isn't sending prices
-    if (orderData.items.some(item => item.price || item.subtotal)) {
-      console.error('❌ SECURITY WARNING: Frontend should not send prices!');
-      throw new Error('Invalid order data: prices should not be sent from frontend');
+
+    getSessionId() {
+        return storage.getSessionId();
     }
-    
-    if (orderData.subtotal || orderData.total || orderData.discount) {
-      console.error('❌ SECURITY WARNING: Frontend should not send totals!');
-      throw new Error('Invalid order data: totals should not be sent from frontend');
+
+    // ================================================================
+    // ===== Helper Methods =====
+    // ================================================================
+    delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
-    
-    // Generate idempotency key
-    const idempotencyKey = orderData.idempotencyKey || this.generateIdempotencyKey();
-    
-    // Clean order data - only IDs and quantities
-    const cleanOrderData = {
-      items: orderData.items.map(item => ({
-        productId: item.productId,
-        quantity: item.quantity
-      })),
-      customer: orderData.customer,
-      deliveryMethod: orderData.deliveryMethod || 'delivery',
-      branch: orderData.branch || null,
-      location: orderData.location || null,
-      promoCode: orderData.promoCode || null,
-      idempotencyKey: idempotencyKey
-    };
-    
-    console.log('📦 Submitting order (IDs only):', cleanOrderData);
-    
-    const result = await this.request('POST', '/orders/submit', cleanOrderData, {
-      idempotencyKey: idempotencyKey,
-      retries: 3
-    });
-    
-    // Backend returns calculated prices
-    console.log('💰 Received calculated prices from backend:', result.data.calculatedPrices);
-    
-    return result.data;
-  }
-  
-  /**
-   * Track Order
-   * @param {string} orderId
-   * @returns {Promise<Object>}
-   */
-  async trackOrder(orderId) {
-    return this.request('GET', '/orders/track', { orderId });
-  }
-  
-  /**
-   * Cancel Order
-   * @param {string} orderId
-   * @returns {Promise<Object>}
-   */
-  async cancelOrder(orderId) {
-    return this.request('POST', '/orders/cancel', { orderId });
-  }
-  
-  // ================================================================
-  // PRODUCT ENDPOINTS
-  // ================================================================
-  
-  /**
-   * Get All Products - Prices come from backend
-   * @param {Object} filters
-   * @returns {Promise<Array>}
-   */
-  async getProducts(filters = {}) {
-    const result = await this.request('GET', '/products', filters);
-    console.log('📦 Products loaded from backend (with prices):', result.data.length);
-    return result.data;
-  }
-  
-  /**
-   * Get Single Product
-   * @param {string} productId
-   * @returns {Promise<Object>}
-   */
-  async getProduct(productId) {
-    const result = await this.request('GET', `/products/${productId}`);
-    return result.data;
-  }
-  
-  /**
-   * Search Products
-   * @param {string} query
-   * @returns {Promise<Array>}
-   */
-  async searchProducts(query) {
-    const result = await this.request('GET', '/products/search', { q: query });
-    return result.data;
-  }
-  
-  // ================================================================
-  // USER ENDPOINTS
-  // ================================================================
-  
-  /**
-   * Save User Data
-   * @param {Object} userData
-   * @returns {Promise<Object>}
-   */
-  async saveUserData(userData) {
-    return this.request('POST', '/users/save', userData);
-  }
-  
-  /**
-   * Get User Profile
-   * @param {string} userId
-   * @returns {Promise<Object>}
-   */
-  async getUserProfile(userId) {
-    const result = await this.request('GET', '/users/profile', { userId });
-    return result.data;
-  }
-  
-  /**
-   * Update User Data
-   * @param {string} userId
-   * @param {Object} updates
-   * @returns {Promise<Object>}
-   */
-  async updateUserData(userId, updates) {
-    return this.request('PUT', `/users/${userId}`, updates);
-  }
-  
-  // ================================================================
-  // BRANCH ENDPOINTS
-  // ================================================================
-  
-  /**
-   * Get All Branches
-   * @returns {Promise<Array>}
-   */
-  async getBranches() {
-    const result = await this.request('GET', '/branches');
-    return result.data;
-  }
-  
-  /**
-   * Check Branch Availability
-   * @param {string} branchId
-   * @returns {Promise<Object>}
-   */
-  async checkBranchAvailability(branchId) {
-    const result = await this.request('GET', '/branches/availability', { branchId });
-    return result.data;
-  }
-  
-  /**
-   * Get Branch Hours
-   * @param {string} branchId
-   * @returns {Promise<Object>}
-   */
-  async getBranchHours(branchId) {
-    const result = await this.request('GET', `/branches/${branchId}/hours`);
-    return result.data;
-  }
-  
-  // ================================================================
-  // PROMOTION ENDPOINTS
-  // ================================================================
-  
-  /**
-   * Get Active Promotions
-   * @returns {Promise<Array>}
-   */
-  async getActivePromotions() {
-    const result = await this.request('GET', '/promotions/active');
-    return result.data;
-  }
-  
-  /**
-   * Validate Promo Code - Backend calculates discount
-   * @param {string} code
-   * @param {number} subtotal - Current cart subtotal for validation
-   * @returns {Promise<Object>}
-   */
-  async validatePromoCode(code, subtotal) {
-    const result = await this.request('POST', '/promotions/validate', { 
-      code, 
-      subtotal 
-    });
-    return result.data;
-  }
-  
-  // ================================================================
-  // ANALYTICS ENDPOINTS
-  // ================================================================
-  
-  /**
-   * Track Single Event - Uses sendBeacon for reliability
-   * @param {Object} event
-   * @returns {Promise<void>}
-   */
-  async trackEvent(event) {
-    try {
-      // Add timestamp and session info
-      const enrichedEvent = {
-        ...event,
-        timestamp: Date.now(),
-        sessionId: this.getSessionId(),
-        userAgent: navigator.userAgent,
-        url: window.location.href
-      };
-      
-      // Try sendBeacon first (more reliable for page unload)
-      if (navigator.sendBeacon && this.baseURL) {
-        const url = `${this.baseURL}?path=${encodeURIComponent('/analytics/event')}`;
-        const blob = new Blob([JSON.stringify(enrichedEvent)], {
-          type: 'application/json'
+
+    generateIdempotencyKey() {
+        return generateUUID();
+    }
+
+    // ================================================================
+    // ===== ORDER ENDPOINTS =====
+    // CRITICAL: Frontend sends only product IDs + quantities
+    // Backend calculates all prices
+    // ================================================================
+
+    /**
+     * Submit Order - CRITICAL: Only send product IDs and quantities
+     * Backend calculates prices, applies promotions, and returns totals
+     * @param {Object} orderData - { items: [{productId, quantity}], customer, deliveryMethod, promoCode }
+     * @returns {Promise<Object>} - { orderId, eta, calculatedPrices }
+     */
+    async submitOrder(orderData) {
+        // Validate that frontend isn't sending prices
+        if (orderData.items.some(item => item.price || item.subtotal)) {
+            console.error('❌ SECURITY WARNING: Frontend should not send prices!');
+            throw new Error('Invalid order data: prices should not be sent from frontend');
+        }
+
+        if (orderData.subtotal || orderData.total || orderData.discount) {
+            console.error('❌ SECURITY WARNING: Frontend should not send totals!');
+            throw new Error('Invalid order data: totals should not be sent from frontend');
+        }
+
+        // Generate idempotency key
+        const idempotencyKey = orderData.idempotencyKey || this.generateIdempotencyKey();
+
+        // Clean order data - only IDs and quantities
+        const cleanOrderData = {
+            items: orderData.items.map(item => ({
+                productId: item.productId,
+                quantity: item.quantity
+            })),
+            customer: orderData.customer,
+            deliveryMethod: orderData.deliveryMethod || 'delivery',
+            branch: orderData.branch || null,
+            location: orderData.location || null,
+            promoCode: orderData.promoCode || null,
+            idempotencyKey: idempotencyKey
+        };
+
+        console.log('📦 Submitting order (IDs only):', cleanOrderData);
+
+        const result = await this.request('POST', '/orders/submit', cleanOrderData, {
+            idempotencyKey: idempotencyKey,
+            retries: 3
         });
-        
-        const sent = navigator.sendBeacon(url, blob);
-        if (sent) {
-          console.log('📊 Event tracked (sendBeacon):', event.name);
-          return;
+
+        // Backend returns calculated prices
+        console.log('💰 Received calculated prices from backend:', result.data.calculatedPrices);
+
+        return result.data;
+    }
+
+    /**
+     * Track Order
+     * @param {string} orderId
+     * @returns {Promise<Object>}
+     */
+    async trackOrder(orderId) {
+        return this.request('GET', '/orders/track', { orderId });
+    }
+
+    /**
+     * Cancel Order
+     * @param {string} orderId
+     * @returns {Promise<Object>}
+     */
+    async cancelOrder(orderId) {
+        return this.request('POST', '/orders/cancel', { orderId });
+    }
+
+    // ================================================================
+    // ===== PRODUCT ENDPOINTS =====
+    // ================================================================
+
+    /**
+     * Get All Products - Prices come from backend
+     * @param {Object} filters
+     * @returns {Promise<Array>}
+     */
+    async getProducts(filters = {}) {
+        const result = await this.request('GET', '/products', filters);
+        console.log('📦 Products loaded from backend (with prices):', result.data?.length || 0);
+        return result.data;
+    }
+
+    /**
+     * Get Single Product
+     * @param {string} productId
+     * @returns {Promise<Object>}
+     */
+    async getProduct(productId) {
+        const result = await this.request('GET', `/products/${productId}`);
+        return result.data;
+    }
+
+    /**
+     * Search Products
+     * @param {string} query
+     * @returns {Promise<Array>}
+     */
+    async searchProducts(query) {
+        // Note: Can use cancelable: false if search is very short, but usually better to cancel old search requests
+        const result = await this.request('GET', '/products/search', { q: query });
+        return result.data;
+    }
+
+    // ================================================================
+    // ===== USER ENDPOINTS =====
+    // ================================================================
+
+    /**
+     * Save User Data
+     * @param {Object} userData
+     * @returns {Promise<Object>}
+     */
+    async saveUserData(userData) {
+        return this.request('POST', '/users/save', userData);
+    }
+
+    /**
+     * Get User Profile
+     * @param {string} userId
+     * @returns {Promise<Object>}
+     */
+    async getUserProfile(userId) {
+        const result = await this.request('GET', '/users/profile', { userId });
+        return result.data;
+    }
+
+    /**
+     * Update User Data
+     * @param {string} userId
+     * @param {Object} updates
+     * @returns {Promise<Object>}
+     */
+    async updateUserData(userId, updates) {
+        return this.request('PUT', `/users/${userId}`, updates);
+    }
+
+    // ================================================================
+    // ===== BRANCH ENDPOINTS =====
+    // ================================================================
+
+    /**
+     * Get All Branches
+     * @returns {Promise<Array>}
+     */
+    async getBranches() {
+        const result = await this.request('GET', '/branches');
+        return result.data;
+    }
+
+    /**
+     * Check Branch Availability
+     * @param {string} branchId
+     * @returns {Promise<Object>}
+     */
+    async checkBranchAvailability(branchId) {
+        const result = await this.request('GET', '/branches/availability', { branchId });
+        return result.data;
+    }
+
+    /**
+     * Get Branch Hours
+     * @param {string} branchId
+     * @returns {Promise<Object>}
+     */
+    async getBranchHours(branchId) {
+        const result = await this.request('GET', `/branches/${branchId}/hours`);
+        return result.data;
+    }
+
+    // ================================================================
+    // ===== PROMOTION ENDPOINTS =====
+    // ================================================================
+
+    /**
+     * Get Active Promotions
+     * @returns {Promise<Array>}
+     */
+    async getActivePromotions() {
+        const result = await this.request('GET', '/promotions/active');
+        return result.data;
+    }
+
+    /**
+     * Validate Promo Code - Backend calculates discount
+     * @param {string} code
+     * @param {number} subtotal - Current cart subtotal for validation
+     * @returns {Promise<Object>}
+     */
+    async validatePromoCode(code, subtotal) {
+        const result = await this.request('POST', '/promotions/validate', {
+            code,
+            subtotal
+        });
+        return result.data;
+    }
+
+    // ================================================================
+    // ===== ANALYTICS ENDPOINTS =====
+    // ================================================================
+
+    /**
+     * Track Single Event - Uses sendBeacon for reliability
+     * @param {Object} event
+     * @returns {Promise<void>}
+     */
+    async trackEvent(event) {
+        try {
+            // Add timestamp and session info
+            const enrichedEvent = {
+                ...event,
+                timestamp: Date.now(),
+                sessionId: this.getSessionId(),
+                userAgent: navigator.userAgent,
+                url: window.location.href
+            };
+
+            // Try sendBeacon first (more reliable for page unload)
+            if (navigator.sendBeacon && this.baseURL) {
+                const url = `${this.baseURL}?path=${encodeURIComponent('/analytics/event')}`;
+                const blob = new Blob([JSON.stringify(enrichedEvent)], {
+                    type: 'application/json'
+                });
+
+                const sent = navigator.sendBeacon(url, blob);
+                if (sent) {
+                    console.log('📊 Event tracked (sendBeacon):', event.name);
+                    return;
+                }
+            }
+
+            // Fallback to regular POST
+            await this.request('POST', '/analytics/event', enrichedEvent, {
+                retries: 1,
+                cancelable: false // Analytics events should typically not be cancelled
+            });
+
+            console.log('📊 Event tracked:', event.name);
+
+        } catch (error) {
+            console.warn('Analytics tracking failed:', error);
         }
-      }
-      
-      // Fallback to regular POST
-      await this.request('POST', '/analytics/event', enrichedEvent, {
-        retries: 1
-      });
-      
-      console.log('📊 Event tracked:', event.name);
-      
-    } catch (error) {
-      console.warn('Analytics tracking failed:', error);
     }
-  }
-  
-  /**
-   * Track Multiple Events in Batch
-   * @param {Array} events
-   * @returns {Promise<void>}
-   */
-  async trackEvents(events) {
-    try {
-      const enrichedEvents = events.map(event => ({
-        ...event,
-        timestamp: Date.now(),
-        sessionId: this.getSessionId()
-      }));
-      
-      await this.request('POST', '/analytics/events', { events: enrichedEvents }, {
-        retries: 1
-      });
-      
-      console.log('📊 Batch events tracked:', events.length);
-      
-    } catch (error) {
-      console.warn('Batch analytics tracking failed:', error);
+
+    /**
+     * Track Multiple Events in Batch
+     * @param {Array} events
+     * @returns {Promise<void>}
+     */
+    async trackEvents(events) {
+        try {
+            const enrichedEvents = events.map(event => ({
+                ...event,
+                timestamp: Date.now(),
+                sessionId: this.getSessionId()
+            }));
+
+            await this.request('POST', '/analytics/events', { events: enrichedEvents }, {
+                retries: 1,
+                cancelable: false
+            });
+
+            console.log('📊 Batch events tracked:', events.length);
+
+        } catch (error) {
+            console.warn('Batch analytics tracking failed:', error);
+        }
     }
-  }
-  
-  getSessionId() {
-    try {
-      let sessionId = sessionStorage.getItem('sessionId');
-      if (!sessionId) {
-        sessionId = this.generateIdempotencyKey();
-        sessionStorage.setItem('sessionId', sessionId);
-      }
-      return sessionId;
-    } catch (e) {
-      return 'unknown';
-    }
-  }
-  
-  // ================================================================
-  // NOTIFICATION ENDPOINTS
-  // ================================================================
-  
-  /**
-   * Send WhatsApp Notification
-   * @param {string} phone
-   * @param {string} message
-   * @returns {Promise<Object>}
-   */
-  async sendWhatsAppNotification(phone, message) {
-    return this.request('POST', '/notifications/whatsapp', {
-      phone,
-      message
-    });
-  }
-  
-  /**
-   * Send Email
-   * @param {Object} emailData - { to, subject, message, html }
-   * @returns {Promise<Object>}
-   */
-  async sendEmail(emailData) {
-    return this.request('POST', '/notifications/email', emailData);
-  }
-  
-  // ================================================================
-  // ERROR HANDLING
-  // ================================================================
-  
-  /**
-   * Get User-Friendly Error Message
-   * @param {Error} error
-   * @param {string} lang - 'ar' or 'en'
-   * @returns {string}
-   */
-  getErrorMessage(error, lang = 'ar') {
-    console.error('API Error:', error);
-    
-    const messages = {
-      ar: {
-        timeout: 'انتهت مهلة الاتصال. الرجاء المحاولة مرة أخرى.',
-        network: 'خطأ في الاتصال بالإنترنت. تحقق من اتصالك.',
-        notFound: 'العنصر المطلوب غير موجود.',
-        validation: 'بيانات غير صالحة. الرجاء المحاولة مرة أخرى.',
-        server: 'حدث خطأ في الخادم. الرجاء المحاولة لاحقاً.',
-        unauthorized: 'يجب تسجيل الدخول للمتابعة.',
-        default: 'حدث خطأ غير متوقع. الرجاء المحاولة مرة أخرى.'
-      },
-      en: {
-        timeout: 'Connection timeout. Please try again.',
-        network: 'Network error. Check your connection.',
-        notFound: 'The requested item was not found.',
-        validation: 'Invalid data. Please try again.',
-        server: 'Server error. Please try again later.',
-        unauthorized: 'You must login to continue.',
-        default: 'An unexpected error occurred. Please try again.'
-      }
-    };
-    
-    const msg = messages[lang] || messages.ar;
-    
-    if (error.message && error.message.includes('timeout')) {
-      return msg.timeout;
-    }
-    
-    if (error.message && (error.message.includes('Network') || error.message.includes('Failed to fetch'))) {
-      return msg.network;
-    }
-    
-    if (error.status === 404) {
-      return msg.notFound;
-    }
-    
-    if (error.status === 400) {
-      return msg.validation;
-    }
-    
-    if (error.status === 401 || error.status === 403) {
-      return msg.unauthorized;
-    }
-    
-    if (error.status >= 500) {
-      return msg.server;
-    }
-    
-    return msg.default;
-  }
 }
 
 // ================================================================
-// Export Singleton Instance
+// ===== Export Instance =====
 // ================================================================
+// Export a single instance to be used application-wide
+
+
 export const api = new APIService();
 
 // ================================================================

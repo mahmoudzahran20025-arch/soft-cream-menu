@@ -1,20 +1,44 @@
 // ================================================================
-// utils.js - الدوال العامة والمساعدة
+// utils.js - الدوال العامة والمساعدة (محسّنة وآمنة)
 // ================================================================
+
+// ================================================================
+// ===== Private State (Encapsulation) =====
+// ================================================================
+const state = {
+  scrollTicking: false,
+  categoriesOriginalOffset: 0,
+  snowflakeCount: 0,
+  maxSnowflakes: 30, // ✅ حد أقصى لتجنب memory leak
+  snowflakeInterval: null
+};
+
+// ================================================================
+// ===== Configuration (يمكن تخصيصه) =====
+// ================================================================
+const config = {
+  selectors: {
+    header: '#header',
+    categoriesSection: '#categoriesSection',
+    toast: '#toast',
+    categoryGroup: '.category-group',
+    categoryTab: '.category-tab',
+    animatedBackground: '.animated-background'
+  },
+  scrollOffset: 50,
+  categoriesOffset: 50
+};
 
 // ================================================================
 // ===== Scroll Handler =====
 // ================================================================
-let scrollTicking = false;
-let categoriesOriginalOffset = 0;
-
 export function handleScroll() {
-  if (!scrollTicking) {
+  if (!state.scrollTicking) {
     window.requestAnimationFrame(() => {
-      const header = document.getElementById('header');
+      const header = document.querySelector(config.selectors.header);
       
       if (header) {
-        if (window.scrollY > 50) {
+        if (window.scrollY > config.scrollOffset) {
           header.classList.add('scrolled');
           document.body.classList.add('scrolled');
         } else {
@@ -24,10 +48,10 @@ export function handleScroll() {
       }
       
       handleCategoriesSticky();
-      scrollTicking = false;
+      state.scrollTicking = false;
     });
     
-    scrollTicking = true;
+    state.scrollTicking = true;
   }
 }
 
@@ -35,15 +59,15 @@ export function handleScroll() {
 // ===== Categories Sticky Handler =====
 // ================================================================
 function handleCategoriesSticky() {
-  const header = document.getElementById('header');
-  const categories = document.getElementById('categoriesSection');
+  const header = document.querySelector(config.selectors.header);
+  const categories = document.querySelector(config.selectors.categoriesSection);
   
   if (!header || !categories) return;
   
   const headerHeight = header.getBoundingClientRect().height;
   const scrollY = window.scrollY;
   
-  if (scrollY >= categoriesOriginalOffset - headerHeight) {
+  if (scrollY >= state.categoriesOriginalOffset - headerHeight) {
     categories.classList.add('visible');
     categories.style.top = `${headerHeight}px`;
     updateActiveCategory();
@@ -54,19 +78,20 @@ function handleCategoriesSticky() {
 
 // ================================================================
 // ===== تحديث الكاتيجوري النشطة أثناء الـ scroll =====
+// ✅ استخدام data attributes بدلاً من onclick
 // ================================================================
 function updateActiveCategory() {
-  const categoryGroups = document.querySelectorAll('.category-group');
+  const categoryGroups = document.querySelectorAll(config.selectors.categoryGroup);
   if (categoryGroups.length === 0) return;
   
-  const header = document.getElementById('header');
-  const categories = document.getElementById('categoriesSection');
+  const header = document.querySelector(config.selectors.header);
+  const categories = document.querySelector(config.selectors.categoriesSection);
   
   if (!header || !categories) return;
   
   const headerHeight = header.getBoundingClientRect().height;
   const categoriesHeight = categories.getBoundingClientRect().height;
-  const offset = headerHeight + categoriesHeight + 50;
+  const offset = headerHeight + categoriesHeight + config.categoriesOffset;
   
   let activeCategory = null;
   
@@ -78,11 +103,12 @@ function updateActiveCategory() {
   });
   
   if (activeCategory) {
-    const tabs = document.querySelectorAll('.category-tab');
+    const tabs = document.querySelectorAll(config.selectors.categoryTab);
     tabs.forEach(tab => {
       tab.classList.remove('active');
-      const onclick = tab.getAttribute('onclick');
-      if (onclick && onclick.includes(`'${activeCategory}'`)) {
+      // ✅ استخدام data-category بدلاً من onclick parsing
+      const tabCategory = tab.getAttribute('data-category');
+      if (tabCategory === activeCategory) {
         tab.classList.add('active');
       }
     });
@@ -100,25 +126,39 @@ export function scrollToTop() {
 // ===== حفظ موضع الكاتيجوري الأصلي =====
 // ================================================================
 export function initCategoriesOffset() {
-  const categories = document.getElementById('categoriesSection');
+  const categories = document.querySelector(config.selectors.categoriesSection);
   if (categories) {
     setTimeout(() => {
-      categoriesOriginalOffset = categories.offsetTop;
-      console.log('📌 Categories original position:', categoriesOriginalOffset);
+      state.categoriesOriginalOffset = categories.offsetTop;
+      console.log('📌 Categories original position:', state.categoriesOriginalOffset);
     }, 100);
   }
 }
 
 // ================================================================
-// ===== تأثيرات بصرية متقدمة - الثلج =====
+// ===== تأثيرات بصرية متقدمة - الثلج (محسّنة) =====
+// ✅ إضافة cleanup و max limit
 // ================================================================
 export function createSnowflakes() {
   const snowflakeChars = ['❄', '🌨', '❅', '✨', '💫', '⭐'];
-  const container = document.querySelector('.animated-background');
+  const container = document.querySelector(config.selectors.animatedBackground);
 
-  if (!container) return;
+  if (!container) {
+    console.warn('Animated background container not found');
+    return;
+  }
+
+  // ✅ تنظيف الـ interval القديم إن وجد
+  if (state.snowflakeInterval) {
+    clearInterval(state.snowflakeInterval);
+  }
 
   function addSnowflake() {
+    // ✅ التحقق من الحد الأقصى
+    if (state.snowflakeCount >= state.maxSnowflakes) {
+      return;
+    }
+
     const snowflake = document.createElement('div');
     snowflake.className = 'snowflake';
 
@@ -137,45 +177,80 @@ export function createSnowflakes() {
     snowflake.style.setProperty('--x-shift', `${horizontalShift}px`);
 
     container.appendChild(snowflake);
+    state.snowflakeCount++;
 
+    // ✅ Cleanup بعد انتهاء الأنيميشن
     setTimeout(() => {
-      snowflake.remove();
+      if (snowflake.parentNode) {
+        snowflake.remove();
+        state.snowflakeCount--;
+      }
     }, (duration + 5) * 1000);
   }
 
+  // إضافة الرقائق الأولية
   for (let i = 0; i < 10; i++) {
     setTimeout(addSnowflake, i * 500);
   }
 
-  setInterval(addSnowflake, 1500);
+  // ✅ حفظ الـ interval للـ cleanup
+  state.snowflakeInterval = setInterval(addSnowflake, 1500);
+}
+
+// ✅ دالة cleanup للثلج
+export function stopSnowflakes() {
+  if (state.snowflakeInterval) {
+    clearInterval(state.snowflakeInterval);
+    state.snowflakeInterval = null;
+  }
+  
+  const container = document.querySelector(config.selectors.animatedBackground);
+  if (container) {
+    container.querySelectorAll('.snowflake').forEach(flake => flake.remove());
+  }
+  
+  state.snowflakeCount = 0;
+  console.log('❄️ Snowflakes stopped and cleaned');
 }
 
 // ================================================================
-// ===== Toast Notification =====
+// ===== Toast Notification (محسّنة) =====
+// ✅ إضافة error handling للـ lucide
 // ================================================================
 export function showToast(title, description, type = 'success') {
-  const toast = document.getElementById('toast');
-  if (!toast) return;
+  const toast = document.querySelector(config.selectors.toast);
+  if (!toast) {
+    console.warn('Toast element not found');
+    return;
+  }
   
   toast.className = 'toast ' + type;
   
+  // ✅ Error handling للـ icon
   const iconElement = toast.querySelector('.toast-icon i');
   if (iconElement) {
     const icon = type === 'success' ? 'check-circle-2' : 'x-circle';
     iconElement.setAttribute('data-lucide', icon);
-    if (typeof lucide !== 'undefined') {
-      lucide.createIcons();
+    
+    // ✅ التحقق من وجود lucide
+    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+      try {
+        lucide.createIcons();
+      } catch (e) {
+        console.warn('Failed to create lucide icons:', e);
+      }
     }
   }
   
-  const titleElement = document.getElementById('toast-title');
-  const descElement = document.getElementById('toast-description');
+  const titleElement = toast.querySelector('#toast-title');
+  const descElement = toast.querySelector('#toast-description');
   
   if (titleElement) titleElement.textContent = title;
   if (descElement) descElement.textContent = description;
   
   toast.classList.add('show');
   
+  // ✅ إزالة الـ toast بعد 4 ثواني
   setTimeout(() => {
     toast.classList.remove('show');
   }, 4000);
@@ -193,10 +268,10 @@ export function generateUUID() {
 }
 
 // ================================================================
-// ===== Calculate Distance =====
+// ===== Calculate Distance (Haversine Formula) =====
 // ================================================================
 export function calculateDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371;
+  const R = 6371; // نصف قطر الأرض بالكيلومتر
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
   const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
@@ -257,4 +332,57 @@ export function initPassiveTouchEvents() {
   document.addEventListener('touchstart', function() {}, { passive: true });
 }
 
-console.log('✅ Utils module loaded');
+// ================================================================
+// ===== Debounce Helper =====
+// ✅ جديد - للاستخدام في الـ API calls
+// ================================================================
+export function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+// ================================================================
+// ===== Throttle Helper =====
+// ✅ جديد - للاستخدام في الـ scroll events
+// ================================================================
+export function throttle(func, limit) {
+  let inThrottle;
+  return function(...args) {
+    if (!inThrottle) {
+      func.apply(this, args);
+      inThrottle = true;
+      setTimeout(() => inThrottle = false, limit);
+    }
+  };
+}
+
+// ================================================================
+// ===== Get Config (للتخصيص) =====
+// ================================================================
+export function getConfig() {
+  return { ...config };
+}
+
+export function setConfig(newConfig) {
+  Object.assign(config, newConfig);
+}
+
+// ================================================================
+// ===== Cleanup All =====
+// ✅ جديد - للتنظيف عند الحاجة
+// ================================================================
+export function cleanup() {
+  stopSnowflakes();
+  state.scrollTicking = false;
+  state.categoriesOriginalOffset = 0;
+  console.log('🧹 Utils cleaned up');
+}
+
+console.log('✅ Utils module loaded (Secure & Optimized)');
