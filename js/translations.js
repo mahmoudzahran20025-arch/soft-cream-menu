@@ -1,4 +1,4 @@
-const translations = {
+window.translations = {
   "ar": {
     "headerTitle": " سوفت كريم",
     "headerSubtitle": "أطيب آيس كريم في المدينة 🍦",
