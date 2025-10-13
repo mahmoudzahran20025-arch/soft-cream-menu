@@ -82,7 +82,6 @@ class ProductsManager {
   }*/
   async loadProducts(forceRefresh = false) {
     try {
-      // 🔄 Check if we need to refresh
       const needsRefresh = forceRefresh || 
                           !this.lastFetch || 
                           (Date.now() - this.lastFetch) > this.cacheTimeout;
@@ -92,33 +91,44 @@ class ProductsManager {
         return this.products;
       }
       
-      // 🚀 Fetch from API
       console.log('🌐 Loading products from API...');
       this.loading = true;
       
       const response = await api.getProducts();
       
-      // ✅ استخراج البيانات من الـ response object
-      let productsData;
-      if (response && response.data && Array.isArray(response.data)) {
-        productsData = response.data;  // البيانات موجودة في response.data
-        console.log('✅ Extracted products from response.data:', productsData.length);
-      } else if (Array.isArray(response)) {
-        productsData = response;  // في حالة الـ API ترجع array مباشرة
-        console.log('✅ Response is already an array:', productsData.length);
-      } else {
-        console.error('❌ Invalid response structure:', response);
-        throw new Error('Invalid products data received from API');
+      console.log('DEBUG response:', response);
+      console.log('DEBUG response.data:', response?.data);
+      console.log('DEBUG is Array?:', Array.isArray(response?.data));
+      
+      let productsData = [];
+      
+      // التحقق الأول: response.data موجودة وهي array
+      if (response?.data && Array.isArray(response.data)) {
+        productsData = response.data;
+        console.log('✅ SUCCESS: Extracted from response.data');
+      } 
+      // التحقق الثاني: response نفسها array (حالة نادرة)
+      else if (Array.isArray(response)) {
+        productsData = response;
+        console.log('✅ SUCCESS: Response is array');
+      } 
+      // فشل - response invalid
+      else {
+        console.error('❌ ERROR: Invalid response structure:', response);
+        throw new Error('Invalid response structure - no data array found');
       }
       
-      // ✅ Update local cache
+      if (!Array.isArray(productsData) || productsData.length === 0) {
+        throw new Error('Products array is empty or invalid');
+      }
+      
       this.products = productsData;
       this.lastFetch = Date.now();
       this.updateCategories();
       
-      console.log(`✅ Loaded ${this.products.length} products from API`);
+      console.log(`✅ Loaded ${this.products.length} products successfully`);
+      console.log('First product:', this.products[0]);
       
-      // 💾 Save to localStorage as backup (optional)
       this.saveToLocalStorage();
       
       return this.products;
@@ -126,7 +136,6 @@ class ProductsManager {
     } catch (error) {
       console.error('❌ Failed to load products from API:', error);
       
-      // 🔄 Fallback to localStorage
       const cachedProducts = this.loadFromLocalStorage();
       if (cachedProducts.length > 0) {
         console.log('⚠️ Using cached products from localStorage');
@@ -140,8 +149,7 @@ class ProductsManager {
     } finally {
       this.loading = false;
     }
-  } 
-    
+  }
   // ================================================================
   // GET SINGLE PRODUCT (with API fallback)
   // ================================================================
