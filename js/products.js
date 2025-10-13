@@ -7,7 +7,7 @@ import { api } from './api.js';
 /**
  * Products Manager Class
  * يدير المنتجات من الـ API (Backend) مع Caching محلي
- */
+ */ 
 class ProductsManager {
   constructor() {
     this.products = [];              // المنتجات المحملة من API
@@ -27,7 +27,7 @@ class ProductsManager {
    * تحميل المنتجات من الـ API
    * @param {boolean} forceRefresh - إجبار التحديث من السيرفر
    * @returns {Promise<Array>}
-   */
+   *//*
   async loadProducts(forceRefresh = false) {
     try {
       // 🔄 Check if we need to refresh
@@ -79,8 +79,69 @@ class ProductsManager {
     } finally {
       this.loading = false;
     }
-  }
-  
+  }*/
+  async loadProducts(forceRefresh = false) {
+    try {
+      // 🔄 Check if we need to refresh
+      const needsRefresh = forceRefresh || 
+                          !this.lastFetch || 
+                          (Date.now() - this.lastFetch) > this.cacheTimeout;
+      
+      if (!needsRefresh && this.products.length > 0) {
+        console.log('📦 Using cached products');
+        return this.products;
+      }
+      
+      // 🚀 Fetch from API
+      console.log('🌐 Loading products from API...');
+      this.loading = true;
+      
+      const response = await api.getProducts();
+      
+      // ✅ استخراج البيانات من الـ response object
+      let productsData;
+      if (response && response.data && Array.isArray(response.data)) {
+        productsData = response.data;  // البيانات موجودة في response.data
+        console.log('✅ Extracted products from response.data:', productsData.length);
+      } else if (Array.isArray(response)) {
+        productsData = response;  // في حالة الـ API ترجع array مباشرة
+        console.log('✅ Response is already an array:', productsData.length);
+      } else {
+        console.error('❌ Invalid response structure:', response);
+        throw new Error('Invalid products data received from API');
+      }
+      
+      // ✅ Update local cache
+      this.products = productsData;
+      this.lastFetch = Date.now();
+      this.updateCategories();
+      
+      console.log(`✅ Loaded ${this.products.length} products from API`);
+      
+      // 💾 Save to localStorage as backup (optional)
+      this.saveToLocalStorage();
+      
+      return this.products;
+      
+    } catch (error) {
+      console.error('❌ Failed to load products from API:', error);
+      
+      // 🔄 Fallback to localStorage
+      const cachedProducts = this.loadFromLocalStorage();
+      if (cachedProducts.length > 0) {
+        console.log('⚠️ Using cached products from localStorage');
+        this.products = cachedProducts;
+        this.updateCategories();
+        return this.products;
+      }
+      
+      throw error;
+      
+    } finally {
+      this.loading = false;
+    }
+  } 
+    
   // ================================================================
   // GET SINGLE PRODUCT (with API fallback)
   // ================================================================
