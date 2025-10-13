@@ -13,7 +13,6 @@ const iconMap = {
   'فواكه': 'apple',
   'مميز': 'star',
   'فاخر': 'crown',
-  // إضافات محتملة:
   'classic': 'ice-cream-cone',
   'fruits': 'apple',
   'premium': 'star',
@@ -24,88 +23,96 @@ const iconMap = {
 // ===== عرض التصنيفات =====
 // ================================================================
 export function renderCategories() {
-  // ✅ الحصول على المنتجات من productsManager
-  const products = productsManager.getAllProducts();
-  
-  // إذا لم تكن المنتجات محملة بعد
-  if (products.length === 0) {
-    console.warn('⚠️ No products loaded yet. Categories will be empty.');
+  try {
+    const products = productsManager.getAllProducts();
     
-    const container = document.getElementById('categoriesScroll');
-    if (container) {
-      container.innerHTML = `
-        <div class="categories-loading">
-          <span>${window.currentLang === 'ar' ? 'جاري التحميل...' : 'Loading...'}</span>
-        </div>
-      `;
+    if (products.length === 0) {
+      console.warn('⚠️ No products loaded yet. Categories will be empty.');
+      
+      const container = document.getElementById('categoriesScroll');
+      if (container) {
+        container.innerHTML = `
+          <div class="categories-loading">
+            <span>${window.currentLang === 'ar' ? 'جاري التحميل...' : 'Loading...'}</span>
+          </div>
+        `;
+      }
+      return;
     }
-    return;
-  }
-  
-  const uniqueCategories = [...new Set(products.map(p => p.category))];
-  const container = document.getElementById('categoriesScroll');
-  
-  if (!container) {
-    console.error('❌ categoriesScroll not found!');
-    return;
-  }
-  
-  const currentLang = window.currentLang || 'ar';
-  
-  let html = `
-    <button class="category-tab active" onclick="window.categoriesModule.selectCategory('all', this)">
-      <i data-lucide="grid-3x3"></i>
-      <span>${currentLang === 'ar' ? 'الكل' : 'All'}</span>
-    </button>
-  `;
-  
-  uniqueCategories.forEach(cat => {
-    const catName = getCategoryName(cat, currentLang);
-    const icon = getCategoryIcon(cat);
     
-    html += `
-      <button class="category-tab" onclick="window.categoriesModule.selectCategory('${cat}', this)">
-        <i data-lucide="${icon}"></i>
-        <span>${catName}</span>
+    const uniqueCategories = [...new Set(products.map(p => p.category).filter(Boolean))];
+    const container = document.getElementById('categoriesScroll');
+    
+    if (!container) {
+      console.error('❌ categoriesScroll not found!');
+      return;
+    }
+    
+    const currentLang = window.currentLang || 'ar';
+    
+    let html = `
+      <button class="category-tab active" onclick="window.categoriesModule.selectCategory('all', this)">
+        <i data-lucide="grid-3x3"></i>
+        <span>${currentLang === 'ar' ? 'الكل' : 'All'}</span>
       </button>
     `;
-  });
-  
-  container.innerHTML = html;
-  
-  if (typeof lucide !== 'undefined') {
-    lucide.createIcons();
+    
+    uniqueCategories.forEach(cat => {
+      if (!cat) return; // تخطي الـ null/undefined
+      
+      const catName = getCategoryName(cat, currentLang);
+      const icon = getCategoryIcon(cat);
+      
+      html += `
+        <button class="category-tab" onclick="window.categoriesModule.selectCategory('${cat}', this)">
+          <i data-lucide="${icon}"></i>
+          <span>${catName}</span>
+        </button>
+      `;
+    });
+    
+    container.innerHTML = html;
+    
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+    
+    console.log('✅ Categories rendered:', uniqueCategories.length);
+    
+  } catch (error) {
+    console.error('❌ Error rendering categories:', error);
   }
-  
-  console.log('✅ Categories rendered:', uniqueCategories.length);
 }
 
 // ================================================================
 // ===== اختيار تصنيف =====
 // ================================================================
 export function selectCategory(category, element) {
-  // تحديث الـ active tab
-  document.querySelectorAll('.category-tab').forEach(btn => btn.classList.remove('active'));
-  if (element) element.classList.add('active');
-  
-  if (category === 'all') {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  } else {
-    const el = document.getElementById(`category-${category}`);
-    if (el) {
-      const header = document.getElementById('header');
-      const categories = document.getElementById('categoriesSection');
-      
-      const headerHeight = header ? header.getBoundingClientRect().height : 100;
-      const categoriesHeight = categories ? categories.getBoundingClientRect().height : 80;
-      const offset = headerHeight + categoriesHeight + 20;
-      
-      const elementPosition = el.getBoundingClientRect().top + window.pageYOffset;
-      window.scrollTo({ 
-        top: elementPosition - offset, 
-        behavior: 'smooth' 
-      });
+  try {
+    document.querySelectorAll('.category-tab').forEach(btn => btn.classList.remove('active'));
+    if (element) element.classList.add('active');
+    
+    if (category === 'all') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      const el = document.getElementById(`category-${category}`);
+      if (el) {
+        const header = document.getElementById('header');
+        const categories = document.getElementById('categoriesSection');
+        
+        const headerHeight = header ? header.getBoundingClientRect().height : 100;
+        const categoriesHeight = categories ? categories.getBoundingClientRect().height : 80;
+        const offset = headerHeight + categoriesHeight + 20;
+        
+        const elementPosition = el.getBoundingClientRect().top + window.pageYOffset;
+        window.scrollTo({ 
+          top: elementPosition - offset, 
+          behavior: 'smooth' 
+        });
+      }
     }
+  } catch (error) {
+    console.error('❌ Error selecting category:', error);
   }
 }
 
@@ -113,6 +120,7 @@ export function selectCategory(category, element) {
 // ===== الحصول على أيقونة التصنيف =====
 // ================================================================
 export function getCategoryIcon(category) {
+  if (!category) return 'ice-cream-cone';
   return iconMap[category] || 'ice-cream-cone';
 }
 
@@ -120,15 +128,38 @@ export function getCategoryIcon(category) {
 // ===== الحصول على اسم التصنيف =====
 // ================================================================
 export function getCategoryName(category, lang = 'ar') {
-  if (lang === 'ar') {
+  try {
+    // ✅ التحقق الأساسي
+    if (!category) {
+      return lang === 'ar' ? 'بدون تصنيف' : 'Uncategorized';
+    }
+    
+    // إذا كانت اللغة عربي، أرجع الفئة مباشرة
+    if (lang === 'ar') {
+      return category;
+    }
+    
+    // للغة الإنجليزية، ابحث عن الترجمة
+    const products = productsManager.getAllProducts();
+    
+    if (!products || products.length === 0) {
+      return category;
+    }
+    
+    // ✅ ابحث عن أول منتج بهذه الفئة وخذ categoryEn منه
+    const product = products.find(p => p && p.category === category);
+    
+    if (product && product.categoryEn) {
+      return product.categoryEn;
+    }
+    
+    // Fallback إلى الفئة الأصلية
     return category;
+    
+  } catch (error) {
+    console.error('❌ Error getting category name:', error, { category, lang });
+    return category || 'Unknown';
   }
-  
-  // ✅ الحصول على المنتجات من productsManager
-  const products = productsManager.getAllProducts();
-  const product = products.find(p => p.category === category);
-  
-  return product?.categoryEn || category;
 }
 
 // ================================================================
