@@ -174,6 +174,7 @@ export function clearSearch() {
 // ================================================================
 // ===== عرض المنتجات =====
 // ================================================================
+/*
 export async function renderProducts() {
   const container = document.getElementById('productsContainer');
   if (!container) return;
@@ -286,6 +287,154 @@ export async function renderProducts() {
             <p class="product-description">${description}</p>
             <div class="product-footer">
               <div class="product-price">${product.price} ${currency}</div>
+              <button class="add-to-cart-btn" onclick="window.cartModule.addToCart(event, '${product.id}')">
+                <i data-lucide="shopping-cart"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    
+    html += `
+        </div>
+      </div>
+    `;
+  });
+  
+  container.innerHTML = html;
+  
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
+}*/
+// ✅ الكود الصحيح - استبدل renderProducts بالكود ده:
+
+export async function renderProducts() {
+  const container = document.getElementById('productsContainer');
+  if (!container) return;
+  
+  // ✅ الحصول على المنتجات من productsManager
+  let filteredProducts = productsManager.getAllProducts();
+  
+  // ✅ إذا لم تكن المنتجات محملة بعد، حملها من API
+  if (filteredProducts.length === 0) {
+    // عرض Loading
+    container.innerHTML = `
+      <div class="loading-container">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">${currentLang === 'ar' ? 'جاري التحميل...' : 'Loading...'}</p>
+      </div>
+    `;
+    
+    try {
+      await productsManager.loadProducts();
+      filteredProducts = productsManager.getAllProducts();
+    } catch (error) {
+      console.error('Failed to load products:', error);
+      
+      // عرض رسالة خطأ
+      const errorTitle = currentLang === 'ar' ? 'حدث خطأ' : 'Error';
+      const errorMsg = currentLang === 'ar' 
+        ? 'فشل تحميل المنتجات. الرجاء المحاولة مرة أخرى.' 
+        : 'Failed to load products. Please try again.';
+      const retryBtn = currentLang === 'ar' ? 'إعادة المحاولة' : 'Retry';
+      
+      container.innerHTML = `
+        <div class="no-results">
+          <div class="no-results-icon">⚠️</div>
+          <h3 class="no-results-title">${errorTitle}</h3>
+          <p class="no-results-text">${errorMsg}</p>
+          <button onclick="window.uiModule.renderProducts()" class="retry-btn">
+            ${retryBtn}
+          </button>
+        </div>
+      `;
+      return;
+    }
+  }
+  
+  // تطبيق البحث
+  if (searchQuery.trim() && fuse) {
+    const searchResults = fuse.search(searchQuery);
+    const searchIds = new Set(searchResults.map(r => r.item.id));
+    filteredProducts = filteredProducts.filter(p => searchIds.has(p.id));
+  }
+  
+  // لا توجد نتائج
+  if (filteredProducts.length === 0) {
+    const noResultsText = currentLang === 'ar' 
+      ? 'لا توجد منتجات مطابقة' 
+      : 'No matching products';
+    const tryAgainText = currentLang === 'ar'
+      ? 'جرب كلمات بحث أخرى'
+      : 'Try different search terms';
+    
+    container.innerHTML = `
+      <div class="no-results">
+        <div class="no-results-icon">🔍</div>
+        <h3 class="no-results-title">${noResultsText}</h3>
+        <p class="no-results-text">${tryAgainText}</p>
+      </div>
+    `;
+    return;
+  }
+  
+  // تجميع المنتجات حسب الفئة
+  const groupedProducts = {};
+  filteredProducts.forEach(product => {
+    if (!groupedProducts[product.category]) {
+      groupedProducts[product.category] = [];
+    }
+    groupedProducts[product.category].push(product);
+  });
+  
+  let html = '';
+  Object.keys(groupedProducts).forEach(category => {
+    const categoryName = getCategoryName(category, currentLang);
+    const icon = getCategoryIcon(category);
+    
+    html += `
+      <div class="category-group" id="category-${category}">
+        <div class="category-header">
+          <div class="category-icon">
+            <i data-lucide="${icon}"></i>
+          </div>
+          <h3 class="category-name">${categoryName}</h3>
+        </div>
+        <div class="products-grid">
+    `;
+    
+    groupedProducts[category].forEach((product, index) => {
+      // ✅ الحل الأساسي: تفادي undefined/null
+      const name = currentLang === 'ar' 
+        ? (product.name || 'بدون اسم')
+        : (product.nameEn || product.name || 'No name');
+      
+      const description = currentLang === 'ar' 
+        ? (product.description || '')
+        : (product.descriptionEn || product.description || '');
+      
+      const badge = product.badge ? `<div class="product-badge">${product.badge}</div>` : '';
+      const currency = window.translations[currentLang]?.currency || 'ج.م';
+      
+      // ✅ التحقق من وجود الصورة
+      const imageUrl = product.image || 'path/to/default-image.png';
+      
+      // ✅ التحقق من السعر
+      const price = product.price || 0;
+      
+      html += `
+        <div class="product-card" style="animation-delay: ${index * 0.05}s;" onclick="window.uiModule.openProductModal('${product.id}')">
+          <div class="product-image-container">
+            <img src="${imageUrl}" alt="${name}" class="product-image" loading="lazy">
+            ${badge}
+          </div>
+          <div class="product-content">
+            <h3 class="product-name">${name}</h3>
+            <p class="product-description">${description}</p>
+            <div class="product-footer">
+              <div class="product-price">${price} ${currency}</div>
               <button class="add-to-cart-btn" onclick="window.cartModule.addToCart(event, '${product.id}')">
                 <i data-lucide="shopping-cart"></i>
               </button>
