@@ -200,13 +200,14 @@ function closeVisibleModals() {
       }
     }*/
     // 1️⃣ Configure API مباشرة
+    // 2️⃣ Configure API مع Base URL ديناميكي
     if (window.api) {
       window.api.configure({
-        baseURL: 'https://script.google.com/macros/s/AKfycbxkAXCOjoBDMyyA72Y-KbIj4YHLBNk_nrYrHMiyAuv97knRWJknyE63d3aBUVizltnq/exec',
+        baseURL: detectBaseURL(), // استدعاء الدالة الجديدة
         timeout: 30000,
         retries: 3
       });
-      console.log('✅ API configured');
+      console.log('✅ API configured for:', detectBaseURL());
     }
     
     // 3️⃣ تهيئة أيقونات Lucide

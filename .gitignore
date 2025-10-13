@@ -1,0 +1,16 @@
+# Ignore temporary and history files
+.history/
+.hist_pro/
+
+# Ignore specific HTML or JS files
+index2.html
+GOOGLE_APP_SCRIPT.JS
+
+# Ignore documentation and notes
+Advanced_soulutions.md
+API_UDATE
+bestpractice.md
+Project Summary.md
+
+# Ignore build output
+dist/

@@ -25,6 +25,7 @@ class APIService {
   // ================================================================
   // Environment Detection
   // ================================================================
+  /*
   detectEnvironment() {
     if (window.location.hostname.includes('firebaseapp.com') || 
         window.location.hostname.includes('web.app')) {
@@ -42,7 +43,22 @@ class APIService {
   detectBaseURL() {
     // Default to empty - must be configured with GAS Web App URL
     return 'https://script.google.com/macros/s/AKfycbxkAXCOjoBDMyyA72Y-KbIj4YHLBNk_nrYrHMiyAuv97knRWJknyE63d3aBUVizltnq/exec';
-  }
+  }*/
+  detectBaseURL() {
+    // ✅ حط الـ Netlify URL الجديد
+    if (window.location.hostname.includes('netlify.app')) {
+      // Use the LATEST deployment URL from Apps Script
+      return 'https://script.google.com/macros/s/AKfycbxkAXCOjoBDMyyA72Y-KbIj4YHLBNk_nrYrHMiyAuv97knRWJknyE63d3aBUVizltnq/exec';
+    }
+    
+    // For local development
+    if (window.location.hostname === 'localhost') {
+      return 'https://script.google.com/macros/s/AKfycbxkAXCOjoBDMyyA72Y-KbIj4YHLBNk_nrYrHMiyAuv97knRWJknyE63d3aBUVizltnq/exec';
+    }
+    
+    // Default
+    return 'https://script.google.com/macros/s/AKfycbxkAXCOjoBDMyyA72Y-KbIj4YHLBNk_nrYrHMiyAuv97knRWJknyE63d3aBUVizltnq/exec';
+  }  
   
   // ================================================================
   // Configuration
