@@ -314,12 +314,9 @@ export async function renderProducts() {
   const container = document.getElementById('productsContainer');
   if (!container) return;
   
-  // ✅ الحصول على المنتجات من productsManager
   let filteredProducts = productsManager.getAllProducts();
   
-  // ✅ إذا لم تكن المنتجات محملة بعد، حملها من API
   if (filteredProducts.length === 0) {
-    // عرض Loading
     container.innerHTML = `
       <div class="loading-container">
         <div class="loading-spinner"></div>
@@ -333,7 +330,6 @@ export async function renderProducts() {
     } catch (error) {
       console.error('Failed to load products:', error);
       
-      // عرض رسالة خطأ
       const errorTitle = currentLang === 'ar' ? 'حدث خطأ' : 'Error';
       const errorMsg = currentLang === 'ar' 
         ? 'فشل تحميل المنتجات. الرجاء المحاولة مرة أخرى.' 
@@ -354,14 +350,12 @@ export async function renderProducts() {
     }
   }
   
-  // تطبيق البحث
   if (searchQuery.trim() && fuse) {
     const searchResults = fuse.search(searchQuery);
     const searchIds = new Set(searchResults.map(r => r.item.id));
     filteredProducts = filteredProducts.filter(p => searchIds.has(p.id));
   }
   
-  // لا توجد نتائج
   if (filteredProducts.length === 0) {
     const noResultsText = currentLang === 'ar' 
       ? 'لا توجد منتجات مطابقة' 
@@ -380,7 +374,6 @@ export async function renderProducts() {
     return;
   }
   
-  // تجميع المنتجات حسب الفئة
   const groupedProducts = {};
   filteredProducts.forEach(product => {
     if (!groupedProducts[product.category]) {
@@ -390,65 +383,78 @@ export async function renderProducts() {
   });
   
   let html = '';
-  Object.keys(groupedProducts).forEach(category => {
-    const categoryName = getCategoryName(category, currentLang);
-    const icon = getCategoryIcon(category);
-    
-    html += `
-      <div class="category-group" id="category-${category}">
-        <div class="category-header">
-          <div class="category-icon">
-            <i data-lucide="${icon}"></i>
-          </div>
-          <h3 class="category-name">${categoryName}</h3>
-        </div>
-        <div class="products-grid">
-    `;
-    
-    groupedProducts[category].forEach((product, index) => {
-      // ✅ الحل الأساسي: تفادي undefined/null
-      const name = currentLang === 'ar' 
-        ? (product.name || 'بدون اسم')
-        : (product.nameEn || product.name || 'No name');
-      
-      const description = currentLang === 'ar' 
-        ? (product.description || '')
-        : (product.descriptionEn || product.description || '');
-      
-      const badge = product.badge ? `<div class="product-badge">${product.badge}</div>` : '';
-      const currency = window.translations[currentLang]?.currency || 'ج.م';
-      
-      // ✅ التحقق من وجود الصورة
-      const imageUrl = product.image || 'path/to/default-image.png';
-      
-      // ✅ التحقق من السعر
-      const price = product.price || 0;
+  
+  try {
+    Object.keys(groupedProducts).forEach(category => {
+      const categoryName = getCategoryName(category, currentLang);
+      const icon = getCategoryIcon(category);
       
       html += `
-        <div class="product-card" style="animation-delay: ${index * 0.05}s;" onclick="window.uiModule.openProductModal('${product.id}')">
-          <div class="product-image-container">
-            <img src="${imageUrl}" alt="${name}" class="product-image" loading="lazy">
-            ${badge}
-          </div>
-          <div class="product-content">
-            <h3 class="product-name">${name}</h3>
-            <p class="product-description">${description}</p>
-            <div class="product-footer">
-              <div class="product-price">${price} ${currency}</div>
-              <button class="add-to-cart-btn" onclick="window.cartModule.addToCart(event, '${product.id}')">
-                <i data-lucide="shopping-cart"></i>
-              </button>
+        <div class="category-group" id="category-${category}">
+          <div class="category-header">
+            <div class="category-icon">
+              <i data-lucide="${icon}"></i>
             </div>
+            <h3 class="category-name">${categoryName}</h3>
+          </div>
+          <div class="products-grid">
+      `;
+      
+      groupedProducts[category].forEach((product, index) => {
+        if (!product) {
+          console.warn('Skipping null/undefined product');
+          return;
+        }
+        
+        const name = currentLang === 'ar' 
+          ? (product.name || 'بدون اسم')
+          : (product.nameEn || product.name || 'No name');
+        
+        const description = currentLang === 'ar' 
+          ? (product.description || '')
+          : (product.descriptionEn || product.description || '');
+        
+        const badge = product.badge ? `<div class="product-badge">${product.badge}</div>` : '';
+        const currency = window.translations?.[currentLang]?.currency || 'ج.م';
+        const imageUrl = product.image || 'path/to/default-image.png';
+        const price = product.price || 0;
+        
+        html += `
+          <div class="product-card" style="animation-delay: ${index * 0.05}s;" onclick="window.uiModule.openProductModal('${product.id}')">
+            <div class="product-image-container">
+              <img src="${imageUrl}" alt="${name}" class="product-image" loading="lazy">
+              ${badge}
+            </div>
+            <div class="product-content">
+              <h3 class="product-name">${name}</h3>
+              <p class="product-description">${description}</p>
+              <div class="product-footer">
+                <div class="product-price">${price} ${currency}</div>
+                <button class="add-to-cart-btn" onclick="window.cartModule.addToCart(event, '${product.id}')">
+                  <i data-lucide="shopping-cart"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      
+      html += `
           </div>
         </div>
       `;
     });
-    
-    html += `
-        </div>
+  } catch (error) {
+    console.error('Error rendering products:', error);
+    container.innerHTML = `
+      <div class="no-results">
+        <div class="no-results-icon">⚠️</div>
+        <h3 class="no-results-title">خطأ في العرض</h3>
+        <p class="no-results-text">${error.message}</p>
       </div>
     `;
-  });
+    return;
+  }
   
   container.innerHTML = html;
   
@@ -456,7 +462,6 @@ export async function renderProducts() {
     lucide.createIcons();
   }
 }
-
 // ================================================================
 // ===== نافذة المنتج =====
 // ================================================================
