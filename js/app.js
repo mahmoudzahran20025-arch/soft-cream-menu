@@ -200,14 +200,35 @@ function closeVisibleModals() {
       }
     }*/
     // 1️⃣ Configure API مباشرة
-    // 2️⃣ Configure API مع Base URL ديناميكي
+    // ================================================================
+// 2️⃣ Configure API مع Base URL ديناميكي
+// ================================================================
+     /*
     if (window.api) {
+      const calculatedBaseURL = window.api.detectBaseURL(); // ✅ الإصلاح هنا
+
       window.api.configure({
-        baseURL: detectBaseURL(), // استدعاء الدالة الجديدة
+        baseURL: calculatedBaseURL, // استخدم القيمة المحسوبة
         timeout: 30000,
         retries: 3
       });
-      console.log('✅ API configured for:', detectBaseURL());
+      console.log('✅ API configured for:', calculatedBaseURL); // ✅ استخدم القيمة المحسوبة
+    }*/
+   // الإصلاح:
+    // ================================================================
+    // التعديل في دالة initApp بملف app.js
+    // ================================================================
+    // 2️⃣ Configure API مع Base URL ديناميكي
+    if (window.api) {
+      // 💡 قم بتعريف متغير أولاً واستدعاء الدالة عبر الكائن window.api
+      const calculatedBaseURL = window.api.detectBaseURL(); // ✅ الاستدعاء الصحيح
+
+      window.api.configure({
+        baseURL: calculatedBaseURL, // استخدم المتغير
+        timeout: 30000,
+        retries: 3
+      });
+      console.log('✅ API configured for:', calculatedBaseURL); // استخدم المتغير
     }
     
     // 3️⃣ تهيئة أيقونات Lucide
