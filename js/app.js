@@ -1,4 +1,39 @@
 // ================================================================
+// ===== التحكم المتقدم في الـ Logs =====
+// ================================================================
+const ENABLE_LOGS = false;
+
+if (!ENABLE_LOGS) {
+  const originalConsole = { ...console };
+  
+  // تعطيل كل الـ logs
+  console.log = console.warn = console.info = console.debug = () => {};
+  
+  // لكن احتفظ بإمكانية رؤية الأخطاء المهمة
+  console.error = (...args) => {
+    const message = args[0];
+    // اطبع فقط الأخطاء المهمة
+    if (typeof message === 'string' && (
+      message.includes('Error') ||
+      message.includes('Failed') || 
+      message.includes('Exception') ||
+      message.includes('خطأ')
+    )) {
+      originalConsole.error(...args);
+    }
+  };
+}
+
+// ممكن تضيف كمان تحكم حسب البيئة
+const IS_DEVELOPMENT = window.location.hostname === 'localhost' || 
+                       window.location.hostname === '127.0.0.1';
+
+if (!IS_DEVELOPMENT) {
+  // في السيرفر/production اطفي كل الـ logs
+  console.log = console.warn = console.info = console.debug = console.error = () => {};
+} 
+
+// ================================================================
 // app.js - الملف الرئيسي للتطبيق (Cleaned & Secure)
 // ================================================================
 

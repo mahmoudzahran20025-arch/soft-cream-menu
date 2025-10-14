@@ -9,12 +9,12 @@ const state = {
   scrollTicking: false,
   categoriesOriginalOffset: 0,
   snowflakeCount: 0,
-  maxSnowflakes: 30, // ✅ حد أقصى لتجنب memory leak
+  maxSnowflakes: 30,
   snowflakeInterval: null
 };
 
 // ================================================================
-// ===== Configuration (يمكن تخصيصه) =====
+// ===== Configuration =====
 // ================================================================
 const config = {
   selectors: {
@@ -22,7 +22,7 @@ const config = {
     categoriesSection: '#categoriesSection',
     toast: '#toast',
     categoryGroup: '.category-group',
-    categoryTab: '.category-tab',
+    categoryTab: '.nav-item',  // ✅ تصحيح: اسم الـ class الصحيح
     animatedBackground: '.animated-background'
   },
   scrollOffset: 50,
@@ -30,7 +30,7 @@ const config = {
 };
 
 // ================================================================
-// ===== Scroll Handler =====
+// ===== Scroll Handler (محسّن) =====
 // ================================================================
 export function handleScroll() {
   if (!state.scrollTicking) {
@@ -48,6 +48,7 @@ export function handleScroll() {
       }
       
       handleCategoriesSticky();
+      updateActiveCategory();  // ✅ تحديث الـ active tab باستمرار
       state.scrollTicking = false;
     });
     
@@ -70,15 +71,14 @@ function handleCategoriesSticky() {
   if (scrollY >= state.categoriesOriginalOffset - headerHeight) {
     categories.classList.add('visible');
     categories.style.top = `${headerHeight}px`;
-    updateActiveCategory();
   } else {
     categories.classList.remove('visible');
   }
 }
 
 // ================================================================
-// ===== تحديث الكاتيجوري النشطة أثناء الـ scroll =====
-// ✅ استخدام data attributes بدلاً من onclick
+// ===== تحديث الـ Active Category أثناء الـ Scroll (محسّنة) =====
+// ✅ هذه هي المشكلة الأساسية - الكود القديم ما كان بينادي عليها بشكل صحيح
 // ================================================================
 function updateActiveCategory() {
   const categoryGroups = document.querySelectorAll(config.selectors.categoryGroup);
@@ -91,28 +91,82 @@ function updateActiveCategory() {
   
   const headerHeight = header.getBoundingClientRect().height;
   const categoriesHeight = categories.getBoundingClientRect().height;
-  const offset = headerHeight + categoriesHeight + config.categoriesOffset;
+  
+  // ✅ الحد الذي نتحقق منه هو أسفل المتصفح شوية
+  const triggerPoint = headerHeight + categoriesHeight + 100;
   
   let activeCategory = null;
+  let closestDistance = Infinity;
   
+  // ✅ البحث عن أقرب category من الـ trigger point
   categoryGroups.forEach(group => {
     const rect = group.getBoundingClientRect();
-    if (rect.top <= offset && rect.bottom > offset) {
+    const distance = Math.abs(rect.top - triggerPoint);
+    
+    // إذا كانت الـ group مرئية والـ trigger point فيها
+    if (rect.top <= triggerPoint && rect.bottom > triggerPoint) {
+      activeCategory = group.id.replace('category-', '');
+    }
+    // أو أقرب واحدة لـ trigger point
+    else if (distance < closestDistance && rect.top >= 0) {
+      closestDistance = distance;
       activeCategory = group.id.replace('category-', '');
     }
   });
   
   if (activeCategory) {
-    const tabs = document.querySelectorAll(config.selectors.categoryTab);
-    tabs.forEach(tab => {
+    // ✅ تحديث الـ nav items (ليس الـ categories tabs)
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => {
+      item.classList.remove('active');
+      
+      // ✅ البحث عن الـ nav item اللي يطابق الـ category
+      const icon = item.querySelector('i');
+      if (icon && getCategoryFromNavItem(item) === activeCategory) {
+        item.classList.add('active');
+      }
+    });
+    
+    // ✅ تحديث الـ categories scroll tabs أيضاً
+    const categoryTabs = document.querySelectorAll('[data-category]');
+    categoryTabs.forEach(tab => {
       tab.classList.remove('active');
-      // ✅ استخدام data-category بدلاً من onclick parsing
-      const tabCategory = tab.getAttribute('data-category');
-      if (tabCategory === activeCategory) {
+      if (tab.getAttribute('data-category') === activeCategory) {
         tab.classList.add('active');
+        
+        // ✅ Scroll into view للـ active tab
+        if (tab.scrollIntoView) {
+          tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+        }
       }
     });
   }
+}
+
+// ================================================================
+// ===== Helper: الحصول على الـ Category من الـ Nav Item =====
+// ================================================================
+function getCategoryFromNavItem(navItem) {
+  // ✅ تحويل الترتيب إلى category name
+  const items = document.querySelectorAll('.nav-item');
+  let index = 0;
+  
+  items.forEach((item, i) => {
+    if (item === navItem) {
+      index = i;
+    }
+  });
+  
+  // ✅ Map nav items إلى categories
+  const categoryMap = {
+    0: 'ice-cream',     // المنيو
+    1: 'desserts',      // (إذا كان موجود)
+    2: null,            // السلة (ليست category)
+    3: null,            // من نحن (ليست category)
+    4: null             // تواصل (ليست category)
+  };
+  
+  return categoryMap[index] || null;
 }
 
 // ================================================================
@@ -123,21 +177,21 @@ export function scrollToTop() {
 }
 
 // ================================================================
-// ===== حفظ موضع الكاتيجوري الأصلي =====
+// ===== حفظ موضع الـ Categories الأصلي =====
 // ================================================================
 export function initCategoriesOffset() {
   const categories = document.querySelector(config.selectors.categoriesSection);
   if (categories) {
-    setTimeout(() => {
+    // ✅ استخدام setTimeout بـ 0 بدلاً من 100 للأداء
+    requestAnimationFrame(() => {
       state.categoriesOriginalOffset = categories.offsetTop;
       console.log('📌 Categories original position:', state.categoriesOriginalOffset);
-    }, 100);
+    });
   }
 }
 
 // ================================================================
-// ===== تأثيرات بصرية متقدمة - الثلج (محسّنة) =====
-// ✅ إضافة cleanup و max limit
+// ===== تأثيرات بصرية - الثلج =====
 // ================================================================
 export function createSnowflakes() {
   const snowflakeChars = ['❄', '🌨', '❅', '✨', '💫', '⭐'];
@@ -148,13 +202,11 @@ export function createSnowflakes() {
     return;
   }
 
-  // ✅ تنظيف الـ interval القديم إن وجد
   if (state.snowflakeInterval) {
     clearInterval(state.snowflakeInterval);
   }
 
   function addSnowflake() {
-    // ✅ التحقق من الحد الأقصى
     if (state.snowflakeCount >= state.maxSnowflakes) {
       return;
     }
@@ -179,7 +231,6 @@ export function createSnowflakes() {
     container.appendChild(snowflake);
     state.snowflakeCount++;
 
-    // ✅ Cleanup بعد انتهاء الأنيميشن
     setTimeout(() => {
       if (snowflake.parentNode) {
         snowflake.remove();
@@ -188,16 +239,13 @@ export function createSnowflakes() {
     }, (duration + 5) * 1000);
   }
 
-  // إضافة الرقائق الأولية
   for (let i = 0; i < 10; i++) {
     setTimeout(addSnowflake, i * 500);
   }
 
-  // ✅ حفظ الـ interval للـ cleanup
   state.snowflakeInterval = setInterval(addSnowflake, 1500);
 }
 
-// ✅ دالة cleanup للثلج
 export function stopSnowflakes() {
   if (state.snowflakeInterval) {
     clearInterval(state.snowflakeInterval);
@@ -214,8 +262,7 @@ export function stopSnowflakes() {
 }
 
 // ================================================================
-// ===== Toast Notification (محسّنة) =====
-// ✅ إضافة error handling للـ lucide
+// ===== Toast Notification =====
 // ================================================================
 export function showToast(title, description, type = 'success') {
   const toast = document.querySelector(config.selectors.toast);
@@ -226,13 +273,11 @@ export function showToast(title, description, type = 'success') {
   
   toast.className = 'toast ' + type;
   
-  // ✅ Error handling للـ icon
   const iconElement = toast.querySelector('.toast-icon i');
   if (iconElement) {
     const icon = type === 'success' ? 'check-circle-2' : 'x-circle';
     iconElement.setAttribute('data-lucide', icon);
     
-    // ✅ التحقق من وجود lucide
     if (typeof lucide !== 'undefined' && lucide.createIcons) {
       try {
         lucide.createIcons();
@@ -250,7 +295,6 @@ export function showToast(title, description, type = 'success') {
   
   toast.classList.add('show');
   
-  // ✅ إزالة الـ toast بعد 4 ثواني
   setTimeout(() => {
     toast.classList.remove('show');
   }, 4000);
@@ -271,7 +315,7 @@ export function generateUUID() {
 // ===== Calculate Distance (Haversine Formula) =====
 // ================================================================
 export function calculateDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371; // نصف قطر الأرض بالكيلومتر
+  const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
   const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
@@ -334,7 +378,6 @@ export function initPassiveTouchEvents() {
 
 // ================================================================
 // ===== Debounce Helper =====
-// ✅ جديد - للاستخدام في الـ API calls
 // ================================================================
 export function debounce(func, wait) {
   let timeout;
@@ -350,7 +393,6 @@ export function debounce(func, wait) {
 
 // ================================================================
 // ===== Throttle Helper =====
-// ✅ جديد - للاستخدام في الـ scroll events
 // ================================================================
 export function throttle(func, limit) {
   let inThrottle;
@@ -364,7 +406,7 @@ export function throttle(func, limit) {
 }
 
 // ================================================================
-// ===== Get Config (للتخصيص) =====
+// ===== Get/Set Config =====
 // ================================================================
 export function getConfig() {
   return { ...config };
@@ -376,7 +418,6 @@ export function setConfig(newConfig) {
 
 // ================================================================
 // ===== Cleanup All =====
-// ✅ جديد - للتنظيف عند الحاجة
 // ================================================================
 export function cleanup() {
   stopSnowflakes();

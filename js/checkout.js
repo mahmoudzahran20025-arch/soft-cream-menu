@@ -420,6 +420,8 @@ export function selectDeliveryMethod(method) {
   
   // إعادة حساب الأسعار مع طريقة التوصيل الجديدة
   recalculatePrices();
+  updateOrderSummary();  // ✅ أضف بس هذا السطر
+
   
   // تحديث الأيقونات
   if (typeof lucide !== 'undefined') {
@@ -455,7 +457,10 @@ export function selectBranch(branchId) {
       checkoutForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }, 100);
   }
-  
+  updateOrderSummary();  // ✅ و أضفه هنا كمان
+
+  recalculatePrices();  // حساب الأسعار بعد اختيار الفرع
+
   console.log('✅ Branch selected:', branchId);
 }
 

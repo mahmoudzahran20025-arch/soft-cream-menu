@@ -5363,17 +5363,31 @@ a:focus-visible {
 <!-- ثم تحميل نظام الترجمات -->
 <script type="module" src="js/translations.js"></script>
 
-<script type="module" src="js/storage.js"></script>
 
 <!-- 1️⃣ Translations أول حاجة (ما تحتاج module) -->
 
-<!-- 2️⃣ كل الـ modules (بدون app.js) -->
+<!-- 3️⃣ Storage (ما يعتمد على حاجة) -->
+<script type="module" src="js/storage.js"></script>
+
+<!-- 4️⃣ Utils (ما يعتمد على حاجة) -->
 <script type="module" src="js/utils.js"></script>
+
+<!-- 5️⃣ API (يعتمد على utils) -->
 <script type="module" src="js/api.js"></script>
+
+<!-- 6️⃣ Products Manager (يعتمد على api) -->
 <script type="module" src="js/products.js"></script>
+
+<!-- 7️⃣ Categories (يعتمد على products) -->
 <script type="module" src="js/categories.js"></script>
+
+<!-- 8️⃣ Cart (يعتمد على products و storage) -->
 <script type="module" src="js/cart.js"></script>
+
+<!-- 9️⃣ UI (يعتمد على products و cart و categories) -->
 <script type="module" src="js/ui.js"></script>
+
+<!-- 🔟 Checkout (يعتمد على cart و api و storage) -->
 <script type="module" src="js/checkout.js"></script>
 
 <!-- 3️⃣ app.js آخر حاجة (بعد كل الـ modules محملة) -->
