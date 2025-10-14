@@ -151,7 +151,7 @@ export async function calculateCartTotals() {
 export async function updateCartUI() {
   const { totalItems, total } = await calculateCartTotals();
   const currentLang = window.currentLang || 'ar';
-  const translations = window.translations || {};
+  const translations = window.i18n.t || {};
   const t = translations[currentLang] || {};
   
   // تحديث الشارات

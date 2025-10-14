@@ -238,6 +238,7 @@ function resetCheckoutUI() {
 // ================================================================
 // ===== تحديث ملخص الطلب =====
 // ================================================================
+/*
 export function updateOrderSummary() {
   const orderItems = document.getElementById('orderItems');
   if (!orderItems) return;
@@ -365,6 +366,172 @@ export function updateOrderSummary() {
     html += `
       <div class="order-item" style="grid-column: 1 / -1; margin-top: 8px;">
         <p style="font-size: 0.75rem; color: #666; text-align: center;">${noteText}</p>
+      </div>
+    `;
+  }
+  
+  orderItems.innerHTML = html;
+  
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
+}*/
+export function updateOrderSummary() {
+  const orderItems = document.getElementById('orderItems');
+  if (!orderItems) return;
+  
+  const lang = window.currentLang || 'ar';
+  const currency = window.i18n?.t?.(lang)?.currency || 'ج.م';
+  
+  let html = '';
+  
+  // ✅ إذا كان لدينا أسعار محسوبة من Backend، استخدمها
+  if (calculatedPrices && calculatedPrices.items && calculatedPrices.items.length > 0) {
+    // عرض المنتجات مع الأسعار المحسوبة من Backend
+    calculatedPrices.items.forEach(item => {
+      const name = lang === 'ar' ? item.name : (item.nameEn || item.name);
+      const price = item.price || 0;
+      const quantity = item.quantity || 0;
+      const subtotal = (price * quantity) || 0;
+      
+      html += `
+        <div class="order-item" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
+          <div style="flex: 1;">
+            <div style="font-weight: 600;">${name}</div>
+            <div style="font-size: 0.875rem; color: #999;">× ${quantity}</div>
+          </div>
+          <div style="text-align: right; font-weight: 600;">${subtotal.toFixed(2)} ${currency}</div>
+        </div>
+      `;
+    });
+    
+    // المبلغ الفرعي من Backend
+    const subtotalText = lang === 'ar' ? 'المبلغ الفرعي' : 'Subtotal';
+    const subtotal = calculatedPrices.subtotal || 0;
+    html += `
+      <div style="display: flex; justify-content: space-between; padding: 8px 0; border-top: 1px solid #ddd; margin-top: 8px;">
+        <span>${subtotalText}</span>
+        <span style="font-weight: 600;">${subtotal.toFixed(2)} ${currency}</span>
+      </div>
+    `;
+    
+    // الخصم (إذا كان موجود)
+    if (calculatedPrices.discount && calculatedPrices.discount > 0) {
+      const discountPercentage = Math.round((calculatedPrices.discount / subtotal) * 100) || 0;
+      const discountText = lang === 'ar' ? 'خصم' : 'Discount';
+      
+      html += `
+        <div style="display: flex; justify-content: space-between; padding: 8px 0; color: #4CAF50;">
+          <span>${discountText} (${discountPercentage}%)</span>
+          <span style="font-weight: 600;">-${calculatedPrices.discount.toFixed(2)} ${currency}</span>
+        </div>
+      `;
+    }
+    
+    // رسوم التوصيل (إذا كانت موجودة)
+    if (calculatedPrices.deliveryFee && calculatedPrices.deliveryFee > 0) {
+      const deliveryText = lang === 'ar' ? 'رسوم التوصيل' : 'Delivery Fee';
+      html += `
+        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+          <span>${deliveryText}</span>
+          <span style="font-weight: 600;">${calculatedPrices.deliveryFee.toFixed(2)} ${currency}</span>
+        </div>
+      `;
+    }
+    
+    // الإجمالي النهائي
+    const totalText = lang === 'ar' ? 'الإجمالي' : 'Total';
+    const total = calculatedPrices.total || 0;
+    html += `
+      <div style="display: flex; justify-content: space-between; padding: 12px 0; border-top: 2px solid #2196F3; margin-top: 8px; font-weight: 700; font-size: 1.1rem;">
+        <span>${totalText}</span>
+        <span style="color: #2196F3;">${total.toFixed(2)} ${currency}</span>
+      </div>
+    `;
+    
+  } else {
+    // ✅ عرض من السلة المحلية (الأسعار التقديرية)
+    // هنا نجلب المنتجات من productsManager
+    
+    if (!cart || cart.length === 0) {
+      html = `
+        <div style="text-align: center; padding: 20px; color: #999;">
+          <p>${lang === 'ar' ? 'السلة فارغة' : 'Cart is empty'}</p>
+        </div>
+      `;
+      orderItems.innerHTML = html;
+      return;
+    }
+    
+    let subtotal = 0;
+    
+    // ✅ المفتاح هنا: نجلب المنتجات من productsManager بشكل صحيح
+    cart.forEach(item => {
+      // البحث عن المنتج في productsManager
+      const allProducts = window.productsManager?.getAllProducts?.() || [];
+      const product = allProducts.find(p => p.id === item.productId || p.id === item.id);
+      
+      if (product && product.price) {
+        const name = lang === 'ar' ? product.name : (product.nameEn || product.name || 'بدون اسم');
+        const price = parseFloat(product.price) || 0;
+        const quantity = item.quantity || 1;
+        const itemTotal = price * quantity;
+        subtotal += itemTotal;
+        
+        html += `
+          <div class="order-item" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
+            <div style="flex: 1;">
+              <div style="font-weight: 600;">${name}</div>
+              <div style="font-size: 0.875rem; color: #999;">× ${quantity}</div>
+            </div>
+            <div style="text-align: right; font-weight: 600;">${itemTotal.toFixed(2)} ${currency}</div>
+          </div>
+        `;
+      }
+    });
+    
+    // المبلغ الفرعي
+    const subtotalText = lang === 'ar' ? 'المبلغ الفرعي' : 'Subtotal';
+    html += `
+      <div style="display: flex; justify-content: space-between; padding: 8px 0; border-top: 1px solid #ddd; margin-top: 8px;">
+        <span>${subtotalText}</span>
+        <span style="font-weight: 600;">${subtotal.toFixed(2)} ${currency}</span>
+      </div>
+    `;
+    
+    // رسوم التوصيل (تقديرية)
+    let deliveryFee = 0;
+    if (selectedDeliveryMethod === 'delivery') {
+      deliveryFee = 15;
+      const deliveryText = lang === 'ar' ? 'رسوم التوصيل' : 'Delivery Fee';
+      html += `
+        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+          <span>${deliveryText}</span>
+          <span style="font-weight: 600;">${deliveryFee} ${currency}</span>
+        </div>
+      `;
+    }
+    
+    // الإجمالي التقديري
+    const estimatedTotal = subtotal + deliveryFee;
+    const totalText = lang === 'ar' ? 'الإجمالي (تقديري)' : 'Total (Estimated)';
+    
+    html += `
+      <div style="display: flex; justify-content: space-between; padding: 12px 0; border-top: 2px solid #2196F3; margin-top: 8px; font-weight: 700; font-size: 1.1rem;">
+        <span>${totalText}</span>
+        <span style="color: #2196F3;">${estimatedTotal.toFixed(2)} ${currency}</span>
+      </div>
+    `;
+    
+    // ملاحظة توضيحية
+    const noteText = lang === 'ar' 
+      ? '* الأسعار النهائية سيتم حسابها عند تأكيد الطلب'
+      : '* Final prices will be calculated upon order confirmation';
+    
+    html += `
+      <div style="margin-top: 12px; padding: 8px 12px; background: #e3f2fd; border-radius: 8px; font-size: 0.8rem; color: #1565c0; text-align: center;">
+        <i data-lucide="info" style="width: 14px; height: 14px; display: inline; vertical-align: middle; margin-right: 4px;"></i>
+        ${noteText}
       </div>
     `;
   }

@@ -601,7 +601,7 @@ export function addModalToCart() {
   addToCart(null, currentProduct.id, modalQuantity);
   closeProductModal();
 }
-/*
+
 function renderSuggestions(productId, category) {
   // ✅ الحصول على المنتجات من productsManager
   const allProducts = productsManager.getAllProducts();
@@ -631,9 +631,9 @@ function renderSuggestions(productId, category) {
   });
   
   suggestionsGrid.innerHTML = html;
-}*/
+}
 // في دالة renderSuggestions - استبدل بالكود الصحيح:
-
+/*
 function renderSuggestions(productId, category) {
   // ✅ الحصول على المنتجات من productsManager
   const allProducts = productsManager.getAllProducts();
@@ -673,7 +673,7 @@ function renderSuggestions(productId, category) {
   });
   
   suggestionsGrid.innerHTML = html;
-}
+}*/
 
 // ================================================================
 // ===== تهيئة Fuse.js للبحث =====
