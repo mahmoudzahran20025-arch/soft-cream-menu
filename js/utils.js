@@ -312,48 +312,104 @@ export function stopSnowflakes() {
 }
 
 // ================================================================
-// ===== Toast Notification (محسّنة) =====
-// ✅ إضافة error handling للـ lucide
+// ===== Toast System Class (بديل showToast) =====
 // ================================================================
-export function showToast(title, description, type = 'success') {
-  const toast = document.querySelector(config.selectors.toast);
-  if (!toast) {
-    console.warn('Toast element not found');
-    return;
+
+// ================================================================
+// ===== Toast Notification System (بديل showToast) =====
+// ================================================================
+
+export function showToast(type = 'success', title = 'Success', message = '', duration = 5000) {
+  if (!window.toastManager) {
+    window.toastManager = new ToastManager('toastContainer');
   }
   
-  toast.className = 'toast ' + type;
-  
-  // ✅ Error handling للـ icon
-  const iconElement = toast.querySelector('.toast-icon i');
-  if (iconElement) {
-    const icon = type === 'success' ? 'check-circle-2' : 'x-circle';
-    iconElement.setAttribute('data-lucide', icon);
-    
-    // ✅ التحقق من وجود lucide
-    if (typeof lucide !== 'undefined' && lucide.createIcons) {
-      try {
-        lucide.createIcons();
-      } catch (e) {
-        console.warn('Failed to create lucide icons:', e);
-      }
-    }
-  }
-  
-  const titleElement = toast.querySelector('#toast-title');
-  const descElement = toast.querySelector('#toast-description');
-  
-  if (titleElement) titleElement.textContent = title;
-  if (descElement) descElement.textContent = description;
-  
-  toast.classList.add('show');
-  
-  // ✅ إزالة الـ toast بعد 4 ثواني
-  setTimeout(() => {
-    toast.classList.remove('show');
-  }, 4000);
+  return window.toastManager.show(type, title, message, duration);
 }
 
+export class ToastManager {
+  constructor(containerId = 'toastContainer') {
+    this.container = document.getElementById(containerId);
+    this.toasts = [];
+    
+    if (!this.container) {
+      console.warn(`Toast container with id "${containerId}" not found`);
+    }
+  }
+
+  show(type = 'success', title = 'Success', message = '', duration = 5000) {
+    if (!this.container) return;
+
+    const toastEl = this.createToast(type, title, message);
+    this.container.appendChild(toastEl);
+    this.toasts.push(toastEl);
+
+    // Show animation
+    setTimeout(() => toastEl.classList.add('show'), 10);
+
+    // Auto hide
+    setTimeout(() => {
+      this.hide(toastEl);
+    }, duration);
+
+    return toastEl;
+  }
+
+  createToast(type, title, message) {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+
+    const iconMap = {
+      success: '<i class="fas fa-check"></i>',
+      error: '<i class="fas fa-times"></i>',
+      warning: '<i class="fas fa-exclamation"></i>',
+      info: '<i class="fas fa-info"></i>'
+    };
+
+    toast.innerHTML = `
+      <div class="toast-icon">${iconMap[type] || iconMap.info}</div>
+      <div class="toast-content">
+        <div class="toast-title">${title}</div>
+        <div class="toast-message">${message}</div>
+      </div>
+      <button class="toast-close" type="button" aria-label="Close">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="toast-progress active"></div>
+    `;
+
+    // Close button
+    toast.querySelector('.toast-close').addEventListener('click', () => {
+      this.hide(toast);
+    });
+
+    return toast;
+  }
+
+  hide(toastEl) {
+    toastEl.classList.remove('show');
+    setTimeout(() => {
+      toastEl.remove();
+      this.toasts = this.toasts.filter(t => t !== toastEl);
+    }, 500);
+  }
+
+  success(title, message, duration = 5000) {
+    return this.show('success', title, message, duration);
+  }
+
+  error(title, message, duration = 5000) {
+    return this.show('error', title, message, duration);
+  }
+
+  warning(title, message, duration = 5000) {
+    return this.show('warning', title, message, duration);
+  }
+
+  info(title, message, duration = 5000) {
+    return this.show('info', title, message, duration);
+  }
+}
 // ================================================================
 // ===== UUID Generator =====
 // ================================================================
@@ -484,3 +540,4 @@ export function cleanup() {
 }
 
 console.log('✅ Utils module loaded (Secure & Optimized)');
+
