@@ -243,7 +243,7 @@ export function updateOrderSummary() {
   if (!orderItems) return;
   
   const lang = window.currentLang || 'ar';
-  const translations = window.translations || {};
+  const translations = window.i18n.t || {};
   const t = translations[lang] || {};
   const currency = t.currency || 'ج.م';
   
@@ -782,7 +782,7 @@ function updateBranchDistances() {
 // ================================================================
 export async function confirmOrder() {
   const lang = window.currentLang || 'ar';
-  const translations = window.translations || {};
+  const translations = window.i18n.t || {};
   const t = translations[lang] || {};
   
   // التحقق من طريقة التوصيل
@@ -1143,7 +1143,7 @@ function fallbackCopy(text) {
 // ================================================================
 function shareOnWhatsApp(orderId, itemsText, phone, total) {
   const lang = window.currentLang || 'ar';
-  const currency = window.translations?.[lang]?.currency || 'ج.م';
+  const currency = window.i18n.t?.[lang]?.currency || 'ج.م';
   
   const message = lang === 'ar'
     ? `🎉 طلب جديد!\n\nرقم الطلب: ${orderId}\nالمنتجات: ${itemsText}\nالإجمالي: ${total.toFixed(2)} ${currency}\n\nشكراً لطلبك!`
@@ -1397,18 +1397,7 @@ export function restoreFormData() {
   if (formData.notes && notesField) notesField.value = formData.notes;
 }
 
-// في fillSavedUserData():
-function fillSavedUserData() {
-  const userData = storage.getUserData(); // ✅ استخدام storage
-  
-  if (userData) {
-    const nameField = document.getElementById('customerName');
-    const phoneField = document.getElementById('customerPhone');
-    
-    if (nameField && userData.name) nameField.value = userData.name;
-    if (phoneField && userData.phone) phoneField.value = userData.phone;
-  }
-}
+
 // ================================================================
 // ===== إغلاق جميع نوافذ الدفع =====
 // ================================================================

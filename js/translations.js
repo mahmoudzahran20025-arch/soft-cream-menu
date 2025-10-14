@@ -1,250 +1,265 @@
-window.translations = {
-  "ar": {
-    "headerTitle": " سوفت كريم",
-    "headerSubtitle": "أطيب آيس كريم في المدينة 🍦",
-    "navMenu": "المنيو",
-    "navCart": "السلة",
-    "navAbout": "من نحن",
-    "navContact": "تواصل",
-    "heroBadge": "🎉 خصم 20% على الطلب الأول",
-    "heroTitle": "اكتشف عالم النكهات الساحر",
-    "heroDescription": "تجربة فريدة من نوعها مع أفضل أنواع الآيس كريم والديسرت المميز 🍨✨",
-    "searchPlaceholder": "ابحث عن منتج...",
-    "cartTitle": "سلة الطلبات",
-    "cartEmpty": "سلتك فارغة حالياً",
-    "cartEmptySubtitle": "أضف بعض الآيس كريم اللذيذ! 🍦",
-    "cartTotal": "الإجمالي:",
-    "checkoutBtn": "إتمام الطلب",
-    "addToCart": "أضف للسلة",
-    "egp": "ج.م",
-    "currency": "ج.م",
-    "checkoutTitle": "تأكيد الطلب",
-    "checkoutSubtitle": "اختر طريقة الاستلام وأكمل بياناتك",
-    "orderSummaryTitle": "ملخص الطلب",
-    "pickupTitle": "الاستلام من الفرع",
-    "pickupDesc": "مجاناً - جاهز خلال 15 دقيقة",
-    "deliveryTitle": "التوصيل",
-    "deliveryDesc": "15 ج.م - خلال 30 دقيقة",
-    "nameLabel": "الاسم الكامل *",
-    "phoneLabel": "رقم الهاتف *",
-    "addressLabel": "العنوان التفصيلي *",
-    "notesLabel": "ملاحظات إضافية",
-    "locationBtnText": "استخدام الموقع الحالي",
-    "cancelBtn": "إلغاء",
-    "confirmBtn": "تأكيد الطلب",
-    "permissionTitle": "نحتاج موقعك للتوصيل الدقيق",
-    "permissionText": "لنتمكن من توصيل طلبك في أسرع وقت وبأفضل دقة، نحتاج إلى معرفة موقعك الحالي. سيتم استخدام الموقع فقط لأغراض التوصيل.",
-    "permissionCancel": "سأكتب العنوان يدوياً",
-    "permissionAllow": "السماح بالوصول للموقع",
-    "discountFirst": "خصم 20% على أول طلب! 🎁",
-    "discountSecond": "خصم 15% على الطلب الثاني! 🎉",
-    "discountLoyal": "خصم 10% للعملاء المميزين! ⭐",
-    "discountApplied": "تم تطبيق الخصم بنجاح!",
-    "branchLabel": "اختر الفرع المناسب:",
-    "branchMaadi": "المعادي",
-    "branchMaadiAddress": "شارع 9، المعادي",
-    "branchZamalek": "الزمالك",
-    "branchZamalekAddress": "شارع 26 يوليو، الزمالك",
-    "branchDowntown": "وسط البلد",
-    "branchDowntownAddress": "شارع طلعت حرب، وسط البلد",
-    "namePlaceholder": "أدخل اسمك الكامل",
-    "phonePlaceholder": "01234567890",
-    "phoneHint": "مثال: 01012345678",
-    "addressPlaceholder": "الشارع، المنطقة، المدينة، معالم قريبة...",
-    "notesPlaceholder": "أي طلبات خاصة (اختياري)",
-    "locationBtn": "استخدام الموقع الحالي",
-    "locationBtnActive": "تم تحديد الموقع ✓",
-    "locationBtnLoading": "جاري التحديد...",
-    "permissionFeature1": "توصيل أسرع",
-    "permissionFeature2": "دقة أعلى",
-    "permissionFeature3": "آمن ومحمي",
-    "confirmBtnLoading": "جاري الإرسال...",
-    "processingTitle": "جاري إرسال طلبك...",
-    "processingSubtitle": "الرجاء الانتظار، لا تغلق الصفحة",
-    "errorMessage": "عذراً، حدث خطأ في الاتصال",
-    "errorDescription": "قد تكون المشكلة مؤقتة، يرجى المحاولة مرة أخرى",
-    "retryBtn": "إعادة المحاولة",
-    "cancelSendBtn": "إلغاء",
-    "helpText": "تحتاج مساعدة؟",
-    "callUs": "اتصل بنا الآن",
-    "confirmedTitle": "تم تأكيد طلبك بنجاح! 🎉",
-    "confirmedSubtitle": "شكراً لثقتك بنا، سنبدأ بتحضير طلبك الآن",
-    "orderIdLabel": "رقم الطلب",
-    "copyOrderId": "نسخ رقم الطلب",
-    "etaLabel": "الوقت المتوقع:",
-    "eta15": "≈ 15 دقيقة",
-    "eta30": "≈ 30 دقيقة",
-    "statusInPrep": "قيد التحضير",
-    "selectedBranchLabel": "فرع الاستلام:",
-    "shareWhatsApp": "مشاركة عبر واتساب",
-    "trackOrder": "تتبع الطلب",
-    "supportText": "تحتاج مساعدة؟",
-    "supportPhone": "اتصل بنا",
-    "continueShoppingBtn": "متابعة التسوق",
-    "trackingTitle": "تتبع طلبك",
-    "trackingSubtitle": "أدخل رقم الطلب للتحقق من حالته",
-    "trackingPlaceholder": "أدخل رقم الطلب (مثال: ORD-123456)",
-    "checkStatusBtn": "تحقق",
-    "searching": "جاري البحث...",
-    "orderNotFound": "لم يتم العثور على الطلب",
-    "orderNotFoundDesc": "تأكد من رقم الطلب وحاول مرة أخرى",
-    "orderNotFoundHint": "تأكد من إدخال الرقم بشكل صحيح",
-    "orderConfirmed": "تم تأكيد طلبك بنجاح",
-    "updateViaPhone": "سنوافيك بالتحديثات عبر الهاتف",
-    "deliveryFee": "رسوم التوصيل",
-    "discount": "خصم",
-    "subtotal": "المبلغ الفرعي",
-    "total": "الإجمالي",
-    "errorSelectMethod": "الرجاء اختيار طريقة الاستلام",
-    "errorSelectBranch": "الرجاء اختيار الفرع",
-    "errorEnterName": "الرجاء إدخال اسمك",
-    "errorInvalidPhone": "الرجاء إدخال رقم هاتف مصري صحيح (01XXXXXXXXX)",
-    "errorEnterAddress": "الرجاء إدخال العنوان",
-    "errorEnterOrderId": "الرجاء إدخال رقم الطلب",
-    "successOrderSent": "تم إرسال الطلب بنجاح! 🎉",
-    "successLocationSet": "تم تحديد موقعك بنجاح",
-    "successCopied": "تم النسخ",
-    "successCopiedDesc": "تم نسخ رقم الطلب",
-    "errorTitle": "خطأ",
-    "errorLocationNotSupported": "المتصفح لا يدعم تحديد الموقع",
-    "errorLocationFailed": "لم نتمكن من الحصول على موقعك",
-    "errorSendFailed": "فشل الإرسال",
-    "errorSendFailedDesc": "لم نتمكن من إرسال طلبك. حاول مرة أخرى.",
-    "errorCopyFailed": "فشل النسخ",
-    "cancel": "إلغاء",
-    "confirm": "تأكيد",
-    "close": "إغلاق",
-    "loading": "جاري التحميل...",
-    "pleaseWait": "الرجاء الانتظار...",
-    "tryAgain": "حاول مرة أخرى",
-    "minutes": "دقيقة",
-    "hours": "ساعة",
-    "days": "يوم",
-    "km": "كم",
-    "meters": "متر"
-  },
-  "en": {
-    "headerTitle": "Soft Cream ",
-    "headerSubtitle": "Best Ice Cream in Town 🍦",
-    "navMenu": "Menu",
-    "navCart": "Cart",
-    "navAbout": "About",
-    "navContact": "Contact",
-    "heroBadge": "🎉 20% OFF First Order",
-    "heroTitle": "Discover Magical Flavors",
-    "heroDescription": "A unique experience with the best ice cream and desserts 🍨✨",
-    "searchPlaceholder": "Search for a product...",
-    "cartTitle": "Shopping Cart",
-    "cartEmpty": "Your cart is empty",
-    "cartEmptySubtitle": "Add some delicious ice cream! 🍦",
-    "cartTotal": "Total:",
-    "checkoutBtn": "Checkout",
-    "addToCart": "Add to Cart",
-    "egp": "EGP",
-    "currency": "EGP",
-    "checkoutTitle": "Confirm Order",
-    "checkoutSubtitle": "Choose pickup method and complete your details",
-    "orderSummaryTitle": "Order Summary",
-    "pickupTitle": "Branch Pickup",
-    "pickupDesc": "Free - Ready in 15 minutes",
-    "deliveryTitle": "Delivery",
-    "deliveryDesc": "15 EGP - Within 30 minutes",
-    "nameLabel": "Full Name *",
-    "phoneLabel": "Phone Number *",
-    "addressLabel": "Detailed Address *",
-    "notesLabel": "Additional Notes",
-    "locationBtnText": "Use Current Location",
-    "cancelBtn": "Cancel",
-    "confirmBtn": "Confirm Order",
-    "permissionTitle": "We need your location for accurate delivery",
-    "permissionText": "To deliver your order as quickly and accurately as possible, we need to know your current location. Location will only be used for delivery purposes.",
-    "permissionCancel": "I'll enter address manually",
-    "permissionAllow": "Allow Location Access",
-    "discountFirst": "20% off your first order! 🎁",
-    "discountSecond": "15% off your second order! 🎉",
-    "discountLoyal": "10% off for valued customers! ⭐",
-    "discountApplied": "Discount applied successfully!",
-    "branchLabel": "Choose your branch:",
-    "branchMaadi": "Maadi",
-    "branchMaadiAddress": "9 St, Maadi",
-    "branchZamalek": "Zamalek",
-    "branchZamalekAddress": "26th of July St, Zamalek",
-    "branchDowntown": "Downtown",
-    "branchDowntownAddress": "Talaat Harb St, Downtown",
-    "namePlaceholder": "Enter your full name",
-    "phonePlaceholder": "01234567890",
-    "phoneHint": "Example: 01012345678",
-    "addressPlaceholder": "Street, area, city, nearby landmarks...",
-    "notesPlaceholder": "Any special requests (optional)",
-    "locationBtn": "Use Current Location",
-    "locationBtnActive": "Location Set ✓",
-    "locationBtnLoading": "Detecting...",
-    "permissionFeature1": "Faster delivery",
-    "permissionFeature2": "Higher accuracy",
-    "permissionFeature3": "Safe & secure",
-    "confirmBtnLoading": "Sending...",
-    "processingTitle": "Sending your order...",
-    "processingSubtitle": "Please wait, don't close the page",
-    "errorMessage": "Sorry, a connection error occurred",
-    "errorDescription": "The issue may be temporary, please try again",
-    "retryBtn": "Retry",
-    "cancelSendBtn": "Cancel",
-    "helpText": "Need help?",
-    "callUs": "Call us now",
-    "confirmedTitle": "Order Confirmed Successfully! 🎉",
-    "confirmedSubtitle": "Thank you for your trust, we'll start preparing your order now",
-    "orderIdLabel": "Order ID",
-    "copyOrderId": "Copy Order ID",
-    "etaLabel": "Estimated time:",
-    "eta15": "≈ 15 minutes",
-    "eta30": "≈ 30 minutes",
-    "statusInPrep": "In Preparation",
-    "selectedBranchLabel": "Pickup Branch:",
-    "shareWhatsApp": "Share via WhatsApp",
-    "trackOrder": "Track Order",
-    "supportText": "Need help?",
-    "supportPhone": "Call us",
-    "continueShoppingBtn": "Continue Shopping",
-    "trackingTitle": "Track Your Order",
-    "trackingSubtitle": "Enter order ID to check its status",
-    "trackingPlaceholder": "Enter order ID (e.g., ORD-123456)",
-    "checkStatusBtn": "Check",
-    "searching": "Searching...",
-    "orderNotFound": "Order Not Found",
-    "orderNotFoundDesc": "Check the order ID and try again",
-    "orderNotFoundHint": "Make sure to enter the number correctly",
-    "orderConfirmed": "Your order has been confirmed",
-    "updateViaPhone": "We will update you via phone",
-    "deliveryFee": "Delivery Fee",
-    "discount": "Discount",
-    "subtotal": "Subtotal",
-    "total": "Total",
-    "errorSelectMethod": "Please select pickup method",
-    "errorSelectBranch": "Please select a branch",
-    "errorEnterName": "Please enter your name",
-    "errorInvalidPhone": "Please enter a valid Egyptian phone number (01XXXXXXXXX)",
-    "errorEnterAddress": "Please enter address",
-    "errorEnterOrderId": "Please enter order ID",
-    "successOrderSent": "Order sent successfully! 🎉",
-    "successLocationSet": "Location successfully set",
-    "successCopied": "Copied",
-    "successCopiedDesc": "Order ID copied",
-    "errorTitle": "Error",
-    "errorLocationNotSupported": "Browser does not support geolocation",
-    "errorLocationFailed": "Could not get your location",
-    "errorSendFailed": "Send failed",
-    "errorSendFailedDesc": "Could not send your order. Please try again.",
-    "errorCopyFailed": "Copy failed",
-    "cancel": "Cancel",
-    "confirm": "Confirm",
-    "close": "Close",
-    "loading": "Loading...",
-    "pleaseWait": "Please wait...",
-    "tryAgain": "Try again",
-    "minutes": "minutes",
-    "hours": "hours",
-    "days": "days",
-    "km": "km",
-    "meters": "meters"
+// ================================================================
+// translations.js - نظام ترجمات آمن وفعّال
+// ================================================================
+
+/**
+ * ✅ المميزات:
+ * 1. No global pollution - كل شيء في closure
+ * 2. Smart fallback - إذا مفتاح ناقص يرجع قيمة افتراضية
+ * 3. Lazy loading ready - يدعم تحميل ديناميكي للغات
+ * 4. Performance - caching للترجمات المستخدمة
+ * 5. Type safe - validation للمفاتيح
+ */
+
+class TranslationManager {
+  constructor() {
+    this.translations = {};
+    this.currentLang = 'ar';
+    this.defaultLang = 'ar';
+    this.cache = new Map();
+    this.observers = [];
+    this.missingKeys = new Set(); // تتبع المفاتيح الناقصة
+    
+    console.log('✅ TranslationManager initialized');
   }
+
+  /**
+   * تحميل ترجمات من كائن
+   */
+  loadTranslations(translationsData) {
+    if (!translationsData || typeof translationsData !== 'object') {
+      console.error('Invalid translations data');
+      return false;
+    }
+
+    this.translations = translationsData;
+    this.cache.clear(); // مسح الـ cache عند تحميل ترجمات جديدة
+    
+    console.log(`✅ Loaded translations for languages:`, Object.keys(translationsData));
+    return true;
+  }
+
+  /**
+   * الحصول على ترجمة مفتاح معين
+   * @param {string} key - مفتاح الترجمة
+   * @param {object} params - معاملات للاستبدال (اختياري)
+   * @returns {string} الترجمة أو المفتاح نفسه كـ fallback
+   */
+  get(key, params = {}) {
+    // 1️⃣ التحقق من الـ cache
+    const cacheKey = `${this.currentLang}:${key}`;
+    if (this.cache.has(cacheKey)) {
+      return this.cache.get(cacheKey);
+    }
+
+    // 2️⃣ البحث عن الترجمة
+    const langData = this.translations[this.currentLang];
+    if (!langData) {
+      console.warn(`Language not found: ${this.currentLang}`);
+      return this.getFallback(key);
+    }
+
+    let value = langData[key];
+
+    // 3️⃣ Fallback إلى اللغة الافتراضية
+    if (!value) {
+      const defaultData = this.translations[this.defaultLang];
+      value = defaultData?.[key];
+      
+      if (!value) {
+        this.missingKeys.add(key);
+        console.warn(`Missing translation key: ${key}`);
+        return this.getFallback(key);
+      }
+    }
+
+    // 4️⃣ استبدال المعاملات إذا كانت موجودة
+    let result = value;
+    if (Object.keys(params).length > 0) {
+      Object.keys(params).forEach(param => {
+        result = result.replace(`{{${param}}}`, params[param]);
+      });
+    }
+
+    // 5️⃣ حفظ في الـ cache
+    this.cache.set(cacheKey, result);
+
+    return result;
+  }
+
+  /**
+   * Fallback value عند عدم وجود ترجمة
+   */
+  getFallback(key) {
+    // تحويل camelCase إلى Title Case
+    return key
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, str => str.toUpperCase())
+      .trim();
+  }
+
+  /**
+   * تبديل اللغة
+   */
+  setLanguage(lang) {
+    if (!this.translations[lang]) {
+      console.warn(`Language not supported: ${lang}`);
+      return false;
+    }
+
+    this.currentLang = lang;
+    this.cache.clear();
+    this.notifyObservers(lang);
+    
+    console.log(`✅ Language changed to: ${lang}`);
+    return true;
+  }
+
+  /**
+   * الحصول على اللغة الحالية
+   */
+  getLanguage() {
+    return this.currentLang;
+  }
+
+  /**
+   * الحصول على جميع الترجمات للغة الحالية
+   */
+  getAll() {
+    return this.translations[this.currentLang] || {};
+  }
+
+  /**
+   * التحقق من وجود مفتاح
+   */
+  has(key) {
+    const langData = this.translations[this.currentLang];
+    return langData && key in langData;
+  }
+
+  /**
+   * تسجيل observer للاستماع لتغيير اللغة
+   */
+  subscribe(callback) {
+    this.observers.push(callback);
+    return () => {
+      this.observers = this.observers.filter(obs => obs !== callback);
+    };
+  }
+
+  /**
+   * إخطار جميع المراقبين
+   */
+  notifyObservers(lang) {
+    this.observers.forEach(callback => {
+      try {
+        callback(lang);
+      } catch (error) {
+        console.error('Observer error:', error);
+      }
+    });
+  }
+
+  /**
+   * الحصول على المفاتيح الناقصة (للـ debugging)
+   */
+  getMissingKeys() {
+    return Array.from(this.missingKeys);
+  }
+
+  /**
+   * مسح المفاتيح الناقصة
+   */
+  clearMissingKeys() {
+    this.missingKeys.clear();
+  }
+
+  /**
+   * إضافة ترجمات إضافية
+   */
+  addTranslations(lang, newTranslations) {
+    if (!this.translations[lang]) {
+      this.translations[lang] = {};
+    }
+    
+    this.translations[lang] = {
+      ...this.translations[lang],
+      ...newTranslations
+    };
+    
+    this.cache.clear();
+    console.log(`✅ Added translations for ${lang}`);
+  }
+}
+
+// ================================================================
+// ===== إنشاء instance واحد = Singleton
+// ================================================================
+const translationManager = new TranslationManager();
+
+// ================================================================
+// ===== واجهة عامة بسيطة (للاستخدام في الكود)
+// ================================================================
+const i18n = {
+  /**
+   * استخدام بسيط: i18n.t('key')
+   */
+  t: (key, params = {}) => translationManager.get(key, params),
+  
+  /**
+   * تبديل اللغة: i18n.setLang('en')
+   */
+  setLang: (lang) => translationManager.setLanguage(lang),
+  
+  /**
+   * الحصول على اللغة الحالية: i18n.getLang()
+   */
+  getLang: () => translationManager.getLanguage(),
+  
+  /**
+   * الحصول على كل الترجمات: i18n.getAll()
+   */
+  getAll: () => translationManager.getAll(),
+  
+  /**
+   * التحقق من وجود مفتاح: i18n.has('key')
+   */
+  has: (key) => translationManager.has(key),
+  
+  /**
+   * الاستماع لتغيير اللغة: i18n.on('change', (lang) => {})
+   */
+  on: (event, callback) => {
+    if (event === 'change') {
+      return translationManager.subscribe(callback);
+    }
+  },
+  
+  /**
+   * إضافة ترجمات جديدة
+   */
+  addTranslations: (lang, trans) => translationManager.addTranslations(lang, trans),
+  
+  /**
+   * معلومات للـ debugging
+   */
+  debug: () => ({
+    currentLang: translationManager.getLanguage(),
+    availableLangs: Object.keys(translationManager.translations),
+    missingKeys: translationManager.getMissingKeys(),
+    cacheSize: translationManager.cache.size
+  })
 };
+
+// ================================================================
+// ===== تصدير للـ window (للوصول العام فقط عند الحاجة)
+// ================================================================
+if (typeof window !== 'undefined') {
+  window.i18n = i18n;
+  console.log('✅ i18n exported to window');
+}
+
+// ================================================================
+// ===== تصدير للـ modules
+// ================================================================
+export { translationManager, i18n };

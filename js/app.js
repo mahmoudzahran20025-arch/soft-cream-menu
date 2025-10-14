@@ -8,6 +8,7 @@ import { loadCart, updateCartUI } from './cart.js';
 import { renderCategories } from './categories.js';
 import { initFuse, renderProducts, updateLanguage, currentLang } from './ui.js';
 import { storage } from './storage.js';
+import { i18n } from './translations.js';
 
 // ================================================================
 // ===== متغيرات عامة =====
@@ -172,7 +173,11 @@ function closeVisibleModals() {
 async function initApp() {
   try {
     console.log('🚀 Initializing Soft Cream Menu App...');
-    
+    // أضف في بداية initApp()
+    const translationsData = window.i18n.tData;
+    if (translationsData && window.translationManager) {
+      window.translationManager.loadTranslations(translationsData);
+    }
     // 1️⃣ تحميل البيانات المحفوظة من storage
     loadSavedData();
     
@@ -229,9 +234,9 @@ async function initApp() {
     
     // 1️⃣1️⃣ إعداد placeholder البحث
     const searchInput = document.getElementById('searchInput');
-    if (searchInput && window.translations) {
+    if (searchInput && window.i18n.t) {
       const lang = window.currentLang || 'ar';
-      searchInput.setAttribute('placeholder', window.translations[lang]?.searchPlaceholder || 'ابحث...');
+      searchInput.setAttribute('placeholder', window.i18n.t[lang]?.searchPlaceholder || 'ابحث...');
     }
     
     // 1️⃣2️⃣ إنشاء تأثير الثلج

@@ -39,7 +39,7 @@ export function toggleLanguage() {
 // ===== تحديث اللغة =====
 // ================================================================
 export function updateLanguage() {
-  const t = window.translations[currentLang];
+  const t = window.i18n.t[currentLang];
   if (!t) return;
   
   // تحديث الهيدر
@@ -275,7 +275,7 @@ export async function renderProducts() {
       const name = currentLang === 'ar' ? product.name : product.nameEn;
       const description = currentLang === 'ar' ? product.description : product.descriptionEn;
       const badge = product.badge ? `<div class="product-badge">${product.badge}</div>` : '';
-      const currency = window.translations[currentLang]?.currency || 'ج.م';
+      const currency = window.i18n.t[currentLang]?.currency || 'ج.م';
       
       html += `
         <div class="product-card" style="animation-delay: ${index * 0.05}s;" onclick="window.uiModule.openProductModal('${product.id}')">
@@ -416,7 +416,7 @@ export async function renderProducts() {
           : (product.descriptionEn || product.description || '');
         
         const badge = product.badge ? `<div class="product-badge">${product.badge}</div>` : '';
-        const currency = window.translations?.[currentLang]?.currency || 'ج.م';
+        const currency = window.i18n.t?.[currentLang]?.currency || 'ج.م';
         const imageUrl = product.image || 'path/to/default-image.png';
         const price = product.price || 0;
         
@@ -485,7 +485,7 @@ export async function openProductModal(productId) {
   
   const name = currentLang === 'ar' ? product.name : product.nameEn;
   const description = currentLang === 'ar' ? product.description : product.descriptionEn;
-  const currency = window.translations[currentLang]?.currency || 'ج.م';
+  const currency = window.i18n.t[currentLang]?.currency || 'ج.م';
   
   updateElement('modalTitle', name);
   updateElement('modalDescription', description);
@@ -537,7 +537,7 @@ export async function openProductModal(productId) {
     ? (product.description || '')
     : (product.descriptionEn || product.description || '');
   
-  const currency = window.translations[currentLang]?.currency || 'ج.م';
+  const currency = window.i18n.t[currentLang]?.currency || 'ج.م';
   const price = product.price || 0;
   const imageUrl = product.image || 'path/to/default-image.png';
   
@@ -589,7 +589,7 @@ export function updateModalQuantity(delta) {
 function updateModalAddButton() {
   if (!currentProduct) return;
   const total = currentProduct.price * modalQuantity;
-  const currency = window.translations[currentLang]?.currency || 'ج.م';
+  const currency = window.i18n.t[currentLang]?.currency || 'ج.م';
   const btnText = currentLang === 'ar' 
     ? `أضف ${modalQuantity} للسلة - ${total} ${currency}`
     : `Add ${modalQuantity} to Cart - ${total} ${currency}`;
@@ -614,7 +614,7 @@ function renderSuggestions(productId, category) {
   const suggestionsGrid = document.getElementById('suggestionsGrid');
   if (!suggestionsGrid) return;
   
-  const currency = window.translations[currentLang]?.currency || 'ج.م';
+  const currency = window.i18n.t[currentLang]?.currency || 'ج.م';
   
   let html = '';
   suggestions.forEach(sug => {
@@ -646,7 +646,7 @@ function renderSuggestions(productId, category) {
   const suggestionsGrid = document.getElementById('suggestionsGrid');
   if (!suggestionsGrid) return;
   
-  const currency = window.translations[currentLang]?.currency || 'ج.م';
+  const currency = window.i18n.t[currentLang]?.currency || 'ج.م';
   
   let html = '';
   suggestions.forEach(sug => {
