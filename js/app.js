@@ -208,7 +208,6 @@ function closeVisibleModals() {
 async function initApp() {
   try {
     console.log('🚀 Initializing Soft Cream Menu App...');
-    const toast = initToastSystem();
 
     // أضف في بداية initApp()
     const translationsData = window.i18n.tData;
