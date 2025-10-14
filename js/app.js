@@ -281,19 +281,56 @@ if (document.readyState === 'loading') {
 }
 
 // ================================================================
-// ===== تصدير للنافذة العامة =====
+// ===== ✅ تصدير جميع الدوال للـ window (الحل الأساسي)
 // ================================================================
+// هذا هو الحل للمشكلة الأساسية - جعل كل الدوال متاحة للـ HTML onclick attributes
+
 if (typeof window !== 'undefined') {
+  // من ui.js
+  window.toggleLanguage = () => window.uiModule?.toggleLanguage?.();
+  window.toggleTheme = () => window.uiModule?.toggleTheme?.();
+  window.switchTab = (tab) => window.uiModule?.switchTab?.(tab);
+  window.handleSearch = () => window.uiModule?.handleSearch?.();
+  window.clearSearch = () => window.uiModule?.clearSearch?.();
+  window.openProductModal = (id) => window.uiModule?.openProductModal?.(id);
+  window.closeProductModal = (e) => window.uiModule?.closeProductModal?.(e);
+  window.updateModalQuantity = (delta) => window.uiModule?.updateModalQuantity?.(delta);
+  window.addModalToCart = () => window.uiModule?.addModalToCart?.();
+  
+  // من cart.js
+  window.openCartModal = () => window.cartModule?.openCartModal?.();
+  window.closeCartModal = (e) => window.cartModule?.closeCartModal?.(e);
+  window.addToCart = (e, id, qty) => window.cartModule?.addToCart?.(e, id, qty);
+  window.updateQuantity = (id, delta) => window.cartModule?.updateQuantity?.(id, delta);
+  window.removeFromCart = (id) => window.cartModule?.removeFromCart?.(id);
+  
+  // من checkout.js
+  window.initiateCheckout = () => window.checkoutModule?.initiateCheckout?.();
+  window.openCheckoutModal = () => window.checkoutModule?.openCheckoutModal?.();
+  window.closeCheckoutModal = (e) => window.checkoutModule?.closeCheckoutModal?.(e);
+  window.selectDeliveryMethod = (method) => window.checkoutModule?.selectDeliveryMethod?.(method);
+  window.selectBranch = (branch) => window.checkoutModule?.selectBranch?.(branch);
+  window.confirmOrder = () => window.checkoutModule?.confirmOrder?.();
+  window.requestLocation = () => window.checkoutModule?.requestLocation?.();
+  window.allowLocation = () => window.checkoutModule?.allowLocation?.();
+  window.closePermissionModal = () => window.checkoutModule?.closePermissionModal?.();
+  
+  // دوال مساعدة
+  window.scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  // تصدير App Module
   window.appModule = {
     getUserData: () => userData,
     setUserData: (data) => {
       userData = data;
       window.userData = data;
-      storage.setUserData(data); // ✅ استخدام storage
+      storage.setUserData(data);
     }
   };
   
   window.userData = userData;
+  
+  console.log('✅ All global functions exported to window');
 }
 
 console.log('✅ App module loaded (Clean & Secure)');
