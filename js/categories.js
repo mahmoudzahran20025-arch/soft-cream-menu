@@ -1,5 +1,5 @@
 // ================================================================
-// categories.js - إدارة التصنيفات
+// categories.js - إدارة التصنيفات (محسّن)
 // ================================================================
 
 import { productsManager } from './products.js';
@@ -7,7 +7,6 @@ import { productsManager } from './products.js';
 // ================================================================
 // ===== أيقونات التصنيفات =====
 // ================================================================
-
 const iconMap = {
   'كلاسيك': 'ice-cream-cone',
   'فواكه': 'apple',
@@ -21,6 +20,7 @@ const iconMap = {
 
 // ================================================================
 // ===== عرض التصنيفات =====
+// ✅ إضافة data-category attribute لكل تاب
 // ================================================================
 export function renderCategories() {
   try {
@@ -50,21 +50,23 @@ export function renderCategories() {
     
     const currentLang = window.currentLang || 'ar';
     
+    // ✅ زر "الكل" مع data-category="all"
     let html = `
-      <button class="category-tab active" onclick="window.categoriesModule.selectCategory('all', this)">
+      <button class="category-tab active" data-category="all" onclick="window.categoriesModule.selectCategory('all', this)">
         <i data-lucide="grid-3x3"></i>
         <span>${currentLang === 'ar' ? 'الكل' : 'All'}</span>
       </button>
     `;
     
     uniqueCategories.forEach(cat => {
-      if (!cat) return; // تخطي الـ null/undefined
+      if (!cat) return;
       
       const catName = getCategoryName(cat, currentLang);
       const icon = getCategoryIcon(cat);
       
+      // ✅ CRITICAL: إضافة data-category attribute
       html += `
-        <button class="category-tab" onclick="window.categoriesModule.selectCategory('${cat}', this)">
+        <button class="category-tab" data-category="${cat}" onclick="window.categoriesModule.selectCategory('${cat}', this)">
           <i data-lucide="${icon}"></i>
           <span>${catName}</span>
         </button>
@@ -89,12 +91,21 @@ export function renderCategories() {
 // ================================================================
 export function selectCategory(category, element) {
   try {
-    document.querySelectorAll('.category-tab').forEach(btn => btn.classList.remove('active'));
-    if (element) element.classList.add('active');
+    // ✅ إزالة active من جميع التابات
+    document.querySelectorAll('.category-tab').forEach(btn => {
+      btn.classList.remove('active');
+    });
+    
+    // ✅ إضافة active للتاب المختار
+    if (element) {
+      element.classList.add('active');
+    }
     
     if (category === 'all') {
+      // الكل - اسكرول لأعلى
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
+      // فئة محددة - اسكرول للفئة
       const el = document.getElementById(`category-${category}`);
       if (el) {
         const header = document.getElementById('header');
@@ -109,6 +120,8 @@ export function selectCategory(category, element) {
           top: elementPosition - offset, 
           behavior: 'smooth' 
         });
+      } else {
+        console.warn(`Category element not found: category-${category}`);
       }
     }
   } catch (error) {
@@ -121,7 +134,11 @@ export function selectCategory(category, element) {
 // ================================================================
 export function getCategoryIcon(category) {
   if (!category) return 'ice-cream-cone';
-  return iconMap[category] || 'ice-cream-cone';
+  
+  // ✅ Normalize the category (lowercase + trim)
+  const normalized = category.toLowerCase().trim();
+  
+  return iconMap[normalized] || iconMap[category] || 'ice-cream-cone';
 }
 
 // ================================================================
@@ -129,7 +146,6 @@ export function getCategoryIcon(category) {
 // ================================================================
 export function getCategoryName(category, lang = 'ar') {
   try {
-    // ✅ التحقق الأساسي
     if (!category) {
       return lang === 'ar' ? 'بدون تصنيف' : 'Uncategorized';
     }
@@ -174,4 +190,4 @@ if (typeof window !== 'undefined') {
   };
 }
 
-console.log('✅ Categories module loaded');
+console.log('✅ Categories module loaded (Fixed with data-category)');

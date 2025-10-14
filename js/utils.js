@@ -9,12 +9,12 @@ const state = {
   scrollTicking: false,
   categoriesOriginalOffset: 0,
   snowflakeCount: 0,
-  maxSnowflakes: 30,
+  maxSnowflakes: 30, // ✅ حد أقصى لتجنب memory leak
   snowflakeInterval: null
 };
 
 // ================================================================
-// ===== Configuration =====
+// ===== Configuration (يمكن تخصيصه) =====
 // ================================================================
 const config = {
   selectors: {
@@ -22,7 +22,7 @@ const config = {
     categoriesSection: '#categoriesSection',
     toast: '#toast',
     categoryGroup: '.category-group',
-    categoryTab: '.nav-item',  // ✅ تصحيح: اسم الـ class الصحيح
+    categoryTab: '.category-tab',
     animatedBackground: '.animated-background'
   },
   scrollOffset: 50,
@@ -30,7 +30,7 @@ const config = {
 };
 
 // ================================================================
-// ===== Scroll Handler (محسّن) =====
+// ===== Scroll Handler =====
 // ================================================================
 export function handleScroll() {
   if (!state.scrollTicking) {
@@ -48,7 +48,6 @@ export function handleScroll() {
       }
       
       handleCategoriesSticky();
-      updateActiveCategory();  // ✅ تحديث الـ active tab باستمرار
       state.scrollTicking = false;
     });
     
@@ -68,17 +67,22 @@ function handleCategoriesSticky() {
   const headerHeight = header.getBoundingClientRect().height;
   const scrollY = window.scrollY;
   
+  // ✅ Debugging (يمكن حذفه بعد التأكد من العمل)
+  // console.log('Scroll:', scrollY, 'Threshold:', state.categoriesOriginalOffset - headerHeight);
+  
   if (scrollY >= state.categoriesOriginalOffset - headerHeight) {
     categories.classList.add('visible');
     categories.style.top = `${headerHeight}px`;
+    updateActiveCategory(); // ✅ تحديث الفئة النشطة
   } else {
     categories.classList.remove('visible');
   }
 }
 
 // ================================================================
-// ===== تحديث الـ Active Category أثناء الـ Scroll (محسّنة) =====
-// ✅ هذه هي المشكلة الأساسية - الكود القديم ما كان بينادي عليها بشكل صحيح
+// ===== تحديث الكاتيجوري النشطة أثناء الـ scroll =====
+// ✅ استخدام data attributes + fallback للـ onclick
+// ✅ إضافة auto-scroll للـ active tab
 // ================================================================
 function updateActiveCategory() {
   const categoryGroups = document.querySelectorAll(config.selectors.categoryGroup);
@@ -91,82 +95,114 @@ function updateActiveCategory() {
   
   const headerHeight = header.getBoundingClientRect().height;
   const categoriesHeight = categories.getBoundingClientRect().height;
-  
-  // ✅ الحد الذي نتحقق منه هو أسفل المتصفح شوية
-  const triggerPoint = headerHeight + categoriesHeight + 100;
+  const offset = headerHeight + categoriesHeight + config.categoriesOffset;
   
   let activeCategory = null;
-  let closestDistance = Infinity;
   
-  // ✅ البحث عن أقرب category من الـ trigger point
+  // ✅ إيجاد الفئة النشطة (أول فئة في viewport)
   categoryGroups.forEach(group => {
     const rect = group.getBoundingClientRect();
-    const distance = Math.abs(rect.top - triggerPoint);
-    
-    // إذا كانت الـ group مرئية والـ trigger point فيها
-    if (rect.top <= triggerPoint && rect.bottom > triggerPoint) {
-      activeCategory = group.id.replace('category-', '');
-    }
-    // أو أقرب واحدة لـ trigger point
-    else if (distance < closestDistance && rect.top >= 0) {
-      closestDistance = distance;
+    // ✅ تحسين: نتحقق من أن الفئة مرئية في viewport
+    if (rect.top <= offset && rect.bottom > offset) {
       activeCategory = group.id.replace('category-', '');
     }
   });
   
   if (activeCategory) {
-    // ✅ تحديث الـ nav items (ليس الـ categories tabs)
-    const navItems = document.querySelectorAll('.nav-item');
-    navItems.forEach(item => {
-      item.classList.remove('active');
-      
-      // ✅ البحث عن الـ nav item اللي يطابق الـ category
-      const icon = item.querySelector('i');
-      if (icon && getCategoryFromNavItem(item) === activeCategory) {
-        item.classList.add('active');
-      }
-    });
+    const tabs = document.querySelectorAll(config.selectors.categoryTab);
+    let activeTab = null;
     
-    // ✅ تحديث الـ categories scroll tabs أيضاً
-    const categoryTabs = document.querySelectorAll('[data-category]');
-    categoryTabs.forEach(tab => {
+    tabs.forEach(tab => {
       tab.classList.remove('active');
-      if (tab.getAttribute('data-category') === activeCategory) {
+      
+      // ✅ Method 1: استخدام data-category (الطريقة المفضلة)
+      const tabCategory = tab.getAttribute('data-category');
+      
+      if (tabCategory === activeCategory) {
         tab.classList.add('active');
-        
-        // ✅ Scroll into view للـ active tab
-        if (tab.scrollIntoView) {
-          tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+        activeTab = tab; // ✅ حفظ الـ tab النشط
+      } 
+      // ✅ Method 2: Fallback - parsing onclick attribute (للتوافق)
+      else {
+        const onclick = tab.getAttribute('onclick');
+        if (onclick && onclick.includes(`'${activeCategory}'`)) {
+          tab.classList.add('active');
+          activeTab = tab; // ✅ حفظ الـ tab النشط
         }
       }
     });
+    
+    // ✅ Auto-scroll للـ tab النشط
+    if (activeTab) {
+      scrollCategoryIntoView(activeTab);
+    }
   }
 }
 
 // ================================================================
-// ===== Helper: الحصول على الـ Category من الـ Nav Item =====
+// ===== Auto-scroll للـ Active Category Tab =====
+// ✅ جديد - يسكرول الـ categories container عشان الـ active tab يكون مرئي
 // ================================================================
-function getCategoryFromNavItem(navItem) {
-  // ✅ تحويل الترتيب إلى category name
-  const items = document.querySelectorAll('.nav-item');
-  let index = 0;
+function scrollCategoryIntoView(activeTab) {
+  const categoriesScroll = document.querySelector('#categoriesScroll');
+  if (!categoriesScroll) return;
   
-  items.forEach((item, i) => {
-    if (item === navItem) {
-      index = i;
-    }
+  // الحصول على موضع الـ tab
+  const tabRect = activeTab.getBoundingClientRect();
+  const containerRect = categoriesScroll.getBoundingClientRect();
+  
+  // حساب المسافة المطلوبة للسكرول
+  const tabCenter = tabRect.left + tabRect.width / 2;
+  const containerCenter = containerRect.left + containerRect.width / 2;
+  const scrollOffset = tabCenter - containerCenter;
+  
+  // السكرول بـ smooth animation
+  categoriesScroll.scrollBy({
+    left: scrollOffset,
+    behavior: 'smooth'
   });
+}
+
+// ================================================================
+// ===== Setup Scroll Indicators للـ Categories =====
+// ✅ يضيف indicators على الجوانب لو فيه محتوى مخفي
+// ================================================================
+export function setupCategoriesScrollIndicators() {
+  const categoriesSection = document.querySelector(config.selectors.categoriesSection);
+  const categoriesScroll = document.querySelector('#categoriesScroll');
   
-  // ✅ Map nav items إلى categories
-  const categoryMap = {
-    0: 'ice-cream',     // المنيو
-    1: 'desserts',      // (إذا كان موجود)
-    2: null,            // السلة (ليست category)
-    3: null,            // من نحن (ليست category)
-    4: null             // تواصل (ليست category)
-  };
+  if (!categoriesSection || !categoriesScroll) return;
   
-  return categoryMap[index] || null;
+  function updateIndicators() {
+    const scrollLeft = categoriesScroll.scrollLeft;
+    const scrollWidth = categoriesScroll.scrollWidth;
+    const clientWidth = categoriesScroll.clientWidth;
+    
+    // Left indicator (فيه محتوى على الشمال)
+    if (scrollLeft > 10) {
+      categoriesSection.classList.add('has-scroll-left');
+    } else {
+      categoriesSection.classList.remove('has-scroll-left');
+    }
+    
+    // Right indicator (فيه محتوى على اليمين)
+    if (scrollLeft + clientWidth < scrollWidth - 10) {
+      categoriesSection.classList.add('has-scroll-right');
+    } else {
+      categoriesSection.classList.remove('has-scroll-right');
+    }
+  }
+  
+  // Update on scroll
+  categoriesScroll.addEventListener('scroll', updateIndicators, { passive: true });
+  
+  // Update on resize
+  window.addEventListener('resize', updateIndicators, { passive: true });
+  
+  // Initial update
+  setTimeout(updateIndicators, 100);
+  
+  console.log('✅ Categories scroll indicators setup');
 }
 
 // ================================================================
@@ -177,21 +213,29 @@ export function scrollToTop() {
 }
 
 // ================================================================
-// ===== حفظ موضع الـ Categories الأصلي =====
+// ===== حفظ موضع الكاتيجوري الأصلي =====
 // ================================================================
 export function initCategoriesOffset() {
   const categories = document.querySelector(config.selectors.categoriesSection);
-  if (categories) {
-    // ✅ استخدام setTimeout بـ 0 بدلاً من 100 للأداء
-    requestAnimationFrame(() => {
-      state.categoriesOriginalOffset = categories.offsetTop;
-      console.log('📌 Categories original position:', state.categoriesOriginalOffset);
-    });
+  if (!categories) {
+    console.warn('⚠️ Categories section not found');
+    return;
   }
+  
+  // ✅ انتظار rendering كامل
+  setTimeout(() => {
+    state.categoriesOriginalOffset = categories.offsetTop;
+    console.log('📌 Categories original position:', state.categoriesOriginalOffset);
+    console.log('📌 Categories height:', categories.offsetHeight);
+    
+    // ✅ تحديث فوري
+    handleCategoriesSticky();
+  }, 500); // زيادة الوقت للتأكد
 }
 
 // ================================================================
-// ===== تأثيرات بصرية - الثلج =====
+// ===== تأثيرات بصرية متقدمة - الثلج (محسّنة) =====
+// ✅ إضافة cleanup و max limit
 // ================================================================
 export function createSnowflakes() {
   const snowflakeChars = ['❄', '🌨', '❅', '✨', '💫', '⭐'];
@@ -202,11 +246,13 @@ export function createSnowflakes() {
     return;
   }
 
+  // ✅ تنظيف الـ interval القديم إن وجد
   if (state.snowflakeInterval) {
     clearInterval(state.snowflakeInterval);
   }
 
   function addSnowflake() {
+    // ✅ التحقق من الحد الأقصى
     if (state.snowflakeCount >= state.maxSnowflakes) {
       return;
     }
@@ -231,6 +277,7 @@ export function createSnowflakes() {
     container.appendChild(snowflake);
     state.snowflakeCount++;
 
+    // ✅ Cleanup بعد انتهاء الأنيميشن
     setTimeout(() => {
       if (snowflake.parentNode) {
         snowflake.remove();
@@ -239,13 +286,16 @@ export function createSnowflakes() {
     }, (duration + 5) * 1000);
   }
 
+  // إضافة الرقائق الأولية
   for (let i = 0; i < 10; i++) {
     setTimeout(addSnowflake, i * 500);
   }
 
+  // ✅ حفظ الـ interval للـ cleanup
   state.snowflakeInterval = setInterval(addSnowflake, 1500);
 }
 
+// ✅ دالة cleanup للثلج
 export function stopSnowflakes() {
   if (state.snowflakeInterval) {
     clearInterval(state.snowflakeInterval);
@@ -262,7 +312,8 @@ export function stopSnowflakes() {
 }
 
 // ================================================================
-// ===== Toast Notification =====
+// ===== Toast Notification (محسّنة) =====
+// ✅ إضافة error handling للـ lucide
 // ================================================================
 export function showToast(title, description, type = 'success') {
   const toast = document.querySelector(config.selectors.toast);
@@ -273,11 +324,13 @@ export function showToast(title, description, type = 'success') {
   
   toast.className = 'toast ' + type;
   
+  // ✅ Error handling للـ icon
   const iconElement = toast.querySelector('.toast-icon i');
   if (iconElement) {
     const icon = type === 'success' ? 'check-circle-2' : 'x-circle';
     iconElement.setAttribute('data-lucide', icon);
     
+    // ✅ التحقق من وجود lucide
     if (typeof lucide !== 'undefined' && lucide.createIcons) {
       try {
         lucide.createIcons();
@@ -295,6 +348,7 @@ export function showToast(title, description, type = 'success') {
   
   toast.classList.add('show');
   
+  // ✅ إزالة الـ toast بعد 4 ثواني
   setTimeout(() => {
     toast.classList.remove('show');
   }, 4000);
@@ -315,7 +369,7 @@ export function generateUUID() {
 // ===== Calculate Distance (Haversine Formula) =====
 // ================================================================
 export function calculateDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371;
+  const R = 6371; // نصف قطر الأرض بالكيلومتر
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
   const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
@@ -378,6 +432,7 @@ export function initPassiveTouchEvents() {
 
 // ================================================================
 // ===== Debounce Helper =====
+// ✅ جديد - للاستخدام في الـ API calls
 // ================================================================
 export function debounce(func, wait) {
   let timeout;
@@ -393,6 +448,7 @@ export function debounce(func, wait) {
 
 // ================================================================
 // ===== Throttle Helper =====
+// ✅ جديد - للاستخدام في الـ scroll events
 // ================================================================
 export function throttle(func, limit) {
   let inThrottle;
@@ -406,7 +462,7 @@ export function throttle(func, limit) {
 }
 
 // ================================================================
-// ===== Get/Set Config =====
+// ===== Get Config (للتخصيص) =====
 // ================================================================
 export function getConfig() {
   return { ...config };
@@ -418,6 +474,7 @@ export function setConfig(newConfig) {
 
 // ================================================================
 // ===== Cleanup All =====
+// ✅ جديد - للتنظيف عند الحاجة
 // ================================================================
 export function cleanup() {
   stopSnowflakes();
