@@ -544,7 +544,12 @@ console.log('✅ Utils module loaded (Secure & Optimized)');
 
 // Soft Ice Cream GSAP Animations - Isolated
 // Soft Ice Cream GSAP - Isolated Version
-(function() {
+export function initGSAPAnimations() {
+  if (typeof gsap === 'undefined') {
+    console.error('❌ GSAP not loaded');
+    return;
+  }
+
   function animateIcecreamFrom(elem, direction) {
     direction = direction || 1;
     var x = 0,
@@ -572,19 +577,16 @@ console.log('✅ Utils module loaded (Secure & Optimized)');
     gsap.set(elem, {autoAlpha: 0});
   }
   
-  document.addEventListener("DOMContentLoaded", function() {
-    gsap.registerPlugin(ScrollTrigger);
+  gsap.registerPlugin(ScrollTrigger);
+  
+  gsap.utils.toArray(".icecream-gs-reveal").forEach(function(elem) {
+    hideIcecreamElem(elem);
     
-    gsap.utils.toArray(".icecream-gs-reveal").forEach(function(elem) {
-      hideIcecreamElem(elem); // assure that the element is hidden when scrolled into view
-      
-      ScrollTrigger.create({
-        trigger: elem,
-        // markers: true,
-        onEnter: function() { animateIcecreamFrom(elem) }, 
-        onEnterBack: function() { animateIcecreamFrom(elem, -1) },
-        onLeave: function() { hideIcecreamElem(elem) } // assure that the element is hidden when scrolled into view
-      });
+    ScrollTrigger.create({
+      trigger: elem,
+      onEnter: function() { animateIcecreamFrom(elem) }, 
+      onEnterBack: function() { animateIcecreamFrom(elem, -1) },
+      onLeave: function() { hideIcecreamElem(elem) }
     });
   });
-})();
+}

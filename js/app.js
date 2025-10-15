@@ -216,7 +216,8 @@ async function initApp() {
     }
     // 1️⃣ تحميل البيانات المحفوظة من storage
     loadSavedData();
-    
+    initGSAPAnimations();
+
     // 2️⃣ Configure API with dynamic base URL
     if (window.api) {
       const calculatedBaseURL = window.api.detectBaseURL();
