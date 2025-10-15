@@ -22,6 +22,15 @@ const API_CONFIG = {
         netlify: 'https://softcream-api.mahmoud-zahran20025.workers.dev',
         local: 'http://localhost:8787'
     },
+    // إضافة CORS config
+    cors: {
+        credentials: 'omit', // تغيير من 'include' إلى 'omit'
+        allowedOrigins: [
+            'https://mahmoudzahran20025-arch.github.io',
+            'http://localhost:5500',
+            'http://127.0.0.1:5500'
+        ]
+    },
     timeout: 30000,
     retries: 3,
     // ✅ Rate limiting config
@@ -243,7 +252,9 @@ class APIService {
                 method,
                 headers,
                 signal: controller.signal,
-                mode: 'cors'
+                mode: 'cors',
+                credentials: API_CONFIG.cors.credentials // إضافة هذا السطر
+
             };
 
             // Build URL
@@ -608,7 +619,7 @@ class APIService {
      * Track Multiple Events in Batch
      * @param {Array} events
      * @returns {Promise<void>}
-     */
+     *//*
     async trackEvents(events) {
         try {
             const enrichedEvents = events.map(event => ({
@@ -627,7 +638,33 @@ class APIService {
         } catch (error) {
             console.warn('Batch analytics tracking failed:', error);
         }
-    }
+    }*/
+    // في نفس الملف، تعديل دالة trackEven للتكالمل مع جيت هوب 
+    async trackEvent(event) {
+        try {
+            const enrichedEvent = {
+                ...event,
+                timestamp: Date.now(),
+                sessionId: this.getSessionId(),
+                userAgent: navigator.userAgent,
+                url: window.location.href
+            };
+
+            // تعديل طريقة إرسال analytics
+            await this.request('POST', '/analytics/event', enrichedEvent, {
+                retries: 1,
+                cancelable: false,
+                timeout: 5000, // timeout أقل للـ analytics
+                credentials: 'omit' // مهم جداً
+            });
+
+            console.log('📊 Event tracked:', event.name);
+        } catch (error) {
+            // تجاهل أخطاء analytics - لا تؤثر على تجربة المستخدم
+            console.warn('Analytics error:', error.message);
+        }
+    }  
+        
 }
 
 // ================================================================
