@@ -1,18 +1,30 @@
 <!DOCTYPE html>
+<!-- ================================================================
+     سوفت كريم | Soft Cream - Interactive Ice Cream Menu
+     RTL Arabic interface with responsive design
+     ================================================================ -->
 <html lang="ar" dir="rtl">
 <head>
+  <!-- ==================== META TAGS ==================== -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title> سوفت كريم - أطيب آيس كريم في المدينة</title>
+  <title>سوفت كريم - أطيب آيس كريم في المدينة</title>
   <meta name="description" content="استمتع بألذ أنواع الآيس كريم والسوفت كريم. منيو رقمي تفاعلي مع توصيل سريع">
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
 
+  <!-- ==================== FAVICONS ==================== -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <!-- Cairo Font -->
+
+  <!-- ==================== FONTS ==================== -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- ==================== THIRD PARTY LIBRARIES ==================== -->
+  <!-- GSAP for animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -25,171 +37,185 @@
 
   <style>
     /* ================================================================
-   🎨 PREMIUM SOFT CREAM MENU - ENHANCED CSS ONLY
-   ================================================================ */
+       🎨 SOFT CREAM DESIGN SYSTEM - CSS VARIABLES
+       Primary color scheme: Pink (#FF6B9D) + Purple (#C9A0DC) + Mint (#A8E6CF)
+       ================================================================ */
 
-/* ================================================================
-   🎨 PREMIUM SOFT CREAM MENU - ENHANCED CSS ONLY
-   ================================================================ */
-
-/* ========================================
-   Design System Variables
-======================================== */
-:root {
-  /* Colors - Premium Palette */
-  --bg-primary: #FFF9F5;
-  --bg-secondary: #FFFFFF;
-  --bg-tertiary: #FFF5EE;
-  --text-primary: #2D1810;
-  --text-secondary: #6B5D52;
-  --text-muted: #9A8B7D;
-  --border-color: rgba(255, 107, 157, 0.12);
+    /* ==================== ROOT VARIABLES ==================== */
+    :root {
+      /* ---------- Color System ---------- */
+      /* Base Background Colors */
+      --bg-primary: #FFF9F5;    /* Main background */
+      --bg-secondary: #FFFFFF;   /* Card/modal background */
+      --bg-tertiary: #FFF5EE;    /* Accent background */
+      
+      /* Text Colors */
+      --text-primary: #2D1810;   /* Main text */
+      --text-secondary: #6B5D52; /* Secondary text */
+      --text-muted: #9A8B7D;     /* Disabled/hint text */
+      
+      /* Brand Colors */
+      --color-primary: #FF6B9D;      /* Primary pink */
+      --color-primary-dark: #E85589; /* Darker pink */
+      --color-secondary: #C9A0DC;    /* Purple */
+      --color-accent: #A8E6CF;       /* Mint */
+      --color-warning: #FFB84D;      /* Orange */
+      --color-success: #4CAF50;      /* Green */
+      --color-destructive: #FF6B6B;  /* Red */
+      
+      /* Border Colors */
+      --border-color: rgba(255, 107, 157, 0.12);
+      
+      /* ---------- Gradients ---------- */
+      --gradient-primary: linear-gradient(135deg, #FF6B9D 0%, #FF8FB3 50%, #C9A0DC 100%);
+      --gradient-secondary: linear-gradient(135deg, #A8E6CF 0%, #8FD4B8 100%);
+      --gradient-accent: linear-gradient(135deg, #FFB84D 0%, #FF9F4D 100%);
+      --gradient-hero: linear-gradient(135deg, #FF6B9D 0%, #C9A0DC 50%, #A8E6CF 100%);
+      --gradient-shine: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 100%);
+      --gradient-overlay: linear-gradient(180deg, rgba(255, 249, 245, 0) 0%, rgba(255, 249, 245, 0.98) 100%);
+      
+      /* ---------- Shadows ---------- */
+      --shadow-xs: 0 1px 3px rgba(255, 107, 157, 0.06);     /* Subtle */
+      --shadow-sm: 0 2px 8px rgba(255, 107, 157, 0.12);     /* Light */
+      --shadow-md: 0 4px 20px rgba(255, 107, 157, 0.18);    /* Medium */
+      --shadow-lg: 0 10px 40px rgba(255, 107, 157, 0.24);   /* Heavy */
+      --shadow-xl: 0 20px 60px rgba(255, 107, 157, 0.3);    /* Extra heavy */
+      --shadow-glow: 0 0 40px rgba(255, 107, 157, 0.5);     /* Glow effect */
+      --shadow-inner: inset 0 2px 8px rgba(0, 0, 0, 0.05);  /* Inner shadow */
   
-  /* Brand Colors */
-  --color-primary: #FF6B9D;
-  --color-primary-dark: #E85589;
-  --color-secondary: #C9A0DC;
-  --color-accent: #A8E6CF;
-  --color-warning: #FFB84D;
-  --color-success: #4CAF50;
-  --color-destructive: #FF6B6B;
-  
-  /* Gradients */
-  --gradient-primary: linear-gradient(135deg, #FF6B9D 0%, #FF8FB3 50%, #C9A0DC 100%);
-  --gradient-secondary: linear-gradient(135deg, #A8E6CF 0%, #8FD4B8 100%);
-  --gradient-accent: linear-gradient(135deg, #FFB84D 0%, #FF9F4D 100%);
-  --gradient-hero: linear-gradient(135deg, #FF6B9D 0%, #C9A0DC 50%, #A8E6CF 100%);
-  --gradient-shine: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 100%);
-  --gradient-overlay: linear-gradient(180deg, rgba(255, 249, 245, 0) 0%, rgba(255, 249, 245, 0.98) 100%);
-  
-  /* Shadows - Enhanced */
-  --shadow-xs: 0 1px 3px rgba(255, 107, 157, 0.06);
-  --shadow-sm: 0 2px 8px rgba(255, 107, 157, 0.12);
-  --shadow-md: 0 4px 20px rgba(255, 107, 157, 0.18);
-  --shadow-lg: 0 10px 40px rgba(255, 107, 157, 0.24);
-  --shadow-xl: 0 20px 60px rgba(255, 107, 157, 0.3);
-  --shadow-glow: 0 0 40px rgba(255, 107, 157, 0.5);
-  --shadow-inner: inset 0 2px 8px rgba(0, 0, 0, 0.05);
-  
-  /* Radius */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --radius-2xl: 32px;
-  --radius-full: 999px;
-  
-  /* Spacing */
-  --header-height: 100px;
-  --bottom-nav-height: 70px;
-  --nav-width: 300px;
-  
-  /* Transitions */
-  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
+      /* ---------- Border Radius ---------- */
+      --radius-sm: 8px;      /* Buttons, small cards */
+      --radius-md: 12px;     /* Input fields */
+      --radius-lg: 16px;     /* Cards */
+      --radius-xl: 24px;     /* Large cards */
+      --radius-2xl: 32px;    /* Modals */
+      --radius-full: 999px;  /* Pills, badges */
+      
+      /* ---------- Layout Measurements ---------- */
+      --header-height: 100px;      /* Header height */
+      --bottom-nav-height: 70px;   /* Mobile nav height */
+      --nav-width: 300px;          /* Desktop sidebar width */
+      
+      /* ---------- Transitions & Animations ---------- */
+      --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);  /* Quick feedback */
+      --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);   /* Standard */
+      --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);   /* Emphasis */
+    }
 
-body.dark {
-  --bg-primary: #1A1625;
-  --bg-secondary: #251E33;
-  --bg-tertiary: #2D2438;
-  --text-primary: #F5EDE4;
-  --text-secondary: #C4B5A8;
-  --text-muted: #948778;
-  --border-color: rgba(255, 107, 157, 0.15);
-  --gradient-overlay: linear-gradient(180deg, rgba(26, 22, 37, 0) 0%, rgba(26, 22, 37, 0.98) 100%);
-  --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.2);
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.5);
-  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.6);
-  --shadow-glow: 0 0 40px rgba(255, 107, 157, 0.6);
-}
+    /* ==================== DARK MODE THEME ==================== */
+    body.dark {
+      /* Background Colors */
+      --bg-primary: #1A1625;      /* Dark background */
+      --bg-secondary: #251E33;    /* Dark surface */
+      --bg-tertiary: #2D2438;     /* Dark accent */
+      
+      /* Text Colors */
+      --text-primary: #F5EDE4;    /* Light text */
+      --text-secondary: #C4B5A8;  /* Muted text */
+      --text-muted: #948778;      /* Extra muted */
+      
+      /* Adjustments */
+      --border-color: rgba(255, 107, 157, 0.15);
+      --gradient-overlay: linear-gradient(180deg, rgba(26, 22, 37, 0) 0%, rgba(26, 22, 37, 0.98) 100%);
+      
+      /* Dark Mode Shadows */
+      --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.2);
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.5);
+      --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.6);
+      --shadow-glow: 0 0 40px rgba(255, 107, 157, 0.6);
+    }
 
-/* ========================================
-   Reset & Base
-======================================== */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
+    /* ==================== RESET & BASE STYLES ==================== */
+    /* Modern CSS Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-html {
-  scroll-behavior: smooth;
-  overflow-x: hidden;
-}
+    /* Base HTML Elements */
+    html {
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
 
-body {
-  font-family: 'Cairo', sans-serif;
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  transition: all var(--transition-base);
-  overflow-x: hidden;
-  line-height: 1.6;
-  position: relative;
-}
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      transition: all var(--transition-base);
+      overflow-x: hidden;
+      line-height: 1.6;
+      position: relative;
+    }
 
-/* ========================================
-   Animated Background
-======================================== */
-.animated-background {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
-  background: url('https://images.unsplash.com/photo-1757917725825-9d6fd4af2d32?w=600&auto=format&fit=crop&q=60') center/cover no-repeat;
-  opacity: 0.08;
-}
+    /* ==================== ANIMATED BACKGROUND EFFECTS ==================== */
+    /* Main Background Container */
+    .animated-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+      /* Subtle texture background with low opacity */
+      background: url('https://images.unsplash.com/photo-1757917725825-9d6fd4af2d32?w=600&auto=format&fit=crop&q=60') center/cover no-repeat;
+      opacity: 0.08;
+    }
 
-.animated-background::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--gradient-overlay);
-  z-index: 1;
-}
+    /* Gradient Overlay */
+    .animated-background::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--gradient-overlay);
+      z-index: 1;
+    }
 
-.floating-shape {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.2;
-  animation: floatShape 25s infinite ease-in-out;
-}
+    /* Floating Shapes Base Style */
+    .floating-shape {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.2;
+      animation: floatShape 25s infinite ease-in-out;
+    }
 
-.shape-1 {
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, #FF6B9D, transparent);
-  top: -10%;
-  right: -10%;
-  animation-delay: 0s;
-}
+    /* Individual Shape Styles */
+    /* Pink Shape - Top Right */
+    .shape-1 {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, #FF6B9D, transparent);
+      top: -10%;
+      right: -10%;
+      animation-delay: 0s;
+    }
 
-.shape-2 {
-  width: 450px;
-  height: 450px;
-  background: radial-gradient(circle, #C9A0DC, transparent);
-  bottom: -15%;
-  left: -10%;
-  animation-delay: 8s;
-}
+    /* Purple Shape - Bottom Left */
+    .shape-2 {
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, #C9A0DC, transparent);
+      bottom: -15%;
+      left: -10%;
+      animation-delay: 8s;
+    }
 
-.shape-3 {
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, #A8E6CF, transparent);
-  top: 40%;
-  left: 40%;
-  animation-delay: 16s;
-}
+    /* Mint Shape - Center */
+    .shape-3 {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, #A8E6CF, transparent);
+      top: 40%;
+      left: 40%;
+      animation-delay: 16s;
+    }
 
 @keyframes floatShape {
   0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
@@ -4709,49 +4735,293 @@ a:focus-visible {
     border-width: 2px;
   }
 }
+
+/* Soft Ice Cream Section - Isolated Styles */
+.icecream-wrapper {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 1rem;
+  font-family: 'Cairo', sans-serif;
+}
+
+.icecream-features {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.icecream-features__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2rem;
+  min-height: 200px;
+  height: auto;
+  padding: 2rem 1rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 245, 250, 0.98));
+  border-radius: 32px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.icecream-features__item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 107, 180, 0.08), transparent);
+  transition: left 0.8s ease;
+}
+
+.icecream-features__item:hover::before {
+  left: 100%;
+}
+
+.icecream-features__item:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 60px rgba(255, 107, 180, 0.2);
+}
+
+.icecream-features__item--left {
+  flex-direction: row;
+}
+
+.icecream-features__item--right {
+  flex-direction: row-reverse;
+}
+
+/* Image Section */
+.icecream-features__image {
+  flex: 1 1 40%;
+  position: relative;
+  min-width: 200px;
+  transition: transform 0.5s ease;
+}
+
+.icecream-features__item:hover .icecream-features__image {
+  transform: scale(1.03);
+}
+
+.icecream-features__card {
+  border-radius: 24px;
+  overflow: hidden;
+  position: relative;
+  aspect-ratio: 1 / 1;
+  box-shadow: 0 15px 35px rgba(255, 107, 180, 0.25);
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.icecream-features__item:hover .icecream-features__card {
+  border-radius: 28px;
+  box-shadow: 0 20px 50px rgba(255, 107, 180, 0.4);
+  transform: rotate(3deg) scale(1.02);
+}
+
+.icecream-features__img {
+  max-width: 100%;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  object-fit: cover;
+  display: block;
+  transition: all 0.5s ease;
+  filter: brightness(1.02) contrast(1.05);
+}
+
+.icecream-features__item:hover .icecream-features__img {
+  transform: scale(1.1);
+  filter: brightness(1.08) saturate(1.2) contrast(1.1);
+}
+
+/* Content Section */
+.icecream-features__content {
+  flex: 1 1 55%;
+  padding: 0 1.5rem;
+  min-width: 280px;
+}
+
+.icecream-features__item--left .icecream-features__content {
+  text-align: right;
+}
+
+.icecream-features__item--right .icecream-features__content {
+  text-align: left;
+}
+
+.icecream-features__title {
+  font-size: clamp(1.4rem, 4vw, 1.8rem);
+  font-weight: 800;
+  color: #FF6B9D;
+  margin: 0 0 1rem 0;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  transition: all 0.4s ease;
+  position: relative;
+  display: inline-block;
+}
+
+.icecream-features__title::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #FF6B9D, #C06C84);
+  transition: width 0.4s ease;
+}
+
+.icecream-features__item:hover .icecream-features__title {
+  color: #C06C84;
+  letter-spacing: 2px;
+}
+
+.icecream-features__item:hover .icecream-features__title::after {
+  width: 100%;
+}
+
+.icecream-features__description {
+  line-height: 1.8;
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
+  color: #444;
+  font-weight: 400;
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+.icecream-features__item:hover .icecream-features__description {
+  color: #222;
+}
+
+/* GSAP Animation Classes */
+.icecream-gs-reveal {
+  opacity: 0;
+  visibility: hidden;
+  will-change: transform, opacity;
+}
+
+.icecream-gs-reveal-left {
+  /* Animated from left */
+}
+
+.icecream-gs-reveal-right {
+  /* Animated from right */
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .icecream-features__item {
+    min-height: 180px;
+    gap: 1.5rem;
+    padding: 1.5rem 1rem;
+  }
+  
+  .icecream-features__image {
+    flex: 1 1 35%;
+    min-width: 160px;
+  }
+}
+
+@media (max-width: 768px) {
+  .icecream-features__item {
+    flex-direction: column !important;
+    min-height: auto;
+    padding: 1.5rem;
+    text-align: center !important;
+  }
+  
+  .icecream-features__image {
+    flex: 0 0 200px;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  
+  .icecream-features__content {
+    text-align: center !important;
+    padding: 0;
+  }
+  
+  .icecream-features__title {
+    font-size: 1.4rem;
+  }
+  
+  .icecream-features__title::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 480px) {
+  .icecream-wrapper {
+    padding: 0.5rem;
+  }
+  
+  .icecream-features {
+    gap: 1.5rem;
+  }
+  
+  .icecream-features__item {
+    padding: 1rem;
+  }
+  
+  .icecream-features__image {
+    flex: 0 0 180px;
+  }
+  
+  .icecream-features__title {
+    font-size: 1.2rem;
+  }
+}
   </style>
 </head>
 
 <body>
-  <!-- خلفية ديناميكية -->
+  <!-- ================================================================
+       DYNAMIC BACKGROUND
+       Animated shapes with blur effect for visual interest
+       ================================================================ -->
   <div class="animated-background">
     <div class="floating-shape shape-1"></div>
     <div class="floating-shape shape-2"></div>
     <div class="floating-shape shape-3"></div>
   </div>
 
-  <!-- محتوى الصفحة -->
+  <!-- ================================================================
+       MAIN PAGE CONTENT
+       Contains all interactive elements and sections
+       ================================================================ -->
   <div class="page-content">
-    <!-- Toast Notification -->
-     <div id="toastContainer" class="toast-container"></div>
-    <!--
-    <div class="toast" id="toast">
-      <div class="toast-icon">
-        <i data-lucide="check-circle-2"></i>
-      </div>
-      <div class="toast-content">
-        <div class="toast-title" id="toast-title">تمت الإضافة!</div>
-        <div class="toast-description" id="toast-description">تم إضافة المنتج للسلة</div>
-      </div>
-    </div>-->
+    <!-- ==================== NOTIFICATIONS ==================== -->
+    <!-- Toast Container - Dynamic notifications -->
+    <div id="toastContainer" class="toast-container"></div>
 
-    <!-- Header -->
+    <!-- ==================== HEADER SECTION ==================== -->
+    <!-- Main navigation and branding -->
     <header class="header" id="header">
+      <!-- Header Content Wrapper -->
       <div class="header-content">
+        <!-- Logo & Branding -->
         <div class="header-logo" onclick="scrollToTop()">
           <div class="logo-icon">
-           <!--  <i data-lucide="ice-cream"></i> -->
+           <!-- Brand Logo Image -->
            <img 
             src="https://i.ibb.co/C5zs6WZ6/546595638-767747059559727-9006561812810172332-n-1-1.jpg" 
-            alt="Logo" 
+            alt="سوفت كريم - Soft Cream Logo" 
             style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover;"
           >
           </div>
+          <!-- Brand Text -->
           <div class="logo-text">
             <h1 id="header-title">سوفت كريم</h1>
             <p id="header-subtitle">أطيب آيس كريم في المدينة 🍦</p>
           </div>
         </div>
+        <!-- Header Actions (Language & Theme) -->
         <div class="header-actions">
           <button class="lang-toggle" onclick="toggleLanguage()" id="langToggle">EN</button>
           <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
@@ -4761,57 +5031,134 @@ a:focus-visible {
       </div>
     </header>
 
-    <!-- Bottom Navigation (Mobile) -->
-    <nav class="bottom-nav">
+    <!-- ==================== NAVIGATION ==================== -->
+    <!-- Mobile Bottom Navigation -->
+    <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
       <div class="bottom-nav-content">
-        <div class="nav-item active" onclick="switchTab('menu')">
+        <!-- Menu Tab -->
+        <div class="nav-item active" onclick="switchTab('menu')" role="button" tabindex="0">
           <i data-lucide="utensils"></i>
           <span id="nav-menu">المنيو</span>
         </div>
-        <div class="nav-item" onclick="openCartModal()">
+        <!-- Cart Tab -->
+        <div class="nav-item" onclick="openCartModal()" role="button" tabindex="0">
           <i data-lucide="shopping-cart"></i>
           <span id="nav-cart">السلة</span>
           <span class="nav-badge" id="navCartBadge">0</span>
         </div>
-        <div class="nav-item" onclick="switchTab('about')">
+        <!-- About Tab -->
+        <div class="nav-item" onclick="switchTab('about')" role="button" tabindex="0">
           <i data-lucide="info"></i>
           <span id="nav-about">من نحن</span>
         </div>
-        <div class="nav-item" onclick="switchTab('contact')">
+        <!-- Contact Tab -->
+        <div class="nav-item" onclick="switchTab('contact')" role="button" tabindex="0">
           <i data-lucide="phone"></i>
           <span id="nav-contact">تواصل</span>
         </div>
       </div>
     </nav>
 
-    <!-- Main Wrapper -->
+    <!-- ==================== MAIN CONTENT ==================== -->
     <div class="main-wrapper">
       <div>
         <!-- Menu Tab -->
         <div class="tab-content active" id="menu-tab">
           <!-- Hero Section -->
-          <div class="hero-section">
-            <div class="hero-badge">
-              <i data-lucide="sparkles" style="width: 16px; height: 16px;"></i>
-              <span id="hero-badge">🎉 خصم 20% على الطلب الأول</span>
-            </div>
-            <h2 class="hero-title" id="hero-title">اكتشف عالم النكهات الساحر</h2>
-            <p class="hero-description" id="hero-description">تجربة فريدة من نوعها مع أفضل أنواع الآيس كريم والديسرت المميز 🍨✨</p>
-            <div class="hero-stats">
-              <div class="stat-item">
-                <span class="stat-value" id="stat-products">50+</span>
-                <span class="stat-label" id="stat-products-label">منتج</span>
-              </div>
-              <div class="stat-item">
-                <span class="stat-value" id="stat-flavors">30+</span>
-                <span class="stat-label" id="stat-flavors-label">نكهة</span>
-              </div>
-              <div class="stat-item">
-                <span class="stat-value" id="stat-rating">4.9⭐</span>
-                <span class="stat-label" id="stat-rating-label">تقييم</span>
-              </div>
-            </div>
-          </div>
+          
+    <!-- ========================================== -->
+<!-- HTML - ده اللي هتحطه مكان الـ Hero Section -->
+<!-- ========================================== -->
+<!-- ========================================== -->
+<!-- HTML - حط ده مكان الـ Hero Section -->
+<!-- ========================================== -->
+<div class="icecream-content">
+  <div class="icecream-features">
+    
+    <!-- آيس كريم فانيليا بصوص كراميل -->
+    <div class="icecream-features__item icecream-features__item--left icecream-gs-reveal icecream-gs-reveal-fromLeft">
+      <div class="icecream-features__image">
+        <div class="icecream-features__card">
+          <img class="icecream-features__img" 
+               src="https://i.ibb.co/LzP97qhB/481279444-627854640201713-219907065737357117-n-min.webp" 
+               alt="آيس كريم فانيليا بصوص كراميل طبيعي" 
+               loading="lazy"
+               width="250"
+               height="250">
+        </div>
+      </div>
+      <div class="icecream-features__content">
+        <h2 class="icecream-features__title icecream-gs-reveal">آيس كريم فانيليا بصوص كراميل</h2>
+        <p class="icecream-features__description icecream-gs-reveal">
+          آيس كريم فانيليا كريمي يخطف الأنفاس، تعلوه طبقة سلسة من صوص الكراميل الذهبي، يقدم تجربة تناغم بين نعومة الفانيليا وغنى الكراميل في كل قضمة.
+        </p>
+      </div>
+    </div>
+    
+    <!-- آيس كريم مانجو طبيعي -->
+    <div class="icecream-features__item icecream-features__item--right icecream-gs-reveal icecream-gs-reveal-fromRight">
+      <div class="icecream-features__image">
+        <div class="icecream-features__card">
+          <img class="icecream-features__img" 
+               src="https://i.ibb.co/4nNL0KR6/Gemini-Generated-Image-7z63p77z63p77z63.png" 
+               alt="آيس كريم مانجو طبيعي ونقي" 
+               loading="lazy"
+               width="250"
+               height="250">
+        </div>
+      </div>
+      <div class="icecream-features__content">
+        <h2 class="icecream-features__title icecream-gs-reveal">سوفت مانجو طبيعي</h2>
+        <p class="icecream-features__description icecream-gs-reveal">
+          سوفت مانجو يختزل جوهر الفاكهة الاستوائية في كل ملعقة. قوام حريري يذوب بلطف، بنقاء ولون طبيعي يعكس طبيعة المانجو الطازج دون أي إضافات صناعية.
+        </p>
+      </div>
+    </div>
+    
+    <!-- آيس كريم فانيليا بقطع البراوني -->
+    <div class="icecream-features__item icecream-features__item--left icecream-gs-reveal icecream-gs-reveal-fromLeft">
+      <div class="icecream-features__image">
+        <div class="icecream-features__card">
+          <img class="icecream-features__img" 
+               src="https://i.ibb.co/3YspR2nn/489627654-645413408459760-7730691560634138295-n-min.jpg" 
+               alt=" صنداي فادج" 
+               loading="lazy"
+               width="250"
+               height="250">
+        </div>
+      </div>
+      <div class="icecream-features__content">
+        <h2 class="icecream-features__title icecream-gs-reveal">فانيليا بقطع براوني</h2>
+        <p class="icecream-features__description icecream-gs-reveal">
+          فانيليا كريمية فاخرة تتخللها قطع غنية من البراوني الشوكولاتي، تخلق تناقضاً رائعاً بين نعومة الآيس كريم وقرمشة الشوكولاتة في تجربة لا تقاوم.
+        </p>
+      </div>
+    </div>
+    
+    <!-- صورة نقاء الآيس كريم السوفت -->
+    <div class="icecream-features__item icecream-features__item--right icecream-gs-reveal icecream-gs-reveal-fromRight">
+      <div class="icecream-features__image">
+        <div class="icecream-features__card">
+          <img class="icecream-features__img" 
+               src="https://i.ibb.co/67cV4CJc/484157834-622859394048495-6880924063204865717-n-min.webp" 
+               alt="سوفت آيس كريم طبيعي ونقي" 
+               loading="lazy"
+               width="250"
+               height="250">
+        </div>
+      </div>
+      <div class="icecream-features__content">
+        <h2 class="icecream-features__title icecream-gs-reveal">نقاء السوفت آيس كريم</h2>
+        <p class="icecream-features__description icecream-gs-reveal">
+          تجسيد للنقاء والطبيعة في كل حبة، حيث يبرز السوفت آيس كريم بمكوناته الطبيعية الخالصة، خالي من الألوان الاصطناعية، ليقدم لك جوهر المتعة الحقيقية.
+        </p>
+      </div>
+    </div>
+    
+  </div>
+</div>
+<div class="icecream-spacer"></div>
+
 
           <!-- Search Section -->
           <div class="search-section">
@@ -4993,16 +5340,23 @@ a:focus-visible {
       </div>
     </div>
 
-    <!-- Cart Modal (Mobile) -->
-    <div class="cart-modal-overlay" id="cartModal" onclick="closeCartModal(event)">
+    <!-- ================================================================
+         MODALS & OVERLAYS
+         Interactive components that overlay the main content
+         ================================================================ -->
+
+    <!-- ==================== CART MODAL (MOBILE) ==================== -->
+    <!-- Slides up from bottom on mobile devices -->
+    <div class="cart-modal-overlay" id="cartModal" onclick="closeCartModal(event)" role="dialog" aria-label="سلة المشتريات">
       <div class="cart-modal" onclick="event.stopPropagation()">
+        <!-- Cart Header -->
         <div class="cart-header">
           <div class="cart-title">
             <i data-lucide="shopping-cart"></i>
             <span id="cart-title-mobile">سلة الطلبات</span>
           </div>
-          <span class="cart-badge" id="cartBadgeMobile">0</span>
-          <button class="cart-close" onclick="closeCartModal()">
+          <span class="cart-badge" id="cartBadgeMobile" aria-label="عدد المنتجات">0</span>
+          <button class="cart-close" onclick="closeCartModal()" aria-label="إغلاق السلة">
             <i data-lucide="x"></i>
           </button>
         </div>
@@ -5082,10 +5436,15 @@ a:focus-visible {
 <!-- نموذج تأكيد الطلب المحسّن - HTML Elements -->
 <!-- ================================================================ -->
 
-<!-- Checkout Modal المحسّن -->
-<div class="checkout-modal-overlay" id="checkoutModal" onclick="closeCheckoutModal(event)">
+<!-- ==================== CHECKOUT FLOW ==================== -->
+<!-- Enhanced Checkout Process with Multiple Steps -->
+
+<!-- Checkout Modal - Main Container -->
+<div class="checkout-modal-overlay" id="checkoutModal" onclick="closeCheckoutModal(event)" 
+     role="dialog" aria-labelledby="checkout-title">
   <div class="checkout-content" onclick="event.stopPropagation()">
-    <button class="checkout-close" onclick="closeCheckoutModal()">
+    <!-- Close Button -->
+    <button class="checkout-close" onclick="closeCheckoutModal()" aria-label="إغلاق نافذة الطلب">
       <i data-lucide="x"></i>
     </button>
     
@@ -5403,10 +5762,12 @@ a:focus-visible {
   </div>
 </div>
 
-<!-- Order Tracking Modal -->
-<div class="tracking-modal hidden" id="trackingModal">
+<!-- ==================== ORDER TRACKING ==================== -->
+<!-- Allows customers to check their order status -->
+<div class="tracking-modal hidden" id="trackingModal" role="dialog" aria-labelledby="tracking-title">
   <div class="tracking-content">
-    <button class="close-tracking" id="closeTrackingBtn">
+    <!-- Close Button -->
+    <button class="close-tracking" id="closeTrackingBtn" aria-label="إغلاق تتبع الطلب">
       <i data-lucide="x"></i>
     </button>
     
@@ -5437,45 +5798,39 @@ a:focus-visible {
     </div>
   </div>
 </div>
-  <!-- المكتبات الخارجية -->
-<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js"></script>
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <!-- ================================================================
+       SCRIPTS & DEPENDENCIES
+       Organized in loading order: External libs → Core → Features
+       ================================================================ -->
+       
+  <!-- ==================== EXTERNAL LIBRARIES ==================== -->
+  <!-- Search and Icons -->
+  <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
-<!-- تحميل ملف الترجمات أولاً -->
-<script src="js/translations-data.js"></script>
+  <!-- ==================== CORE MODULES ==================== -->
+  <!-- Translations - Load First -->
+  <script src="js/translations-data.js"></script>
+  <script type="module" src="js/translations.js"></script>
 
-<!-- ثم تحميل نظام الترجمات -->
-<script type="module" src="js/translations.js"></script>
+  <!-- Base Services -->
+  <script type="module" src="js/storage.js"></script>
+  <script type="module" src="js/utils.js"></script>
+  <script type="module" src="js/api.js"></script>
 
+  <!-- ==================== FEATURE MODULES ==================== -->
+  <!-- Product Management -->
+  <script type="module" src="js/products.js"></script>
+  <script type="module" src="js/categories.js"></script>
 
-<!-- 1️⃣ Translations أول حاجة (ما تحتاج module) -->
+  <!-- Shopping Experience -->
+  <script type="module" src="js/cart.js"></script>
+  <script type="module" src="js/ui.js"></script>
+  <script type="module" src="js/checkout.js"></script>
 
-<!-- 3️⃣ Storage (ما يعتمد على حاجة) -->
-<script type="module" src="js/storage.js"></script>
-
-<!-- 4️⃣ Utils (ما يعتمد على حاجة) -->
-<script type="module" src="js/utils.js"></script>
-
-<!-- 5️⃣ API (يعتمد على utils) -->
-<script type="module" src="js/api.js"></script>
-
-<!-- 6️⃣ Products Manager (يعتمد على api) -->
-<script type="module" src="js/products.js"></script>
-
-<!-- 7️⃣ Categories (يعتمد على products) -->
-<script type="module" src="js/categories.js"></script>
-
-<!-- 8️⃣ Cart (يعتمد على products و storage) -->
-<script type="module" src="js/cart.js"></script>
-
-<!-- 9️⃣ UI (يعتمد على products و cart و categories) -->
-<script type="module" src="js/ui.js"></script>
-
-<!-- 🔟 Checkout (يعتمد على cart و api و storage) -->
-<script type="module" src="js/checkout.js"></script>
-
-<!-- 3️⃣ app.js آخر حاجة (بعد كل الـ modules محملة) -->
-<script type="module" src="js/app.js"></script>
+  <!-- ==================== MAIN APPLICATION ==================== -->
+  <!-- Initialize App (after all modules are loaded) -->
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>
 
