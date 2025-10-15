@@ -8,7 +8,7 @@
   <!-- ==================== META TAGS ==================== -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>سوفت كريم - أطيب آيس كريم في المدينة</title>
+  <title>soft cream</title>
   <meta name="description" content="استمتع بألذ أنواع الآيس كريم والسوفت كريم. منيو رقمي تفاعلي مع توصيل سريع">
 
   <!-- ==================== FAVICONS ==================== -->
@@ -164,7 +164,7 @@
       overflow: hidden;
       pointer-events: none;
       /* Subtle texture background with low opacity */
-      background: url('https://images.unsplash.com/photo-1757917725825-9d6fd4af2d32?w=600&auto=format&fit=crop&q=60') center/cover no-repeat;
+      background: url('https://images.unsplash.com/photo-1757917725825-9d6fd4af2d32?w=300&auto=format&fit=crop&q=30&fm=webp') center/cover no-repeat;
       opacity: 0.08;
     }
 
@@ -4087,7 +4087,7 @@ body.dark .toast {
   bottom: 5rem;
   right: 2rem;
   left: auto;
-  z-index: 9999;
+  z-index: 10000;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -4737,6 +4737,7 @@ a:focus-visible {
 }
 
 /* Soft Ice Cream Section - Isolated Styles */
+/* Soft Ice Cream Section - Isolated Styles */
 .icecream-wrapper {
   max-width: 1240px;
   margin: 0 auto;
@@ -4764,6 +4765,7 @@ a:focus-visible {
   position: relative;
   overflow: hidden;
   transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform; /* إضافة لتحسين الأداء */
 }
 
 .icecream-features__item::before {
@@ -4899,9 +4901,10 @@ a:focus-visible {
 
 /* GSAP Animation Classes */
 .icecream-gs-reveal {
-  opacity: 0;
   visibility: hidden;
   will-change: transform, opacity;
+  /* مهم: نحدد مساحة العنصر مسبقاً */
+  min-height: 200px;
 }
 
 .icecream-gs-reveal-left {
