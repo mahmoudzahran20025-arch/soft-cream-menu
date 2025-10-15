@@ -216,7 +216,6 @@ async function initApp() {
     }
     // 1️⃣ تحميل البيانات المحفوظة من storage
     loadSavedData();
-    initGSAPAnimations();
 
     // 2️⃣ Configure API with dynamic base URL
     if (window.api) {
@@ -256,7 +255,8 @@ async function initApp() {
     // 6️⃣ عرض التصنيفات والمنتجات
     renderCategories();
     await renderProducts();
-    
+    // 7️⃣ الآن نشغل GSAP بعد ما كل العناصر اتحملت
+    initGSAPAnimations();
     // 7️⃣ تحديث واجهة السلة
     await updateCartUI();
     
