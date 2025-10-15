@@ -44,6 +44,7 @@ import { renderCategories } from './categories.js';
 import { initFuse, renderProducts, updateLanguage, currentLang } from './ui.js';
 import { storage } from './storage.js';
 import { i18n } from './translations.js';
+import { initGSAPAnimations } from './animations.js';
 
 // ================================================================
 // ===== متغيرات عامة =====
@@ -208,6 +209,8 @@ function closeVisibleModals() {
 async function initApp() {
   try {
     console.log('🚀 Initializing Soft Cream Menu App...');
+            // تهيئة الأنيميشن أولاً
+    await initGSAPAnimations();
 
     // أضف في بداية initApp()
     const translationsData = window.i18n.tData;
@@ -256,7 +259,6 @@ async function initApp() {
     renderCategories();
     await renderProducts();
     // 7️⃣ الآن نشغل GSAP بعد ما كل العناصر اتحملت
-    initGSAPAnimations();
     // 7️⃣ تحديث واجهة السلة
     await updateCartUI();
     

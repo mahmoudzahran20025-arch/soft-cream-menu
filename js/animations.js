@@ -1,5 +1,3 @@
-// Soft Ice Cream GSAP Animations - Isolated
-// Soft Ice Cream GSAP - Isolated Version
 export function initGSAPAnimations() {
   if (typeof gsap === 'undefined') {
     console.error('❌ GSAP not loaded');
