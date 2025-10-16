@@ -4958,7 +4958,7 @@ a:focus-visible {
     transform: translateX(-50%);
   }
 }
-
+/*
 @media (max-width: 480px) {
   .icecream-wrapper {
     padding: 0.5rem;
@@ -4979,6 +4979,100 @@ a:focus-visible {
   .icecream-features__title {
     font-size: 1.2rem;
   }
+}*/
+@media (max-width: 480px) {
+  /* Wrapper */
+.icecream-wrapper {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0.5rem;
+  font-family: 'Cairo', sans-serif;
+}
+
+/* Features container */
+.icecream-features {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Each item */
+.icecream-features__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* توسيط الصورة والنص */
+  gap: 0.75rem;
+  padding: 0.75rem;
+  min-height: auto;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(255,255,255,0.98), rgba(255,245,250,0.98));
+  border-radius: 24px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+  overflow: hidden;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Image */
+.icecream-features__image {
+  width: 90%;          /* يملا معظم البوكس */
+  max-width: 180px;    /* لا يزيد عن الحجم الأصلي */
+  margin-bottom: 0.5rem;
+}
+
+.icecream-features__card {
+  border-radius: 20px;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  min-height: 180px;     /* يضمن مساحة ثابتة قبل تحميل الصورة */
+
+  box-shadow: 0 10px 30px rgba(255,107,180,0.2);
+}
+
+.icecream-features__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: all 0.5s ease;
+  filter: brightness(1.02) contrast(1.05);
+}
+
+/* Content */
+.icecream-features__content {
+  width: 95%;
+  padding: 0;
+  text-align: center;
+}
+
+.icecream-features__title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #FF6B9D;
+  margin-bottom: 0.5rem;
+}
+
+.icecream-features__title::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #FF6B9D, #C06C84);
+  transition: width 0.4s ease;
+}
+
+.icecream-features__description {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #444;
+}
+
+/* Remove GSAP min-height */
+.icecream-gs-reveal {
+  min-height: auto;
+}
 }
   </style>
 </head>
@@ -5441,13 +5535,16 @@ a:focus-visible {
 
 <!-- ==================== CHECKOUT FLOW ==================== -->
 <!-- Enhanced Checkout Process with Multiple Steps -->
+<!-- ================================================================ -->
+<!-- CHECKOUT MODALS - HTML المُحسّن -->
+<!-- ================================================================ -->
 
 <!-- Checkout Modal - Main Container -->
-<div class="checkout-modal-overlay" id="checkoutModal" onclick="closeCheckoutModal(event)" 
-     role="dialog" aria-labelledby="checkout-title">
+<div class="checkout-modal-overlay" id="checkoutModal" onclick="checkoutModule.closeCheckoutModal(event)" 
+     role="dialog" aria-labelledby="checkout-title" style="display: none;">
   <div class="checkout-content" onclick="event.stopPropagation()">
     <!-- Close Button -->
-    <button class="checkout-close" onclick="closeCheckoutModal()" aria-label="إغلاق نافذة الطلب">
+    <button class="checkout-close" onclick="checkoutModule.closeCheckoutModal()" aria-label="إغلاق">
       <i data-lucide="x"></i>
     </button>
     
@@ -5465,13 +5562,15 @@ a:focus-visible {
         <i data-lucide="receipt"></i>
         <span id="order-summary-title">ملخص الطلب</span>
       </div>
-      <div id="orderItems"></div>
+      <div id="orderItems">
+        <!-- سيتم ملؤه ديناميكياً من updateOrderSummary() -->
+      </div>
     </div>
 
     <!-- Delivery Options -->
     <div class="delivery-options">
       <!-- استلام من الفرع -->
-      <div class="delivery-option" id="pickupOption" onclick="selectDeliveryMethod('pickup')">
+      <div class="delivery-option" id="pickupOption" onclick="checkoutModule.selectDeliveryMethod('pickup')">
         <div class="delivery-option-icon">
           <i data-lucide="store"></i>
         </div>
@@ -5484,68 +5583,19 @@ a:focus-visible {
         </div>
       </div>
 
-      <!-- اختيار الفرع (يظهر عند اختيار الاستلام) -->
+      <!-- ✅ اختيار الفرع (container فارغ - يُملأ ديناميكياً) -->
       <div class="branch-selection" id="branchSelection" style="display: none;">
         <label class="branch-label" id="branch-label">
           <i data-lucide="map-pin"></i>
           <span>اختر الفرع المناسب:</span>
         </label>
         <div class="branches-grid">
-          <div class="branch-card" data-branch="maadi" onclick="selectBranch('maadi')">
-            <div class="branch-icon">
-              <i data-lucide="building-2"></i>
-            </div>
-            <div class="branch-info">
-              <h4 class="branch-name" id="branch-maadi">المعادي</h4>
-              <p class="branch-address" id="branch-maadi-address">شارع 9، المعادي</p>
-              <p class="branch-distance" id="branch-maadi-distance">
-                <i data-lucide="navigation"></i>
-                <span>2.5 كم</span>
-              </p>
-            </div>
-            <div class="branch-check">
-              <i data-lucide="check-circle-2"></i>
-            </div>
-          </div>
-
-          <div class="branch-card" data-branch="zamalek" onclick="selectBranch('zamalek')">
-            <div class="branch-icon">
-              <i data-lucide="building-2"></i>
-            </div>
-            <div class="branch-info">
-              <h4 class="branch-name" id="branch-zamalek">الزمالك</h4>
-              <p class="branch-address" id="branch-zamalek-address">شارع 26 يوليو، الزمالك</p>
-              <p class="branch-distance" id="branch-zamalek-distance">
-                <i data-lucide="navigation"></i>
-                <span>4.8 كم</span>
-              </p>
-            </div>
-            <div class="branch-check">
-              <i data-lucide="check-circle-2"></i>
-            </div>
-          </div>
-
-          <div class="branch-card" data-branch="downtown" onclick="selectBranch('downtown')">
-            <div class="branch-icon">
-              <i data-lucide="building-2"></i>
-            </div>
-            <div class="branch-info">
-              <h4 class="branch-name" id="branch-downtown">وسط البلد</h4>
-              <p class="branch-address" id="branch-downtown-address">شارع طلعت حرب، وسط البلد</p>
-              <p class="branch-distance" id="branch-downtown-distance">
-                <i data-lucide="navigation"></i>
-                <span>3.2 كم</span>
-              </p>
-            </div>
-            <div class="branch-check">
-              <i data-lucide="check-circle-2"></i>
-            </div>
-          </div>
+          <!-- ✅ سيتم ملؤها من renderBranchSelection() في checkout-delivery.js -->
         </div>
       </div>
 
       <!-- التوصيل -->
-      <div class="delivery-option" id="deliveryOption" onclick="selectDeliveryMethod('delivery')">
+      <div class="delivery-option" id="deliveryOption" onclick="checkoutModule.selectDeliveryMethod('delivery')">
         <div class="delivery-option-icon">
           <i data-lucide="truck"></i>
         </div>
@@ -5585,7 +5635,7 @@ a:focus-visible {
           <span>العنوان التفصيلي *</span>
         </label>
         <textarea class="form-textarea" id="customerAddress" rows="3" placeholder="الشارع، المنطقة، المدينة، معالم قريبة..."></textarea>
-        <button type="button" class="location-btn" id="locationBtn" onclick="requestLocation()">
+        <button type="button" class="location-btn" id="locationBtn" onclick="checkoutModule.requestLocation()">
           <i data-lucide="navigation"></i>
           <span id="location-btn-text">استخدام الموقع الحالي</span>
         </button>
@@ -5598,30 +5648,52 @@ a:focus-visible {
         </label>
         <textarea class="form-textarea" id="orderNotes" rows="2" placeholder="أي طلبات خاصة (اختياري)"></textarea>
       </div>
+
+      <!-- ⬅️ جديد: كود الخصم -->
+      <div class="form-group">
+        <label class="form-label">
+          <i data-lucide="tag"></i>
+          <span id="promo-label">كود الخصم (اختياري)</span>
+        </label>
+        <div class="promo-input-group" style="display: flex; gap: 8px;">
+          <input 
+            type="text" 
+            class="form-input" 
+            id="promoCodeInput" 
+            placeholder="أدخل كود الخصم"
+            dir="ltr"
+            style="flex: 1;"
+          >
+          <button type="button" class="apply-promo-btn" id="applyPromoBtn" onclick="checkoutModule.applyPromoCode()" style="padding: 8px 16px; background: #2196F3; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+            <span id="apply-promo-text">تطبيق</span>
+          </button>
+        </div>
+        <div id="promoStatus" style="display: none; margin-top: 8px;"></div>
+      </div>
     </div>
 
     <div class="checkout-actions">
-      <button class="checkout-action-btn secondary" onclick="closeCheckoutModal()" id="cancel-btn">
+      <button class="checkout-action-btn secondary" onclick="checkoutModule.closeCheckoutModal()" id="cancel-btn">
         <i data-lucide="x"></i>
-        <span>إلغاء</span>
+        <span id="cancel-btn-text">إلغاء</span>
       </button>
-      <button class="checkout-action-btn primary" onclick="confirmOrder()" id="confirm-btn">
+      <button class="checkout-action-btn primary" onclick="checkoutModule.confirmOrder()" id="confirm-btn">
         <i data-lucide="check-circle-2"></i>
-        <span>تأكيد الطلب</span>
+        <span id="confirm-btn-text">تأكيد الطلب</span>
       </button>
     </div>
   </div>
 </div>
 
 <!-- Location Permission Modal -->
-<div class="permission-modal" id="permissionModal">
+<div class="permission-modal" id="permissionModal" style="display: none;">
   <div class="permission-content">
     <div class="permission-icon">
       <i data-lucide="map-pin"></i>
     </div>
     <h3 class="permission-title" id="permission-title">نحتاج موقعك للتوصيل الدقيق</h3>
     <p class="permission-text" id="permission-text">
-      لنتمكن من توصيل طلبك في أسرع وقت وبأفضل دقة، نحتاج إلى معرفة موقعك الحالي. سيتم استخدام الموقع فقط لأغراض التوصيل.
+      لنتمكن من توصيل طلبك في أسرع وقت وبأفضل دقة، نحتاج إلى معرفة موقعك الحالي.
     </p>
     <div class="permission-features">
       <div class="permission-feature">
@@ -5638,10 +5710,10 @@ a:focus-visible {
       </div>
     </div>
     <div class="permission-actions">
-      <button class="permission-btn secondary" onclick="closePermissionModal()" id="permission-cancel">
+      <button class="permission-btn secondary" onclick="checkoutModule.closePermissionModal()" id="permission-cancel">
         <span>سأكتب العنوان يدوياً</span>
       </button>
-      <button class="permission-btn primary" onclick="allowLocation()" id="permission-allow">
+      <button class="permission-btn primary" onclick="checkoutModule.allowLocation()" id="permission-allow">
         <i data-lucide="map-pin"></i>
         <span>السماح بالوصول للموقع</span>
       </button>
@@ -5649,8 +5721,8 @@ a:focus-visible {
   </div>
 </div>
 
-<!-- Processing Modal - أثناء الإرسال -->
-<div class="processing-modal hidden" id="processingModal">
+<!-- Processing Modal -->
+<div class="processing-modal" id="processingModal" style="display: none;">
   <div class="processing-content">
     <div class="spinner-container">
       <div class="spinner"></div>
@@ -5658,13 +5730,11 @@ a:focus-visible {
     <h3 class="processing-title" id="processing-title">جاري إرسال طلبك...</h3>
     <p class="processing-subtitle" id="processing-subtitle">الرجاء الانتظار، لا تغلق الصفحة</p>
     
-    <!-- خيارات إعادة المحاولة/الإلغاء (مخفية افتراضياً) -->
+    <!-- ✅ خيارات الخطأ (مخفية - تُملأ من JS) -->
     <div class="processing-actions" id="processingActions" style="display: none;">
-      <div class="error-icon">
-        <i data-lucide="wifi-off"></i>
-      </div>
-      <p class="error-message" id="error-message">عذراً، حدث خطأ في الاتصال</p>
-      <p class="error-description">قد تكون المشكلة مؤقتة، يرجى المحاولة مرة أخرى</p>
+      <div class="error-icon" id="errorIcon"></div>
+      <p class="error-message" id="errorMessage"></p>
+      <p class="error-description" id="errorDescription"></p>
       <div class="action-buttons">
         <button class="btn-retry" id="retryBtn">
           <i data-lucide="refresh-cw"></i>
@@ -5675,16 +5745,12 @@ a:focus-visible {
           <span id="cancel-send-text">إلغاء</span>
         </button>
       </div>
-      <p class="help-text" id="help-text">
-        <i data-lucide="headphones"></i>
-        <span>تحتاج مساعدة؟ <a href="tel:+201234567890">اتصل بنا الآن</a></span>
-      </p>
     </div>
   </div>
 </div>
 
-<!-- Order Confirmed Modal - بعد النجاح -->
-<div class="confirmed-modal hidden" id="orderConfirmedModal">
+<!-- Order Confirmed Modal -->
+<div class="confirmed-modal" id="orderConfirmedModal" style="display: none;">
   <div class="confirmed-content">
     <button class="close-confirmed" id="closeConfirmedBtn">
       <i data-lucide="x"></i>
@@ -5709,7 +5775,7 @@ a:focus-visible {
         <span class="label" id="order-id-label">رقم الطلب</span>
         <div class="order-id-display">
           <span class="order-id-value" id="confirmedOrderId">ORD-123456</span>
-          <button class="copy-btn" id="copyOrderIdBtn" title="نسخ رقم الطلب">
+          <button class="copy-btn" id="copyOrderIdBtn" title="نسخ">
             <i data-lucide="copy"></i>
           </button>
         </div>
@@ -5725,7 +5791,7 @@ a:focus-visible {
         <span id="status-text">قيد التحضير</span>
       </div>
 
-      <!-- معلومات الفرع المختار (للاستلام فقط) -->
+      <!-- معلومات الفرع -->
       <div class="selected-branch-info" id="selectedBranchInfo" style="display: none;">
         <div class="branch-info-header">
           <i data-lucide="map-pin"></i>
@@ -5736,6 +5802,9 @@ a:focus-visible {
           <span id="selectedBranchAddress"></span>
         </div>
       </div>
+
+      <!-- ⬅️ جديد: رسالة الترقية -->
+      <div id="upgradeMessage" style="display: none; margin-top: 16px;"></div>
     </div>
     
     <div class="quick-actions">
@@ -5752,12 +5821,6 @@ a:focus-visible {
       </button>
     </div>
     
-    <div class="contact-support">
-      <i data-lucide="headphones"></i>
-      <span id="support-text">تحتاج مساعدة؟</span>
-      <a href="tel:+201234567890" id="support-phone">اتصل بنا</a>
-    </div>
-    
     <button class="btn-continue" id="continueShoppingBtn">
       <span id="continue-text">متابعة التسوق</span>
       <i data-lucide="arrow-left"></i>
@@ -5765,12 +5828,10 @@ a:focus-visible {
   </div>
 </div>
 
-<!-- ==================== ORDER TRACKING ==================== -->
-<!-- Allows customers to check their order status -->
-<div class="tracking-modal hidden" id="trackingModal" role="dialog" aria-labelledby="tracking-title">
+<!-- Order Tracking Modal -->
+<div class="tracking-modal" id="trackingModal" role="dialog" style="display: none;">
   <div class="tracking-content">
-    <!-- Close Button -->
-    <button class="close-tracking" id="closeTrackingBtn" aria-label="إغلاق تتبع الطلب">
+    <button class="close-tracking" id="closeTrackingBtn" aria-label="إغلاق">
       <i data-lucide="x"></i>
     </button>
     
@@ -5797,7 +5858,7 @@ a:focus-visible {
     </div>
     
     <div class="tracking-result" id="trackingResult" style="display: none;">
-      <!-- سيتم ملؤها ديناميكياً -->
+      <!-- ✅ سيتم ملؤه من checkOrderStatus() -->
     </div>
   </div>
 </div>

@@ -8,6 +8,11 @@
 // ✅ Request Cancellation + Rate Limiting + Dynamic URLs
 // CRITICAL: Never send prices from frontend - backend calculates all prices
 // ================================================================
+// ================================================================
+// api.js - Enhanced API Service
+// ✅ Request Cancellation + Rate Limiting + Dynamic URLs
+// CRITICAL: Never send prices from frontend - backend calculates all prices
+// ================================================================
 
 import { generateUUID } from './utils.js';
 import { storage } from './storage.js';
@@ -16,15 +21,13 @@ import { storage } from './storage.js';
 // ===== API Configuration =====
 // ================================================================
 const API_CONFIG = {
-    // ✅ Dynamic base URLs (no hardcoding)
     urls: {
         production: 'https://softcream-api.mahmoud-zahran20025.workers.dev',
         netlify: 'https://softcream-api.mahmoud-zahran20025.workers.dev',
         local: 'http://localhost:8787'
     },
-    // إضافة CORS config
     cors: {
-        credentials: 'omit', // تغيير من 'include' إلى 'omit'
+        credentials: 'omit',
         allowedOrigins: [
             'https://mahmoudzahran20025-arch.github.io',
             'http://localhost:5500',
@@ -33,11 +36,10 @@ const API_CONFIG = {
     },
     timeout: 30000,
     retries: 3,
-    // ✅ Rate limiting config
     rateLimit: {
         enabled: true,
-        maxRequests: 60, // 60 requests
-        window: 60000    // per minute
+        maxRequests: 60,
+        window: 60000
     }
 };
 
@@ -50,11 +52,7 @@ class APIService {
         this.timeout = options.timeout || API_CONFIG.timeout;
         this.retries = options.retries || API_CONFIG.retries;
         this.authToken = options.authToken || null;
-
-        // ✅ Active requests tracking (للـ cancellation)
         this.activeRequests = new Map();
-
-        // ✅ Rate limiting state
         this.requestTimestamps = [];
         this.rateLimitEnabled = API_CONFIG.rateLimit.enabled;
 
@@ -63,22 +61,19 @@ class APIService {
     }
 
     // ================================================================
-    // ===== Environment Detection (Dynamic URLs) =====
+    // ===== Environment Detection =====
     // ================================================================
     detectBaseURL() {
         const hostname = window.location.hostname;
 
-        // ✅ Netlify Production
         if (hostname.includes('netlify.app')) {
             return API_CONFIG.urls.netlify;
         }
 
-        // ✅ Local Development
         if (hostname === 'localhost' || hostname === '127.0.0.1') {
             return API_CONFIG.urls.local;
         }
 
-        // ✅ Default - Production
         return API_CONFIG.urls.production;
     }
 
@@ -99,7 +94,6 @@ class APIService {
 
     // ================================================================
     // ===== Rate Limiting Check =====
-    // ✅ Frontend rate limiting لمنع spam
     // ================================================================
     checkRateLimit() {
         if (!this.rateLimitEnabled) return true;
@@ -107,12 +101,10 @@ class APIService {
         const now = Date.now();
         const { maxRequests, window: timeWindow } = API_CONFIG.rateLimit;
 
-        // إزالة الـ timestamps القديمة
         this.requestTimestamps = this.requestTimestamps.filter(
             timestamp => now - timestamp < timeWindow
         );
 
-        // التحقق من الحد
         if (this.requestTimestamps.length >= maxRequests) {
             const oldestRequest = this.requestTimestamps[0];
             const timeUntilReset = timeWindow - (now - oldestRequest);
@@ -121,14 +113,12 @@ class APIService {
             return false;
         }
 
-        // إضافة timestamp الحالي
         this.requestTimestamps.push(now);
         return true;
     }
 
     // ================================================================
     // ===== Request Cancellation =====
-    // ✅ إلغاء الطلبات القديمة عند التنقل
     // ================================================================
     cancelRequest(requestId) {
         const controller = this.activeRequests.get(requestId);
@@ -151,7 +141,6 @@ class APIService {
     // ===== Main Request Method =====
     // ================================================================
     async request(method, endpoint, data = null, options = {}) {
-        // ✅ التحقق من Rate Limit
         if (!this.checkRateLimit()) {
             throw new Error('Rate limit exceeded. Please try again later.');
         }
@@ -161,7 +150,7 @@ class APIService {
             retries = this.retries,
             idempotencyKey = null,
             authToken = this.authToken,
-            cancelable = true // New option for cancellation
+            cancelable = true
         } = options;
 
         let lastError;
@@ -180,7 +169,6 @@ class APIService {
             } catch (error) {
                 lastError = error;
 
-                // ✅ لا تعيد المحاولة إذا تم إلغاء الطلب
                 if (error.name === 'AbortError') {
                     console.log('🚫 Request was cancelled');
                     throw error;
@@ -188,7 +176,6 @@ class APIService {
 
                 console.warn(`⚠️ Attempt ${attempt} failed:`, error.message);
 
-                // Don't retry on client errors (4xx)
                 if (error.status >= 400 && error.status < 500) {
                     throw error;
                 }
@@ -206,14 +193,13 @@ class APIService {
     }
 
     // ================================================================
-    // ===== HTTP Request with Enhanced Error Handling and Cancellation =====
+    // ===== HTTP Request =====
     // ================================================================
     async httpRequest(method, endpoint, data, options) {
         if (!this.baseURL) {
             throw new Error('API baseURL not configured');
         }
 
-        // ✅ إنشاء AbortController للـ cancellation
         const requestId = generateUUID();
         const controller = new AbortController();
 
@@ -222,7 +208,6 @@ class APIService {
         }
 
         const timeoutId = setTimeout(() => {
-            // Check if the request is still active before aborting timeout
             if(this.activeRequests.has(requestId)) {
                 controller.abort();
             }
@@ -234,18 +219,15 @@ class APIService {
                 'Accept': 'application/json'
             };
 
-            // Add idempotency key
             if (options.idempotencyKey) {
                 headers['Idempotency-Key'] = options.idempotencyKey;
             }
 
-            // Add authentication
             const token = options.authToken || this.getAuthToken();
             if (token) {
                 headers['Authorization'] = `Bearer ${token}`;
             }
 
-            // Add origin for CORS
             headers['Origin'] = window.location.origin;
 
             const config = {
@@ -253,11 +235,9 @@ class APIService {
                 headers,
                 signal: controller.signal,
                 mode: 'cors',
-                credentials: API_CONFIG.cors.credentials // إضافة هذا السطر
-
+                credentials: API_CONFIG.cors.credentials
             };
 
-            // Build URL
             let url = this.baseURL;
 
             if (method === 'GET' && data && Object.keys(data).length > 0) {
@@ -282,12 +262,10 @@ class APIService {
 
             console.log(`📥 Response Status: ${response.status}`);
 
-            // Handle 204 No Content
             if (response.status === 204) {
                 return { success: true, data: null };
             }
 
-            // Parse response
             let result;
             const contentType = response.headers.get('content-type');
 
@@ -304,7 +282,6 @@ class APIService {
                 result = { success: false, error: 'Expected JSON response', rawResponse: text };
             }
 
-            // Handle error responses
             if (!response.ok) {
                 const error = new Error(result.error || `HTTP ${response.status}: ${response.statusText}`);
                 error.status = response.status;
@@ -317,19 +294,15 @@ class APIService {
             return result;
 
         } catch (error) {
-            // Check if the error is a timeout and re-throw with better message
             if (error.name === 'AbortError') {
-                 // Check if it was canceled manually or by timeout
                 if (!this.activeRequests.has(requestId)) {
                     throw new Error(`Request timeout after ${options.timeout}ms`);
                 }
-                // If the request is still in the active map, it means it was a manual cancellation
                 throw error;
             }
             throw error;
         } finally {
             clearTimeout(timeoutId);
-            // ✅ تنظيف الـ active request
             if (options.cancelable) {
                 this.activeRequests.delete(requestId);
             }
@@ -337,8 +310,66 @@ class APIService {
     }
 
     // ================================================================
+    // ===== ✅ NEW: Get Error Message =====
+    // ================================================================
+    getErrorMessage(error, lang = 'ar') {
+        // AbortError
+        if (error.name === 'AbortError') {
+            return lang === 'ar' 
+                ? 'تم إلغاء الطلب'
+                : 'Request cancelled';
+        }
+
+        // Rate limit
+        if (error.message?.includes('Rate limit') || error.message?.includes('Too many')) {
+            return lang === 'ar' 
+                ? 'عدد كبير من المحاولات. يرجى الانتظار قليلاً'
+                : 'Too many attempts. Please wait a moment';
+        }
+        
+        // Timeout
+        if (error.message?.includes('timeout')) {
+            return lang === 'ar'
+                ? 'انتهت مهلة الاتصال. تحقق من الإنترنت'
+                : 'Connection timeout. Check your internet';
+        }
+
+        // Network
+        if (error.message?.includes('Network') || error.message?.includes('Failed to fetch')) {
+            return lang === 'ar'
+                ? 'مشكلة في الاتصال. تحقق من الإنترنت'
+                : 'Connection problem. Check your internet';
+        }
+        
+        // 4xx errors
+        if (error.status >= 400 && error.status < 500) {
+            if (error.status === 404) {
+                return lang === 'ar' ? 'المورد غير موجود' : 'Resource not found';
+            }
+            if (error.status === 400) {
+                return lang === 'ar' ? 'بيانات غير صحيحة' : 'Invalid data';
+            }
+            return error.data?.error || error.message;
+        }
+
+        // 5xx errors
+        if (error.status >= 500) {
+            return lang === 'ar'
+                ? 'خطأ في الخادم. حاول مرة أخرى'
+                : 'Server error. Try again';
+        }
+
+        // Promo code errors
+        if (error.message?.includes('كود') || error.message?.includes('promo')) {
+            return error.message;
+        }
+        
+        // Default
+        return error.message || (lang === 'ar' ? 'حدث خطأ. حاول مرة أخرى' : 'An error occurred. Try again');
+    }
+
+    // ================================================================
     // ===== Authentication =====
-    // ✅ استخدام storage module
     // ================================================================
     getAuthToken() {
         return storage.getAuthToken();
@@ -369,18 +400,8 @@ class APIService {
 
     // ================================================================
     // ===== ORDER ENDPOINTS =====
-    // CRITICAL: Frontend sends only product IDs + quantities
-    // Backend calculates all prices
     // ================================================================
-
-    /**
-     * Submit Order - CRITICAL: Only send product IDs and quantities
-     * Backend calculates prices, applies promotions, and returns totals
-     * @param {Object} orderData - { items: [{productId, quantity}], customer, deliveryMethod, promoCode }
-     * @returns {Promise<Object>} - { orderId, eta, calculatedPrices }
-     */
     async submitOrder(orderData) {
-        // Validate that frontend isn't sending prices
         if (orderData.items.some(item => item.price || item.subtotal)) {
             console.error('❌ SECURITY WARNING: Frontend should not send prices!');
             throw new Error('Invalid order data: prices should not be sent from frontend');
@@ -391,10 +412,8 @@ class APIService {
             throw new Error('Invalid order data: totals should not be sent from frontend');
         }
 
-        // Generate idempotency key
         const idempotencyKey = orderData.idempotencyKey || this.generateIdempotencyKey();
 
-        // Clean order data - only IDs and quantities
         const cleanOrderData = {
             items: orderData.items.map(item => ({
                 productId: item.productId,
@@ -404,6 +423,7 @@ class APIService {
             deliveryMethod: orderData.deliveryMethod || 'delivery',
             branch: orderData.branch || null,
             location: orderData.location || null,
+            customerPhone: orderData.customerPhone || orderData.customer?.phone,
             promoCode: orderData.promoCode || null,
             idempotencyKey: idempotencyKey
         };
@@ -415,62 +435,49 @@ class APIService {
             retries: 3
         });
 
-        // Backend returns calculated prices
         console.log('💰 Received calculated prices from backend:', result.data.calculatedPrices);
 
         return result.data;
     }
 
-    /**
-     * Track Order
-     * @param {string} orderId
-     * @returns {Promise<Object>}
-     */
     async trackOrder(orderId) {
         return this.request('GET', '/orders/track', { orderId });
     }
 
-    /**
-     * Cancel Order
-     * @param {string} orderId
-     * @returns {Promise<Object>}
-     */
     async cancelOrder(orderId) {
         return this.request('POST', '/orders/cancel', { orderId });
     }
 
     // ================================================================
+    // ===== ✅ FIXED: Calculate Order Prices =====
+    // ================================================================
+    async calculateOrderPrices(items, promoCode = null, deliveryMethod = 'delivery', customerPhone = null) {
+        const result = await this.request('POST', '/orders/prices', {
+            items,
+            promoCode,
+            deliveryMethod,
+            customerPhone
+        });
+        
+        // ✅ Fixed: result.data contains calculatedPrices
+        return result.data?.calculatedPrices || result.data;
+    }
+
+    // ================================================================
     // ===== PRODUCT ENDPOINTS =====
     // ================================================================
-
-    /**
-     * Get All Products - Prices come from backend
-     * @param {Object} filters
-     * @returns {Promise<Array>}
-     */
     async getProducts(filters = {}) {
         const result = await this.request('GET', '/products', filters);
         console.log('📦 Products loaded from backend (with prices):', result.data?.length || 0);
         return result.data;
     }
 
-    /**
-     * Get Single Product
-     * @param {string} productId
-     * @returns {Promise<Object>}
-     */
     async getProduct(productId) {
         const result = await this.request('GET', `/products/${productId}`);
         return result.data;
     }
 
-    /**
-     * Search Products
-     * @param {string} query
-     * @returns {Promise<Array>}
-     */
     async searchProducts(query) {
-        // Note: Can use cancelable: false if search is very short, but usually better to cancel old search requests
         const result = await this.request('GET', '/products/search', { q: query });
         return result.data;
     }
@@ -478,32 +485,15 @@ class APIService {
     // ================================================================
     // ===== USER ENDPOINTS =====
     // ================================================================
-
-    /**
-     * Save User Data
-     * @param {Object} userData
-     * @returns {Promise<Object>}
-     */
     async saveUserData(userData) {
         return this.request('POST', '/users/save', userData);
     }
 
-    /**
-     * Get User Profile
-     * @param {string} userId
-     * @returns {Promise<Object>}
-     */
     async getUserProfile(userId) {
         const result = await this.request('GET', '/users/profile', { userId });
         return result.data;
     }
 
-    /**
-     * Update User Data
-     * @param {string} userId
-     * @param {Object} updates
-     * @returns {Promise<Object>}
-     */
     async updateUserData(userId, updates) {
         return this.request('PUT', `/users/${userId}`, updates);
     }
@@ -511,31 +501,16 @@ class APIService {
     // ================================================================
     // ===== BRANCH ENDPOINTS =====
     // ================================================================
-
-    /**
-     * Get All Branches
-     * @returns {Promise<Array>}
-     */
     async getBranches() {
         const result = await this.request('GET', '/branches');
         return result.data;
     }
 
-    /**
-     * Check Branch Availability
-     * @param {string} branchId
-     * @returns {Promise<Object>}
-     */
     async checkBranchAvailability(branchId) {
         const result = await this.request('GET', '/branches/availability', { branchId });
         return result.data;
     }
 
-    /**
-     * Get Branch Hours
-     * @param {string} branchId
-     * @returns {Promise<Object>}
-     */
     async getBranchHours(branchId) {
         const result = await this.request('GET', `/branches/${branchId}/hours`);
         return result.data;
@@ -544,22 +519,11 @@ class APIService {
     // ================================================================
     // ===== PROMOTION ENDPOINTS =====
     // ================================================================
-
-    /**
-     * Get Active Promotions
-     * @returns {Promise<Array>}
-     */
     async getActivePromotions() {
         const result = await this.request('GET', '/promotions/active');
         return result.data;
     }
 
-    /**
-     * Validate Promo Code - Backend calculates discount
-     * @param {string} code
-     * @param {number} subtotal - Current cart subtotal for validation
-     * @returns {Promise<Object>}
-     */
     async validatePromoCode(code, subtotal) {
         const result = await this.request('POST', '/promotions/validate', {
             code,
@@ -569,77 +533,20 @@ class APIService {
     }
 
     // ================================================================
-    // ===== ANALYTICS ENDPOINTS =====
+    // ===== GAMIFICATION ENDPOINTS =====
     // ================================================================
-
-    /**
-     * Track Single Event - Uses sendBeacon for reliability
-     * @param {Object} event
-     * @returns {Promise<void>}
-     */
-    async trackEvent(event) {
-        try {
-            // Add timestamp and session info
-            const enrichedEvent = {
-                ...event,
-                timestamp: Date.now(),
-                sessionId: this.getSessionId(),
-                userAgent: navigator.userAgent,
-                url: window.location.href
-            };
-
-            // Try sendBeacon first (more reliable for page unload)
-            if (navigator.sendBeacon && this.baseURL) {
-                const url = `${this.baseURL}?path=${encodeURIComponent('/analytics/event')}`;
-                const blob = new Blob([JSON.stringify(enrichedEvent)], {
-                    type: 'application/json'
-                });
-
-                const sent = navigator.sendBeacon(url, blob);
-                if (sent) {
-                    console.log('📊 Event tracked (sendBeacon):', event.name);
-                    return;
-                }
-            }
-
-            // Fallback to regular POST
-            await this.request('POST', '/analytics/event', enrichedEvent, {
-                retries: 1,
-                cancelable: false // Analytics events should typically not be cancelled
-            });
-
-            console.log('📊 Event tracked:', event.name);
-
-        } catch (error) {
-            console.warn('Analytics tracking failed:', error);
+    async getCustomerGamification(phone) {
+        if (!phone) {
+            throw new Error('Phone number required');
         }
+        
+        const result = await this.request('GET', '/gamification', { phone });
+        return result.data;
     }
 
-    /**
-     * Track Multiple Events in Batch
-     * @param {Array} events
-     * @returns {Promise<void>}
-     *//*
-    async trackEvents(events) {
-        try {
-            const enrichedEvents = events.map(event => ({
-                ...event,
-                timestamp: Date.now(),
-                sessionId: this.getSessionId()
-            }));
-
-            await this.request('POST', '/analytics/events', { events: enrichedEvents }, {
-                retries: 1,
-                cancelable: false
-            });
-
-            console.log('📊 Batch events tracked:', events.length);
-
-        } catch (error) {
-            console.warn('Batch analytics tracking failed:', error);
-        }
-    }*/
-    // في نفس الملف، تعديل دالة trackEven للتكالمل مع جيت هوب 
+    // ================================================================
+    // ===== ✅ FIXED: Analytics with keepalive =====
+    // ================================================================
     async trackEvent(event) {
         try {
             const enrichedEvent = {
@@ -650,36 +557,36 @@ class APIService {
                 url: window.location.href
             };
 
-            // تعديل طريقة إرسال analytics
-            await this.request('POST', '/analytics/event', enrichedEvent, {
-                retries: 1,
-                cancelable: false,
-                timeout: 5000, // timeout أقل للـ analytics
-                credentials: 'omit' // مهم جداً
+            // ✅ استخدام fetch مع keepalive بدل sendBeacon
+            const url = `${this.baseURL}?path=${encodeURIComponent('/analytics/event')}`;
+            
+            await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(enrichedEvent),
+                keepalive: true, // ✅ يضمن إرسال الطلب حتى لو غادر المستخدم
+                mode: 'cors',
+                credentials: 'omit'
             });
 
             console.log('📊 Event tracked:', event.name);
+
         } catch (error) {
-            // تجاهل أخطاء analytics - لا تؤثر على تجربة المستخدم
             console.warn('Analytics error:', error.message);
         }
-    }  
-        
+    }
 }
 
 // ================================================================
-// ===== Export Instance =====
+// ===== Export Singleton Instance =====
 // ================================================================
-// Export a single instance to be used application-wide
-
-
 export const api = new APIService();
 
-// ================================================================
-// Expose to Window
-// ================================================================
+// For debugging
 if (typeof window !== 'undefined') {
-  window.api = api;
+    window.apiService = api;
 }
 
 // ================================================================
