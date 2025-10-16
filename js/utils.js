@@ -567,6 +567,7 @@ export function formatPrice(value, lang = 'ar') {
 // ================================================================
 // Utility: حساب المسافة بين نقطتين (lat/lng) بالكيلومتر
 // ================================================================
+/*
 export function calculateDistance(lat1, lng1, lat2, lng2) {
   const toRad = (value) => (value * Math.PI) / 180;
 
@@ -583,4 +584,4 @@ export function calculateDistance(lat1, lng1, lat2, lng2) {
   const distance = R * c;
 
   return distance; // بالكيلومتر
-}
+}*/
