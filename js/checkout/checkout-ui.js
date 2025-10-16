@@ -1,5 +1,5 @@
 // ================================================================
-// CHECKOUT UI - واجهة المستخدم (FIXED VERSION)
+// CHECKOUT UI - واجهة المستخدم (ENHANCED VERSION)
 // ================================================================
 
 console.log('🔄 Loading checkout-ui.js');
@@ -7,14 +7,13 @@ console.log('🔄 Loading checkout-ui.js');
 // ================================================================
 // Static Imports
 // ================================================================
-import { cart } from '../cart.js';
+import { getCart } from '../cart.js';  // ✅ استخدام getCart()
 import { storage } from '../storage.js';
-import { showToast, formatPrice } from '../utils.js';
+import { showToast } from '../utils.js';
 
 // ================================================================
-// ✅ FIX 1: Enhanced updateOrderSummary with Better Error Handling
+// ✅ Enhanced updateOrderSummary - Moved Below Promo Code
 // ================================================================
-/*
 export async function updateOrderSummary() {
   console.log('🔄 Updating order summary...');
   
@@ -27,6 +26,7 @@ export async function updateOrderSummary() {
   }
 
   const lang = window.currentLang || 'ar';
+  const cart = getCart();  // ✅ الحصول على السلة الحالية
   
   try {
     // Get current state
@@ -46,72 +46,101 @@ export async function updateOrderSummary() {
       selectedBranch,
       cartItems: cart?.length || 0
     });
+
+    // إخفاء ملخص الطلب في البداية
+    orderSummary.style.display = 'none';
     
-    // Build items HTML
-    let itemsHtml = '';
-    
-    if (calculatedPrices && calculatedPrices.items) {
-      // Use calculated items with server prices
-      calculatedPrices.items.forEach(item => {
-        itemsHtml += `
-          <div class="order-item">
-            <div class="order-item-info">
-              <div class="order-item-name">${item.name}</div>
-              <div class="order-item-details">
-                <span class="quantity">× ${item.quantity}</span>
-                <span class="unit-price">${formatPrice(item.price)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</span>
+    // عرض ملخص الأسعار فقط بعد اختيار طريقة التوصيل
+    if (deliveryMethod && calculatedPrices) {
+      orderSummary.style.display = 'block';
+      
+      // Build enhanced items HTML with better styling
+      let itemsHtml = `
+        <div class="order-summary-header" style="padding: 12px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px 8px 0 0; color: white; font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 8px;">
+          <i data-lucide="receipt" style="width: 18px; height: 18px;"></i>
+          <span>${lang === 'ar' ? 'ملخص الطلب' : 'Order Summary'}</span>
+        </div>
+        <div class="order-items-list" style="padding: 16px; background: white; border: 1px solid #e0e0e0; border-top: none;">
+      `;
+      
+      // عرض عناصر الطلب
+      if (calculatedPrices.items && calculatedPrices.items.length > 0) {
+        calculatedPrices.items.forEach((item, index) => {
+          const itemTotal = item.total || (item.price * item.quantity);
+          itemsHtml += `
+            <div class="summary-item" style="display: flex; justify-content: space-between; align-items: start; padding: 10px 0; ${index < calculatedPrices.items.length - 1 ? 'border-bottom: 1px solid #f0f0f0;' : ''}">
+              <div class="item-details" style="flex: 1;">
+                <div style="font-weight: 600; color: #333; margin-bottom: 4px; font-size: 14px;">${item.name}</div>
+                <div style="display: flex; align-items: center; gap: 12px; font-size: 13px; color: #666;">
+                  <span style="background: #f5f5f5; padding: 2px 8px; border-radius: 4px;">× ${item.quantity}</span>
+                  <span>${item.price.toFixed(2)} EGP</span>
+                </div>
+              </div>
+              <div class="item-total" style="font-weight: 700; color: #667eea; font-size: 15px; white-space: nowrap; margin-left: 12px;">
+                ${itemTotal.toFixed(2)} EGP
               </div>
             </div>
-            <div class="order-item-total">${formatPrice(item.total || item.price * item.quantity)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</div>
-          </div>
-        `;
-      });
-    } else if (cart && cart.length > 0) {
-      // Use cart items with fallback prices
-      cart.forEach(item => {
-        const itemTotal = (item.price || 0) * item.quantity;
-        itemsHtml += `
-          <div class="order-item">
-            <div class="order-item-info">
-              <div class="order-item-name">${item.name}</div>
-              <div class="order-item-details">
-                <span class="quantity">× ${item.quantity}</span>
-                <span class="unit-price">${formatPrice(item.price || 0)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</span>
-              </div>
-            </div>
-            <div class="order-item-total">${formatPrice(itemTotal)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</div>
-          </div>
-        `;
-      });
-    }
-    
-    // Build totals HTML
-    let totalsHtml = '';
-    
-    if (calculatedPrices) {
+          `;
+        });
+      }
+      
+      itemsHtml += `</div>`;
+      
+      // Build enhanced totals HTML
       const { subtotal, deliveryFee, discount, total } = calculatedPrices;
       
-      totalsHtml = `
-        <div class="order-totals">
-          <div class="order-total-line">
-            <span>${lang === 'ar' ? 'المجموع الفرعي' : 'Subtotal'}</span>
-            <span>${formatPrice(subtotal)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</span>
+      let totalsHtml = `
+        <div class="order-totals" style="padding: 16px; background: #fafafa; border: 1px solid #e0e0e0; border-top: none; border-radius: 0 0 8px 8px;">
+          
+          <!-- Subtotal -->
+          <div class="total-row" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 14px;">
+            <span style="color: #666; display: flex; align-items: center; gap: 6px;">
+              <i data-lucide="shopping-bag" style="width: 16px; height: 16px;"></i>
+              ${lang === 'ar' ? 'المجموع الفرعي' : 'Subtotal'}
+            </span>
+            <span style="font-weight: 600; color: #333;">${subtotal.toFixed(2)} EGP</span>
           </div>
+          
+          <!-- Delivery Fee -->
           ${deliveryFee > 0 ? `
-            <div class="order-total-line">
-              <span>${lang === 'ar' ? 'رسوم التوصيل' : 'Delivery Fee'}</span>
-              <span>${formatPrice(deliveryFee)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</span>
+            <div class="total-row" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 14px;">
+              <span style="color: #666; display: flex; align-items: center; gap: 6px;">
+                <i data-lucide="truck" style="width: 16px; height: 16px;"></i>
+                ${lang === 'ar' ? 'رسوم التوصيل' : 'Delivery Fee'}
+              </span>
+              <span style="font-weight: 600; color: #333;">${deliveryFee.toFixed(2)} EGP</span>
             </div>
-          ` : ''}
+          ` : `
+            <div class="total-row" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 14px;">
+              <span style="color: #666; display: flex; align-items: center; gap: 6px;">
+                <i data-lucide="package-check" style="width: 16px; height: 16px;"></i>
+                ${lang === 'ar' ? 'رسوم التوصيل' : 'Delivery Fee'}
+              </span>
+              <span style="font-weight: 600; color: #4caf50;">${lang === 'ar' ? 'مجاني' : 'FREE'}</span>
+            </div>
+          `}
+          
+          <!-- Discount -->
           ${discount > 0 ? `
-            <div class="order-total-line discount">
-              <span>${lang === 'ar' ? 'الخصم' : 'Discount'}</span>
-              <span>-${formatPrice(discount)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</span>
+            <div class="total-row discount" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 14px; background: #fff3e0; margin: 8px -16px; padding-left: 16px; padding-right: 16px;">
+              <span style="color: #f57c00; display: flex; align-items: center; gap: 6px; font-weight: 600;">
+                <i data-lucide="tag" style="width: 16px; height: 16px;"></i>
+                ${lang === 'ar' ? 'الخصم' : 'Discount'}
+              </span>
+              <span style="font-weight: 700; color: #f57c00;">-${discount.toFixed(2)} EGP</span>
             </div>
           ` : ''}
-          <div class="order-total-line total">
-            <span>${lang === 'ar' ? 'الإجمالي' : 'Total'}</span>
-            <span>${formatPrice(total)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</span>
+          
+          <!-- Divider -->
+          <div style="border-top: 2px dashed #e0e0e0; margin: 12px 0;"></div>
+          
+          <!-- Total -->
+          <div class="total-row final-total" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; margin: 0 -16px -16px -16px;">
+            <span style="color: white; font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+              <i data-lucide="wallet" style="width: 20px; height: 20px;"></i>
+              ${lang === 'ar' ? 'الإجمالي النهائي' : 'Total Amount'}
+            </span>
+            <span style="font-weight: 700; color: white; font-size: 20px;">${total.toFixed(2)} EGP</span>
           </div>
         </div>
       `;
@@ -119,227 +148,67 @@ export async function updateOrderSummary() {
       // Show offline indicator if applicable
       if (calculatedPrices.isOffline) {
         totalsHtml += `
-          <div class="offline-indicator" style="padding: 8px; background: #fff3cd; border-radius: 4px; color: #856404; font-size: 12px; text-align: center; margin-top: 8px;">
-            <i data-lucide="wifi-off" style="width: 14px; height: 14px;"></i>
-            ${lang === 'ar' ? 'الأسعار تقديرية - سيتم التأكيد' : 'Estimated prices - will be confirmed'}
-          </div>
-        `;
-      }
-    } else if (deliveryMethod) {
-      // Show calculation in progress
-      totalsHtml = `
-        <div class="calculating-prices" style="padding: 16px; text-align: center; color: #666;">
-          <i data-lucide="loader" style="width: 20px; height: 20px; animation: spin 1s linear infinite;"></i>
-          <span style="margin-left: 8px;">${lang === 'ar' ? 'جاري حساب الأسعار...' : 'Calculating prices...'}</span>
-        </div>
-      `;
-    }
-    
-    // Combine HTML
-    orderItems.innerHTML = itemsHtml + totalsHtml;
-    
-    // Add branch info if selected
-    if (deliveryMethod === 'pickup' && selectedBranch) {
-      try {
-        const { branches } = await import('./checkout-delivery.js');
-        const branch = branches[selectedBranch];
-        
-        if (branch) {
-          const branchInfo = `
-            <div class="selected-branch-info" style="margin-top: 12px; padding: 8px; background: #f0f7ff; border-radius: 6px; border-left: 3px solid #2196F3;">
-              <div style="font-size: 12px; color: #1976D2; margin-bottom: 4px;">
-                <i data-lucide="store" style="width: 14px; height: 14px;"></i>
-                ${lang === 'ar' ? 'فرع الاستلام' : 'Pickup Branch'}
-              </div>
-              <div style="font-weight: 600; color: #333;">${branch.name[lang]}</div>
-              <div style="font-size: 12px; color: #666;">${branch.address[lang]}</div>
-            </div>
-          `;
-          orderItems.insertAdjacentHTML('beforeend', branchInfo);
-        }
-      } catch (err) {
-        console.warn('⚠️ Could not load branch info:', err);
-      }
-    }
-    
-    // Refresh icons
-    if (typeof lucide !== 'undefined') {
-      lucide.createIcons();
-    }
-    
-    console.log('✅ Order summary updated successfully');
-    
-  } catch (error) {
-    console.error('❌ Failed to update order summary:', error);
-    
-    // Fallback display
-    orderItems.innerHTML = `
-      <div class="error-message" style="padding: 16px; text-align: center; color: #d32f2f;">
-        <i data-lucide="alert-circle"></i>
-        <span style="margin-left: 8px;">${lang === 'ar' ? 'خطأ في تحميل الملخص' : 'Error loading summary'}</span>
-      </div>
-    `;
-    
-    if (typeof lucide !== 'undefined') {
-      lucide.createIcons();
-    }
-  }
-}*/
-export async function updateOrderSummary() {
-  console.log('🔄 Updating order summary...');
-  
-  const orderSummary = document.getElementById('orderSummary');
-  const orderItems = document.getElementById('orderItems');
-  
-  if (!orderSummary || !orderItems) {
-    console.warn('⚠️ Order summary elements not found');
-    return;
-  }
-
-  const lang = window.currentLang || 'ar';
-  
-  try {
-    // Get current state
-    const { 
-      getCalculatedPrices, 
-      getSelectedDeliveryMethod, 
-      getSelectedBranch 
-    } = await import('./checkout-core.js');
-    
-    const calculatedPrices = getCalculatedPrices();
-    const deliveryMethod = getSelectedDeliveryMethod();
-    const selectedBranch = getSelectedBranch();
-    
-    console.log('🔄 Order summary state:', {
-      calculatedPrices: !!calculatedPrices,
-      deliveryMethod,
-      selectedBranch,
-      cartItems: cart?.length || 0
-    });
-
-    // أولاً: نخفي ملخص الطلب في البداية
-    orderSummary.style.display = 'none';
-    
-    // ثانياً: لما يتم اختيار طريقة التوصيل، نعرض ملخص الأسعار
-    if (deliveryMethod) {
-      orderSummary.style.display = 'block';
-      
-      // Build items HTML
-      let itemsHtml = '';
-      
-      if (calculatedPrices && calculatedPrices.items) {
-        // Use calculated items with server prices
-        calculatedPrices.items.forEach(item => {
-          itemsHtml += `
-            <div class="order-item">
-              <div class="order-item-info">
-                <div class="order-item-name">${item.name}</div>
-                <div class="order-item-details">
-                  <span class="quantity">× ${item.quantity}</span>
-                  <span class="unit-price">${formatPrice(item.price)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</span>
-                </div>
-              </div>
-              <div class="order-item-total">${formatPrice(item.total || item.price * item.quantity)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</div>
-            </div>
-          `;
-        });
-      } else if (cart && cart.length > 0) {
-        // Use cart items with fallback prices
-        cart.forEach(item => {
-          const itemTotal = (item.price || 0) * item.quantity;
-          itemsHtml += `
-            <div class="order-item">
-              <div class="order-item-info">
-                <div class="order-item-name">${item.name}</div>
-                <div class="order-item-details">
-                  <span class="quantity">× ${item.quantity}</span>
-                  <span class="unit-price">${formatPrice(item.price || 0)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</span>
-                </div>
-              </div>
-              <div class="order-item-total">${formatPrice(itemTotal)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</div>
-            </div>
-          `;
-        });
-      }
-      
-      // Build totals HTML
-      let totalsHtml = '';
-      
-      if (calculatedPrices) {
-        const { subtotal, deliveryFee, discount, total } = calculatedPrices;
-        
-        totalsHtml = `
-          <div class="order-totals">
-            <div class="order-total-line">
-              <span>${lang === 'ar' ? 'المجموع الفرعي' : 'Subtotal'}</span>
-              <span>${formatPrice(subtotal)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</span>
-            </div>
-            ${deliveryFee > 0 ? `
-              <div class="order-total-line">
-                <span>${lang === 'ar' ? 'رسوم التوصيل' : 'Delivery Fee'}</span>
-                <span>${formatPrice(deliveryFee)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</span>
-              </div>
-            ` : ''}
-            ${discount > 0 ? `
-              <div class="order-total-line discount">
-                <span>${lang === 'ar' ? 'الخصم' : 'Discount'}</span>
-                <span>-${formatPrice(discount)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</span>
-              </div>
-            ` : ''}
-            <div class="order-total-line total">
-              <span>${lang === 'ar' ? 'الإجمالي' : 'Total'}</span>
-              <span>${formatPrice(total)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</span>
+          <div class="offline-indicator" style="margin-top: 12px; padding: 12px; background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); border-radius: 8px; border-left: 4px solid #f39c12; display: flex; align-items: center; gap: 10px;">
+            <i data-lucide="wifi-off" style="width: 20px; height: 20px; color: #f39c12; flex-shrink: 0;"></i>
+            <div style="font-size: 13px; color: #856404; line-height: 1.5;">
+              <div style="font-weight: 600; margin-bottom: 2px;">${lang === 'ar' ? '⚠️ وضع عدم الاتصال' : '⚠️ Offline Mode'}</div>
+              <div>${lang === 'ar' ? 'الأسعار تقديرية - سيتم التأكيد عند الاتصال' : 'Prices are estimated - will be confirmed when online'}</div>
             </div>
           </div>
         `;
-        
-        // Show offline indicator if applicable
-        if (calculatedPrices.isOffline) {
-          totalsHtml += `
-            <div class="offline-indicator" style="padding: 8px; background: #fff3cd; border-radius: 4px; color: #856404; font-size: 12px; text-align: center; margin-top: 8px;">
-              <i data-lucide="wifi-off" style="width: 14px; height: 14px;"></i>
-              ${lang === 'ar' ? 'الأسعار تقديرية - سيتم التأكيد' : 'Estimated prices - will be confirmed'}
-            </div>
-          `;
-        }
-      } else if (deliveryMethod) {
-        // Show calculation in progress
-        totalsHtml = `
-          <div class="calculating-prices" style="padding: 16px; text-align: center; color: #666;">
-            <i data-lucide="loader" style="width: 20px; height: 20px; animation: spin 1s linear infinite;"></i>
-            <span style="margin-left: 8px;">${lang === 'ar' ? 'جاري حساب الأسعار...' : 'Calculating prices...'}</span>
-          </div>
-        `;
       }
       
-      // Combine HTML
-      orderItems.innerHTML = itemsHtml + totalsHtml;
-      
-      // Add branch info if selected
+      // Add branch info for pickup
       if (deliveryMethod === 'pickup' && selectedBranch) {
         try {
           const { branches } = await import('./checkout-delivery.js');
           const branch = branches[selectedBranch];
           
           if (branch) {
-            const branchInfo = `
-              <div class="selected-branch-info" style="margin-top: 12px; padding: 8px; background: #f0f7ff; border-radius: 6px; border-left: 3px solid #2196F3;">
-                <div style="font-size: 12px; color: #1976D2; margin-bottom: 4px;">
-                  <i data-lucide="store" style="width: 14px; height: 14px;"></i>
-                  ${lang === 'ar' ? 'فرع الاستلام' : 'Pickup Branch'}
+            totalsHtml += `
+              <div class="selected-branch-info" style="margin-top: 12px; padding: 12px; background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border-radius: 8px; border-left: 4px solid #2196F3;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                  <i data-lucide="map-pin" style="width: 18px; height: 18px; color: #1976D2;"></i>
+                  <span style="font-size: 13px; color: #1565c0; font-weight: 600;">${lang === 'ar' ? 'فرع الاستلام' : 'Pickup Branch'}</span>
                 </div>
-                <div style="font-weight: 600; color: #333;">${branch.name[lang]}</div>
-                <div style="font-size: 12px; color: #666;">${branch.address[lang]}</div>
+                <div style="font-weight: 700; color: #0d47a1; font-size: 15px; margin-bottom: 4px;">${branch.name[lang]}</div>
+                <div style="font-size: 13px; color: #1565c0; display: flex; align-items: start; gap: 6px;">
+                  <i data-lucide="navigation" style="width: 14px; height: 14px; margin-top: 2px; flex-shrink: 0;"></i>
+                  <span>${branch.address[lang]}</span>
+                </div>
               </div>
             `;
-            orderItems.insertAdjacentHTML('beforeend', branchInfo);
           }
         } catch (err) {
           console.warn('⚠️ Could not load branch info:', err);
         }
       }
+      
+      // Combine HTML
+      orderItems.innerHTML = itemsHtml + totalsHtml;
+      
+    } else if (deliveryMethod && !calculatedPrices) {
+      // Show calculation in progress
+      orderSummary.style.display = 'block';
+      orderItems.innerHTML = `
+        <div class="calculating-prices" style="padding: 32px; text-align: center; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 8px;">
+          <div class="spinner" style="width: 48px; height: 48px; margin: 0 auto 16px; border: 4px solid #e0e0e0; border-top: 4px solid #667eea; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+          <div style="font-size: 16px; font-weight: 600; color: #667eea; margin-bottom: 8px;">
+            ${lang === 'ar' ? 'جاري حساب الأسعار...' : 'Calculating Prices...'}
+          </div>
+          <div style="font-size: 13px; color: #666;">
+            ${lang === 'ar' ? 'الرجاء الانتظار قليلاً' : 'Please wait a moment'}
+          </div>
+        </div>
+        <style>
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        </style>
+      `;
     } else {
-      // إذا مفيش طريقة توصيل مختارة، نخفي ملخص الطلب
+      // إخفاء الملخص إذا لم يتم اختيار طريقة التوصيل
       orderSummary.style.display = 'none';
     }
     
@@ -355,9 +224,14 @@ export async function updateOrderSummary() {
     
     // Fallback display
     orderItems.innerHTML = `
-      <div class="error-message" style="padding: 16px; text-align: center; color: #d32f2f;">
-        <i data-lucide="alert-circle"></i>
-        <span style="margin-left: 8px;">${lang === 'ar' ? 'خطأ في تحميل الملخص' : 'Error loading summary'}</span>
+      <div class="error-message" style="padding: 24px; text-align: center; background: #ffebee; border-radius: 8px; border-left: 4px solid #f44336;">
+        <i data-lucide="alert-circle" style="width: 48px; height: 48px; color: #f44336; margin-bottom: 12px;"></i>
+        <div style="font-size: 16px; font-weight: 600; color: #c62828; margin-bottom: 8px;">
+          ${lang === 'ar' ? 'خطأ في تحميل الملخص' : 'Error Loading Summary'}
+        </div>
+        <div style="font-size: 13px; color: #d32f2f;">
+          ${lang === 'ar' ? 'حاول مرة أخرى أو تواصل مع الدعم' : 'Try again or contact support'}
+        </div>
       </div>
     `;
     
@@ -367,14 +241,12 @@ export async function updateOrderSummary() {
   }
 }
 
-
-
 // ================================================================
-// ✅ FIX 2: Enhanced Modal Management Functions
+// ✅ Enhanced Modal Management Functions
 // ================================================================
 export function closeCheckoutModal(event) {
   if (event && event.target !== event.currentTarget) {
-    return; // Only close if clicked on overlay, not content
+    return;
   }
   
   console.log('🔄 Closing checkout modal...');
@@ -396,9 +268,7 @@ export function closeCheckoutModal(event) {
     }
   });
   
-  // Restore body scroll
   document.body.style.overflow = '';
-  
   console.log('✅ Checkout modal closed');
 }
 
@@ -424,12 +294,10 @@ export function showProcessingModal(show = true, showError = false, errorMessage
     const actions = modal.querySelector('#processingActions');
     
     if (showError) {
-      // Show error state
       if (title) title.textContent = lang === 'ar' ? 'فشل في إرسال الطلب' : 'Order Failed';
       if (subtitle) subtitle.textContent = errorMessage || (lang === 'ar' ? 'حدث خطأ أثناء معالجة طلبك' : 'An error occurred while processing your order');
       if (actions) actions.style.display = 'block';
     } else {
-      // Show loading state
       if (title) title.textContent = lang === 'ar' ? 'جاري إرسال طلبك...' : 'Sending your order...';
       if (subtitle) subtitle.textContent = lang === 'ar' ? 'الرجاء الانتظار، لا تغلق الصفحة' : 'Please wait, do not close the page';
       if (actions) actions.style.display = 'none';
@@ -453,7 +321,6 @@ export function showConfirmedModal(orderId, eta, customerPhone, itemsText, order
   
   const lang = window.currentLang || 'ar';
   
-  // Update modal content
   const orderIdEl = modal.querySelector('#confirmedOrderId');
   const etaEl = modal.querySelector('#confirmedEta');
   const branchInfoEl = modal.querySelector('#selectedBranchInfo');
@@ -463,7 +330,6 @@ export function showConfirmedModal(orderId, eta, customerPhone, itemsText, order
   if (orderIdEl) orderIdEl.textContent = orderId;
   if (etaEl) etaEl.textContent = lang === 'ar' ? `الوقت المتوقع: ≈ ${eta}` : `Estimated time: ≈ ${eta}`;
   
-  // Show branch info if pickup
   if (orderData?.deliveryMethod === 'pickup' && orderData?.branch && branchInfoEl) {
     import('./checkout-delivery.js').then(({ branches }) => {
       const branch = branches[orderData.branch];
@@ -479,40 +345,23 @@ export function showConfirmedModal(orderId, eta, customerPhone, itemsText, order
     branchInfoEl.style.display = 'none';
   }
   
-  // Setup event handlers
   const copyBtn = modal.querySelector('#copyOrderIdBtn');
   const whatsappBtn = modal.querySelector('#shareWhatsAppBtn');
   const trackBtn = modal.querySelector('#trackOrderBtn');
   const continueBtn = modal.querySelector('#continueShoppingBtn');
   const closeBtn = modal.querySelector('#closeConfirmedBtn');
   
-  if (copyBtn) {
-    copyBtn.onclick = () => copyOrderId(orderId);
-  }
+  if (copyBtn) copyBtn.onclick = () => copyOrderId(orderId);
+  if (whatsappBtn) whatsappBtn.onclick = () => shareOnWhatsApp(orderId, itemsText, customerPhone);
+  if (trackBtn) trackBtn.onclick = () => openTrackingModal(orderId);
+  if (continueBtn) continueBtn.onclick = closeCheckoutModal;
+  if (closeBtn) closeBtn.onclick = closeCheckoutModal;
   
-  if (whatsappBtn) {
-    whatsappBtn.onclick = () => shareOnWhatsApp(orderId, itemsText, customerPhone);
-  }
-  
-  if (trackBtn) {
-    trackBtn.onclick = () => openTrackingModal(orderId);
-  }
-  
-  if (continueBtn) {
-    continueBtn.onclick = closeCheckoutModal;
-  }
-  
-  if (closeBtn) {
-    closeBtn.onclick = closeCheckoutModal;
-  }
-  
-  // Show modal
   modal.classList.remove('hidden');
   modal.classList.add('show');
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
   
-  // Refresh icons
   if (typeof lucide !== 'undefined') {
     lucide.createIcons();
   }
@@ -521,7 +370,7 @@ export function showConfirmedModal(orderId, eta, customerPhone, itemsText, order
 }
 
 // ================================================================
-// ✅ FIX 3: Enhanced Form Management
+// ✅ Enhanced Form Management
 // ================================================================
 export function resetFormFields() {
   console.log('🔄 Resetting form fields...');
@@ -542,14 +391,12 @@ export function resetFormFields() {
     }
   });
   
-  // Reset promo status
   const promoStatus = document.getElementById('promoStatus');
   if (promoStatus) {
     promoStatus.style.display = 'none';
     promoStatus.innerHTML = '';
   }
   
-  // Reset location button
   const locationBtn = document.getElementById('locationBtn');
   if (locationBtn) {
     locationBtn.classList.remove('active');
@@ -577,13 +424,11 @@ export function fillSavedUserData() {
     return;
   }
   
-  // Fill name
   const nameField = document.getElementById('customerName');
   if (nameField && userData.name) {
     nameField.value = userData.name;
   }
   
-  // Fill phone  
   const phoneField = document.getElementById('customerPhone');
   if (phoneField && userData.phone) {
     phoneField.value = userData.phone;
@@ -608,38 +453,33 @@ export function saveFormData() {
 }
 
 export function restoreFormData() {
-  saveFormData(); // Auto-save current data
+  saveFormData();
 }
 
 // ================================================================
-// ✅ FIX 4: Enhanced UI Reset Function
+// ✅ Enhanced UI Reset Function
 // ================================================================
 export function resetCheckoutUI() {
   console.log('🔄 Resetting checkout UI...');
   
-  // Reset delivery method selection
   document.querySelectorAll('.delivery-option').forEach(option => {
     option.classList.remove('selected');
   });
   
-  // Reset branch selection
   document.querySelectorAll('.branch-card').forEach(card => {
     card.classList.remove('selected');
   });
   
-  // Hide branch selection
   const branchSelection = document.getElementById('branchSelection');
   if (branchSelection) {
     branchSelection.style.display = 'none';
   }
   
-  // Hide address group
   const addressGroup = document.getElementById('addressGroup');
   if (addressGroup) {
     addressGroup.style.display = 'none';
   }
   
-  // Hide checkout form initially
   const checkoutForm = document.getElementById('checkoutForm');
   if (checkoutForm) {
     checkoutForm.classList.remove('show');
@@ -649,7 +489,7 @@ export function resetCheckoutUI() {
 }
 
 // ================================================================
-// ✅ FIX 5: Enhanced Sharing Functions
+// ✅ Enhanced Sharing Functions
 // ================================================================
 export function copyOrderId(orderId) {
   if (navigator.clipboard) {
@@ -718,7 +558,7 @@ export function shareOnWhatsApp(orderId, itemsText, customerPhone) {
 }
 
 // ================================================================
-// ✅ FIX 6: Enhanced Tracking Functions  
+// ✅ Enhanced Tracking Functions  
 // ================================================================
 export function openTrackingModal(orderId = '') {
   console.log('🔄 Opening tracking modal with order ID:', orderId);
@@ -729,29 +569,24 @@ export function openTrackingModal(orderId = '') {
     return;
   }
   
-  // Close other modals first
   closeCheckoutModal();
   
-  // Pre-fill order ID if provided
   const trackingInput = document.getElementById('trackingInput');
   if (trackingInput && orderId) {
     trackingInput.value = orderId;
   }
   
-  // Clear previous results
   const trackingResult = document.getElementById('trackingResult');
   if (trackingResult) {
     trackingResult.style.display = 'none';
     trackingResult.innerHTML = '';
   }
   
-  // Show modal
   modal.classList.remove('hidden');
   modal.classList.add('show');
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
   
-  // Focus input
   if (trackingInput) {
     setTimeout(() => trackingInput.focus(), 100);
   }
@@ -783,7 +618,6 @@ export async function checkOrderStatus() {
     return;
   }
   
-  // Show loading
   if (checkBtn) {
     checkBtn.disabled = true;
     checkBtn.innerHTML = '<i data-lucide="loader"></i><span>جاري البحث...</span>';
@@ -799,7 +633,6 @@ export async function checkOrderStatus() {
       let statusText = status;
       let statusColor = '#2196F3';
       
-      // Map status to user-friendly text
       const statusMap = {
         'pending': { ar: 'قيد الانتظار', en: 'Pending', color: '#ff9800' },
         'confirmed': { ar: 'تم التأكيد', en: 'Confirmed', color: '#2196F3' },
@@ -815,7 +648,6 @@ export async function checkOrderStatus() {
         statusColor = statusMap[status].color;
       }
       
-      // Build result HTML
       let resultHtml = `
         <div class="tracking-order-info" style="text-align: center; padding: 20px;">
           <div class="tracking-status" style="margin-bottom: 16px;">
@@ -841,7 +673,7 @@ export async function checkOrderStatus() {
             ${total ? `
               <div class="detail-row" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                 <span style="color: #666;">${lang === 'ar' ? 'الإجمالي:' : 'Total:'}</span>
-                <span style="font-weight: 600;">${formatPrice(total)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</span>
+                <span style="font-weight: 600;">${total.toFixed(2)} EGP</span>
               </div>
             ` : ''}
             
@@ -857,7 +689,7 @@ export async function checkOrderStatus() {
               ${items.map(item => `
                 <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #eee;">
                   <span>${item.name} × ${item.quantity}</span>
-                  <span>${formatPrice(item.total)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</span>
+                  <span>${item.total.toFixed(2)} EGP</span>
                 </div>
               `).join('')}
             </div>
@@ -869,7 +701,6 @@ export async function checkOrderStatus() {
       trackingResult.style.display = 'block';
       
     } else {
-      // Order not found
       trackingResult.innerHTML = `
         <div class="tracking-not-found" style="text-align: center; padding: 20px; color: #d32f2f;">
           <i data-lucide="search-x" style="width: 48px; height: 48px; margin-bottom: 16px;"></i>
@@ -893,13 +724,11 @@ export async function checkOrderStatus() {
     trackingResult.style.display = 'block';
     
   } finally {
-    // Reset button
     if (checkBtn) {
       checkBtn.disabled = false;
       checkBtn.innerHTML = '<i data-lucide="search"></i><span>تحقق</span>';
     }
     
-    // Refresh icons
     if (typeof lucide !== 'undefined') {
       lucide.createIcons();
     }
@@ -907,7 +736,7 @@ export async function checkOrderStatus() {
 }
 
 // ================================================================
-// ✅ FIX 7: Permission Modal Functions
+// ✅ Permission Modal Functions
 // ================================================================
 export function closePermissionModal() {
   console.log('🔄 Closing permission modal...');
@@ -920,4 +749,4 @@ export function closePermissionModal() {
   }
 }
 
-console.log('✅ checkout-ui.js loaded successfully');
+console.log('✅ checkout-ui.js loaded successfully (Enhanced Version)');

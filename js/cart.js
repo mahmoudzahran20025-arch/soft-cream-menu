@@ -1,5 +1,5 @@
 // ================================================================
-// cart.js - إدارة السلة (آمن - بدون أسعار)
+// cart.js - إدارة السلة (آمن - بدون أسعار) - FIXED
 // CRITICAL: Prices are NEVER stored, always fetched from productsManager
 // ================================================================
 
@@ -9,8 +9,22 @@ import { storage } from './storage.js';
 
 // ================================================================
 // ===== متغيرات السلة =====
+// ✅ FIX: استخدام object بدلاً من array مباشر
 // ================================================================
-export let cart = [];
+const cartState = {
+  items: []
+};
+
+// ================================================================
+// ✅ FIX: دوال للوصول للسلة
+// ================================================================
+export function getCart() {
+  return cartState.items;
+}
+
+export function setCart(newCart) {
+  cartState.items = newCart;
+}
 
 // ================================================================
 // ===== إضافة منتج للسلة =====
@@ -43,7 +57,7 @@ export async function addToCart(event, productId, quantity = 1) {
   // ✅ التحقق من الحد الأقصى
   const MAX_QUANTITY = 50;
   
-  const existing = cart.find(item => item.productId === productId);
+  const existing = cartState.items.find(item => item.productId === productId);
   if (existing) {
     if (existing.quantity + quantity > MAX_QUANTITY) {
       const lang = window.currentLang || 'ar';
@@ -57,7 +71,7 @@ export async function addToCart(event, productId, quantity = 1) {
     existing.quantity += quantity;
   } else {
     // ✅ CRITICAL: نحفظ فقط productId و quantity - بدون أسعار!
-    cart.push({
+    cartState.items.push({
       productId: productId,
       quantity: quantity
     });
@@ -81,7 +95,7 @@ export async function addToCart(event, productId, quantity = 1) {
 // ===== تحديث كمية منتج =====
 // ================================================================
 export async function updateQuantity(productId, delta) {
-  const item = cart.find(i => i.productId === productId);
+  const item = cartState.items.find(i => i.productId === productId);
   if (!item) return;
   
   const MAX_QUANTITY = 50;
@@ -106,7 +120,7 @@ export async function updateQuantity(productId, delta) {
 // ===== حذف منتج من السلة =====
 // ================================================================
 export async function removeFromCart(productId) {
-  cart = cart.filter(item => item.productId !== productId);
+  cartState.items = cartState.items.filter(item => item.productId !== productId);
   saveCart();
   await updateCartUI();
   
@@ -125,12 +139,12 @@ export async function removeFromCart(productId) {
 // ✅ الأسعار تُجلب من productsManager (ديناميكياً)
 // ================================================================
 export async function calculateCartTotals() {
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const totalItems = cartState.items.reduce((sum, item) => sum + item.quantity, 0);
   
   // ✅ جلب الأسعار من productsManager
   let total = 0;
   
-  for (const item of cart) {
+  for (const item of cartState.items) {
     try {
       const product = await productsManager.getProduct(item.productId);
       if (product && product.price) {
@@ -184,7 +198,7 @@ async function updateSingleCartUI(itemsId, totalId, footerId, total, translation
     cartTotal.textContent = `${total.toFixed(2)} ${currency}`;
   }
   
-  if (cart.length === 0) {
+  if (cartState.items.length === 0) {
     const emptyText = currentLang === 'ar' ? 'سلتك فارغة حالياً' : 'Your cart is empty';
     const emptySubtext = currentLang === 'ar' ? 'أضف بعض الآيس كريم اللذيذ! 🍦' : 'Add some delicious ice cream! 🍦';
     
@@ -215,7 +229,7 @@ async function updateSingleCartUI(itemsId, totalId, footerId, total, translation
   let html = '';
   
   // ✅ جلب بيانات المنتجات من productsManager
-  for (const item of cart) {
+  for (const item of cartState.items) {
     try {
       const product = await productsManager.getProduct(item.productId);
       
@@ -267,7 +281,8 @@ async function updateSingleCartUI(itemsId, totalId, footerId, total, translation
 // ✅ استخدام storage module (sessionStorage)
 // ================================================================
 export function saveCart() {
-  storage.setCart(cart);
+  storage.setCart(cartState.items);
+  console.log('💾 Cart saved:', cartState.items.length, 'items');
 }
 
 // ================================================================
@@ -277,10 +292,10 @@ export function saveCart() {
 export function loadCart() {
   const savedCart = storage.getCart();
   if (savedCart && Array.isArray(savedCart)) {
-    cart = savedCart;
-    console.log('✅ Cart loaded:', cart.length, 'items');
+    cartState.items = savedCart;
+    console.log('✅ Cart loaded:', cartState.items.length, 'items');
   } else {
-    cart = [];
+    cartState.items = [];
   }
 }
 
@@ -288,9 +303,10 @@ export function loadCart() {
 // ===== تفريغ السلة =====
 // ================================================================
 export async function clearCart() {
-  cart = [];
+  cartState.items = [];
   saveCart();
   await updateCartUI();
+  console.log('🗑️ Cart cleared');
 }
 
 // ================================================================
@@ -325,9 +341,9 @@ if (typeof window !== 'undefined') {
     openCartModal,
     closeCartModal,
     clearCart,
-    getCart: () => cart,
+    getCart: () => cartState.items,  // ✅ إرجاع array مباشرة
     getCartTotals: calculateCartTotals
   };
 }
 
-console.log('✅ Cart module loaded (Secure - No Prices Stored)');
+console.log('✅ Cart module loaded (Secure - No Prices Stored - FIXED)');
