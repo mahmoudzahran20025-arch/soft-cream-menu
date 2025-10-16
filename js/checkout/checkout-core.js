@@ -71,6 +71,9 @@ export function getCurrentOrderData() {
 // بدء عملية الشراء
 // ================================================================
 export async function initiateCheckout() {
+  console.log('🔹 initiateCheckout called');
+  console.log('🔹 Cart contents:', cart);
+
   if (!cart || cart.length === 0) {
     const lang = window.currentLang || 'ar';
     showToast(
@@ -80,35 +83,43 @@ export async function initiateCheckout() {
     );
     return;
   }
-  
+
   // إعادة تعيين
   selectedDeliveryMethod = null;
   selectedBranch = null;
   calculatedPrices = null;
   activePromoCode = null;
-  
-  // استدعاء باقي الوظائف من الموديولات الأخرى
-  const { resetFormFields, fillSavedUserData, resetCheckoutUI } = await import('./checkout-ui.js');
-  const { updateOrderSummary } = await import('./checkout-ui.js');
-  const { loadBranches } = await import('./checkout-delivery.js');
-  
-  await loadBranches();
-  resetFormFields();
-  fillSavedUserData();
-  updateOrderSummary();
-  resetCheckoutUI();
-  
+
+  try {
+    const { resetFormFields, fillSavedUserData, resetCheckoutUI, updateOrderSummary } = await import('./checkout-ui.js');
+    const { loadBranches } = await import('./checkout-delivery.js');
+
+    await loadBranches();
+    console.log('🔹 loadBranches done');
+
+    resetFormFields();
+    fillSavedUserData();
+    updateOrderSummary();
+    resetCheckoutUI();
+    console.log('🔹 UI reset done');
+  } catch (err) {
+    console.error('❌ Error in checkout setup:', err);
+  }
+
   // إظهار Modal
   const modal = document.getElementById('checkoutModal');
   if (modal) {
+    modal.classList.remove('hidden');
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
+    console.log('🔹 Modal opened');
   }
-  
+
   if (typeof lucide !== 'undefined') {
     lucide.createIcons();
   }
 }
+
 
 // ================================================================
 // ✅ FIX 1: إعادة حساب الأسعار من Backend
