@@ -201,7 +201,60 @@ if (typeof window !== 'undefined') {
     });
   };
 }
+import { cart } from './cart.js';
+import { showToast } from './utils.js';
+import { initiateCheckout as coreInitiate } from './checkout/checkout-core.js';
 
+if (typeof window !== 'undefined') {
+  // تعريف واضح للـ initiateCheckout
+  window.initiateCheckout = async function() {
+    console.log('🚀 Starting checkout process...');
+    
+    // 1. التحقق من وجود منتجات في السلة
+    if (!cart || cart.length === 0) {
+      const lang = window.currentLang || 'ar';
+      showToast(
+        lang === 'ar' ? 'السلة فارغة' : 'Cart is empty',
+        lang === 'ar' ? 'أضف بعض المنتجات أولاً' : 'Add some products first',
+        'error'
+      );
+      return;
+    }
+    
+    // 2. عرض Modal الـ checkout
+    const modal = document.getElementById('checkoutModal');
+    if (!modal) {
+      console.error('❌ Checkout modal not found!');
+      return;
+    }
+
+    try {
+      modal.style.display = 'block';
+      modal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+      
+      // 3. تهيئة الـ checkout
+      await coreInitiate();
+      
+      console.log('✅ Checkout initiated successfully');
+    } catch (error) {
+      console.error('❌ Error during checkout:', error);
+      modal.style.display = 'none';
+      modal.classList.remove('show');
+      document.body.style.overflow = '';
+      
+      const lang = window.currentLang || 'ar';
+      showToast(
+        lang === 'ar' ? 'خطأ' : 'Error',
+        error.message || (lang === 'ar' ? 'حدث خطأ أثناء التحميل' : 'Error during loading'),
+        'error'
+      );
+    }
+  };
+}
+
+// Export for ES modules
+export { initiateCheckout };
 
 // ================================================================
 // ✅ FIX 1: إعادة حساب الأسعار من Backend
