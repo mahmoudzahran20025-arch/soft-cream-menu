@@ -266,6 +266,12 @@ console.log('🧠 Debug:', {
   windowInitiate: typeof window.initiateCheckout,
   module: window.checkoutModule
 });
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.querySelector('.checkout-btn');
+  if (btn) {
+    btn.addEventListener('click', initiateCheckout);
+  }
+});
 
 
 // في زر التأكيد في HTML
