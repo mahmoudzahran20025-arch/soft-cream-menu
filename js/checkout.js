@@ -247,15 +247,26 @@ if (typeof window !== 'undefined') {
 
 console.log('✅ Checkout module loaded (Modular Architecture)');
 // في checkout.js
-window.initiateCheckout = async () => {
-  console.log('🚀 Starting checkout...');
-  try {
-    await initiateCheckout();
-    console.log('✅ Checkout initiated successfully');
-  } catch (error) {
-    console.error('❌ Error initiating checkout:', error);
-  }
+// Add this after the window.checkoutModule definition
+window.debugCheckout = () => {
+  console.log({
+    initiateCheckoutExists: typeof window.initiateCheckout === 'function',
+    moduleExists: typeof window.checkoutModule === 'object',
+    modalExists: !!document.getElementById('checkoutModal'),
+    modalState: {
+      element: document.getElementById('checkoutModal'),
+      display: document.getElementById('checkoutModal')?.style.display,
+      classes: document.getElementById('checkoutModal')?.classList.toString()
+    }
+  });
 };
+console.log('🧠 Debug:', {
+  windowExists: typeof window !== 'undefined',
+  initiateCheckoutType: typeof initiateCheckout,
+  windowInitiate: typeof window.initiateCheckout,
+  module: window.checkoutModule
+});
+
 
 // في زر التأكيد في HTML
 
