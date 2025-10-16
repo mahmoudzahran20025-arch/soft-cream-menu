@@ -247,6 +247,8 @@ if (typeof window !== 'undefined') {
 
 console.log('✅ Checkout module loaded (Modular Architecture)');
 
+
+
 // ================================================================
 // تصدير للاستخدام كـ ES Module
 // ================================================================

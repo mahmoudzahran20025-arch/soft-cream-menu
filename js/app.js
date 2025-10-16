@@ -347,7 +347,7 @@ if (typeof window !== 'undefined') {
   window.addToCart = (e, id, qty) => window.cartModule?.addToCart?.(e, id, qty);
   window.updateQuantity = (id, delta) => window.cartModule?.updateQuantity?.(id, delta);
   window.removeFromCart = (id) => window.cartModule?.removeFromCart?.(id);
-  
+  /*
   // من checkout.js
   window.initiateCheckout = () => window.checkoutModule?.initiateCheckout?.();
   window.openCheckoutModal = () => window.checkoutModule?.openCheckoutModal?.();
@@ -358,7 +358,7 @@ if (typeof window !== 'undefined') {
   window.requestLocation = () => window.checkoutModule?.requestLocation?.();
   window.allowLocation = () => window.checkoutModule?.allowLocation?.();
   window.closePermissionModal = () => window.checkoutModule?.closePermissionModal?.();
-  
+  */
   // دوال مساعدة
   window.scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
   
