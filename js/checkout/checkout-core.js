@@ -1,5 +1,5 @@
 // ================================================================
-// CHECKOUT CORE - الوظائف الأساسية (FIXED VERSION)
+// CHECKOUT CORE - الوظائف الأساسية (COMPLETELY FIXED)
 // ================================================================
 
 console.log('🔄 Loading checkout-core.js');
@@ -11,6 +11,7 @@ import { cart, clearCart } from '../cart.js';
 import { api } from '../api.js';
 import { storage } from '../storage.js';
 import { showToast, generateUUID } from '../utils.js';
+import { productsManager } from '../products.js';  // ✅ إضافة مهمة!
 
 // ================================================================
 // المتغيرات العامة - State Management
@@ -23,7 +24,7 @@ export let calculatedPrices = null;
 export let activePromoCode = null;
 
 // ================================================================
-// ✅ FIX 1: Enhanced Setters with Logging
+// ✅ Enhanced Setters with Logging
 // ================================================================
 export function setDeliveryMethod(method) {
   console.log('🔄 Setting delivery method:', method);
@@ -56,7 +57,7 @@ export function setCurrentOrderData(data) {
 }
 
 // ================================================================
-// ✅ FIX 2: Enhanced Getters
+// ✅ Enhanced Getters
 // ================================================================
 export function getSelectedDeliveryMethod() {
   return selectedDeliveryMethod;
@@ -83,22 +84,46 @@ export function getCurrentOrderData() {
 }
 
 // ================================================================
-// ✅ FIX 3: Enhanced recalculatePrices with Better Error Handling
+// ✅ NEW: دالة لتحويل السلة إلى عناصر كاملة مع البيانات
+// ================================================================
+async function enrichCartItems(cartItems) {
+  const enrichedItems = [];
+  
+  for (const item of cartItems) {
+    try {
+      // جلب بيانات المنتج الكاملة
+      const product = await productsManager.getProduct(item.productId);
+      
+      if (product) {
+        const lang = window.currentLang || 'ar';
+        enrichedItems.push({
+          productId: item.productId,
+          quantity: item.quantity,
+          price: product.price || 0,
+          name: lang === 'ar' ? product.name : (product.nameEn || product.name)
+        });
+      } else {
+        console.warn('⚠️ Product not found:', item.productId);
+      }
+    } catch (error) {
+      console.error('❌ Error enriching cart item:', error);
+    }
+  }
+  
+  return enrichedItems;
+}
+
+// ================================================================
+// ✅ FIXED: recalculatePrices with enriched items
 // ================================================================
 export async function recalculatePrices() {
   console.log('🔄 Recalculating prices...');
-  console.log('🔄 Current state:', {
-    deliveryMethod: selectedDeliveryMethod,
-    branch: selectedBranch,
-    promoCode: activePromoCode,
-    cartItems: cart?.length || 0
-  });
+  console.log('🔄 Current cart:', cart.length, 'items');
 
   if (!selectedDeliveryMethod) {
     console.log('⚠️ No delivery method selected, clearing prices');
     calculatedPrices = null;
     
-    // Update UI
     try {
       const { updateOrderSummary } = await import('./checkout-ui.js');
       updateOrderSummary();
@@ -108,7 +133,23 @@ export async function recalculatePrices() {
     return;
   }
 
+  // ✅ تحقق من وجود عناصر في السلة
+  if (!cart || cart.length === 0) {
+    console.warn('⚠️ Cart is empty, cannot calculate prices');
+    calculatedPrices = null;
+    return;
+  }
+
   try {
+    // ✅ إثراء عناصر السلة ببيانات المنتجات
+    const enrichedItems = await enrichCartItems(cart);
+    
+    if (enrichedItems.length === 0) {
+      throw new Error('No valid items in cart');
+    }
+    
+    console.log('📦 Enriched items:', enrichedItems);
+    
     // Get customer phone
     let customerPhone = null;
     try {
@@ -119,12 +160,7 @@ export async function recalculatePrices() {
     }
     
     const request = {
-      items: cart.map(item => ({ 
-        productId: item.id || item.productId, 
-        quantity: item.quantity,
-        price: item.price || 0,
-        name: item.name || ''
-      })),
+      items: enrichedItems,  // ✅ استخدام العناصر المُثراة
       deliveryMethod: selectedDeliveryMethod,
       branch: selectedBranch,
       promoCode: activePromoCode,
@@ -136,7 +172,6 @@ export async function recalculatePrices() {
 
     const result = await api.request('POST', '/orders/prices', request);
     
-    // Handle different response formats
     if (result && result.data) {
       calculatedPrices = result.data.calculatedPrices || result.data;
     } else if (result) {
@@ -147,7 +182,6 @@ export async function recalculatePrices() {
 
     console.log('✅ Prices calculated successfully:', calculatedPrices);
     
-    // Update UI
     try {
       const { updateOrderSummary } = await import('./checkout-ui.js');
       updateOrderSummary();
@@ -158,30 +192,35 @@ export async function recalculatePrices() {
   } catch (error) {
     console.error('❌ Failed to calculate prices:', error);
     
-    // Fallback calculation
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const deliveryFee = selectedDeliveryMethod === 'delivery' ? 15 : 0;
-    const discount = activePromoCode ? Math.round(subtotal * 0.1) : 0;
-    const total = subtotal + deliveryFee - discount;
+    // ✅ Fallback calculation مع إثراء العناصر
+    try {
+      const enrichedItems = await enrichCartItems(cart);
+      const subtotal = enrichedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const deliveryFee = selectedDeliveryMethod === 'delivery' ? 15 : 0;
+      const discount = activePromoCode ? Math.round(subtotal * 0.1) : 0;
+      const total = subtotal + deliveryFee - discount;
+      
+      calculatedPrices = {
+        items: enrichedItems.map(item => ({
+          productId: item.productId,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          total: item.price * item.quantity
+        })),
+        subtotal,
+        deliveryFee,
+        discount,
+        total,
+        isOffline: true
+      };
+      
+      console.log('⚠️ Using fallback price calculation:', calculatedPrices);
+    } catch (fallbackError) {
+      console.error('❌ Fallback calculation also failed:', fallbackError);
+      calculatedPrices = null;
+    }
     
-    calculatedPrices = {
-      items: cart.map(item => ({
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        quantity: item.quantity,
-        total: item.price * item.quantity
-      })),
-      subtotal,
-      deliveryFee,
-      discount,
-      total,
-      isOffline: true
-    };
-    
-    console.log('⚠️ Using fallback price calculation:', calculatedPrices);
-    
-    // Update UI with fallback data
     try {
       const { updateOrderSummary } = await import('./checkout-ui.js');
       updateOrderSummary();
@@ -192,11 +231,24 @@ export async function recalculatePrices() {
 }
 
 // ================================================================
-// ✅ FIX 4: Enhanced confirmOrder with Better Error Handling
+// ✅ FIXED: confirmOrder with enriched items
 // ================================================================
 export async function confirmOrder() {
   console.log('🔄 Starting order confirmation...');
+  console.log('🔄 Current cart:', cart.length, 'items');
+  
   const lang = window.currentLang || 'ar';
+  
+  // ✅ تحقق من السلة أولاً
+  if (!cart || cart.length === 0) {
+    console.error('❌ Cart is empty!');
+    showToast(
+      lang === 'ar' ? 'خطأ' : 'Error',
+      lang === 'ar' ? 'السلة فارغة!' : 'Cart is empty!',
+      'error'
+    );
+    return;
+  }
   
   try {
     // Validate order
@@ -221,14 +273,18 @@ export async function confirmOrder() {
     closeCheckoutModal();
     showProcessingModal(true, false);
     
+    // ✅ إثراء عناصر السلة قبل الإرسال
+    const enrichedItems = await enrichCartItems(cart);
+    
+    if (enrichedItems.length === 0) {
+      throw new Error(lang === 'ar' ? 'فشل في تحميل بيانات المنتجات' : 'Failed to load product data');
+    }
+    
+    console.log('📦 Enriched items for order:', enrichedItems);
+    
     // Prepare order data
     const orderData = {
-      items: cart.map(item => ({
-        productId: item.id || item.productId,
-        quantity: item.quantity,
-        price: item.price || 0,
-        name: item.name || ''
-      })),
+      items: enrichedItems,  // ✅ استخدام العناصر المُثراة
       customer: validation.customer,
       customerPhone: validation.customer.phone,
       deliveryMethod: selectedDeliveryMethod,
@@ -263,7 +319,7 @@ export async function confirmOrder() {
       customer: orderData.customer,
       deliveryMethod: selectedDeliveryMethod,
       branch: selectedBranch,
-      items: serverPrices?.items || calculatedPrices?.items || orderData.items,
+      items: serverPrices?.items || calculatedPrices?.items || enrichedItems,
       calculatedPrices: serverPrices || calculatedPrices,
       loyaltyReward
     };
@@ -284,7 +340,7 @@ export async function confirmOrder() {
     
     // Show success modal
     const { showConfirmedModal } = await import('./checkout-ui.js');
-    const itemsText = (serverPrices?.items || calculatedPrices?.items || orderData.items)
+    const itemsText = (serverPrices?.items || calculatedPrices?.items || enrichedItems)
       .map(i => `${i.name} × ${i.quantity}`)
       .join(', ');
     
@@ -323,7 +379,7 @@ export async function confirmOrder() {
         name: 'order_completed',
         orderId: orderId,
         total: (serverPrices || calculatedPrices)?.total || 0,
-        itemsCount: orderData.items.length
+        itemsCount: enrichedItems.length
       });
     }
     
@@ -371,7 +427,7 @@ export async function confirmOrder() {
 }
 
 // ================================================================
-// ✅ FIX 5: Enhanced applyPromoCode with Better Validation
+// ✅ FIXED: applyPromoCode with enriched items
 // ================================================================
 export async function applyPromoCode() {
   console.log('🔄 Applying promo code...');
@@ -404,9 +460,13 @@ export async function applyPromoCode() {
   }
   
   try {
-    // Get subtotal for validation
-    const subtotal = calculatedPrices?.subtotal || 
-                     cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    // ✅ حساب الـ subtotal من العناصر المُثراة
+    let subtotal = calculatedPrices?.subtotal || 0;
+    
+    if (!subtotal && cart && cart.length > 0) {
+      const enrichedItems = await enrichCartItems(cart);
+      subtotal = enrichedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    }
     
     console.log('📤 Validating promo code:', { code, subtotal });
     
@@ -446,13 +506,11 @@ export async function applyPromoCode() {
   } catch (error) {
     console.error('❌ Promo code validation failed:', error);
     
-    // Get error message
     let errorMessage = error.message || 'كود الخصم غير صحيح';
     if (typeof api.getErrorMessage === 'function') {
       errorMessage = api.getErrorMessage(error, lang);
     }
     
-    // Show error status
     promoStatus.innerHTML = `
       <div class="promo-error" style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #ffeaea; border-radius: 6px; color: #d32f2f;">
         <i data-lucide="alert-circle" style="width: 16px; height: 16px;"></i>
@@ -464,13 +522,11 @@ export async function applyPromoCode() {
     showToast(lang === 'ar' ? 'خطأ' : 'Error', errorMessage, 'error');
     
   } finally {
-    // Re-enable button
     if (applyBtn) {
       applyBtn.disabled = false;
       applyBtn.innerHTML = '<span id="apply-promo-text">تطبيق</span>';
     }
     
-    // Refresh icons
     if (typeof lucide !== 'undefined') {
       lucide.createIcons();
     }
@@ -478,7 +534,7 @@ export async function applyPromoCode() {
 }
 
 // ================================================================
-// ✅ FIX 6: Enhanced removePromoCode
+// ✅ removePromoCode
 // ================================================================
 export async function removePromoCode() {
   console.log('🔄 Removing promo code...');
@@ -509,7 +565,7 @@ export async function removePromoCode() {
 }
 
 // ================================================================
-// ✅ FIX 7: State Reset Function
+// ✅ State Reset Function
 // ================================================================
 export function resetCheckoutState() {
   console.log('🔄 Resetting checkout state...');
@@ -525,7 +581,7 @@ export function resetCheckoutState() {
 }
 
 // ================================================================
-// ✅ FIX 8: Debug Function
+// ✅ Debug Function
 // ================================================================
 export function getCheckoutDebugInfo() {
   return {
@@ -536,8 +592,9 @@ export function getCheckoutDebugInfo() {
     calculatedPrices,
     activePromoCode,
     cartItems: cart?.length || 0,
+    cartContent: cart,
     timestamp: new Date().toISOString()
   };
 }
 
-console.log('✅ checkout-core.js loaded successfully');
+console.log('✅ checkout-core.js loaded successfully (COMPLETELY FIXED)');
