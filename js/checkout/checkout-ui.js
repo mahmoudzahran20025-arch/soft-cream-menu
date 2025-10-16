@@ -1,362 +1,518 @@
 // ================================================================
-// CHECKOUT UI - واجهة المستخدم والـ Modals (FIXED - Minimal Changes)
+// CHECKOUT UI - واجهة المستخدم (FIXED VERSION)
 // ================================================================
 
+console.log('🔄 Loading checkout-ui.js');
+
+// ================================================================
+// Static Imports
+// ================================================================
 import { cart } from '../cart.js';
 import { storage } from '../storage.js';
-import { showToast } from '../utils.js';
-import { api } from '../api.js';
-import { 
-  getCalculatedPrices,         // ✅ FIX: استخدام getter
-  getSelectedDeliveryMethod,   // ✅ FIX: استخدام getter
-  getCurrentOrderData          // ✅ FIX: استخدام getter
-} from './checkout-core.js';
-import { getTierIcon, renderGamificationSummary, getUpgradeMessage } from './checkout-loyalty.js';
-import { branches } from './checkout-delivery.js';
+import { showToast, formatPrice } from '../utils.js';
 
 // ================================================================
-// تحديث ملخص الطلب
+// ✅ FIX 1: Enhanced updateOrderSummary with Better Error Handling
 // ================================================================
-export function updateOrderSummary() {
+export async function updateOrderSummary() {
+  console.log('🔄 Updating order summary...');
+  
+  const orderSummary = document.getElementById('orderSummary');
   const orderItems = document.getElementById('orderItems');
-  if (!orderItems) return;
   
+  if (!orderSummary || !orderItems) {
+    console.warn('⚠️ Order summary elements not found');
+    return;
+  }
+
   const lang = window.currentLang || 'ar';
-  const currency = window.i18n?.t?.[lang]?.currency || 'ج.م';
   
-  // ✅ FIX: استخدام getter بدل المتغير المباشر
-  const calculatedPrices = getCalculatedPrices();
-  const selectedDeliveryMethod = getSelectedDeliveryMethod();
-  
-  let html = '';
-  
-  // ✅ إذا كان لدينا أسعار محسوبة من Backend
-  if (calculatedPrices && calculatedPrices.items && calculatedPrices.items.length > 0) {
-    // عرض المنتجات
-    calculatedPrices.items.forEach(item => {
-      const name = lang === 'ar' ? item.name : (item.nameEn || item.name);
-      const price = item.price || 0;
-      const quantity = item.quantity || 0;
-      const subtotal = (price * quantity) || 0;
-      
-      html += `
-        <div class="order-item" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
-          <div style="flex: 1;">
-            <div style="font-weight: 600;">${name}</div>
-            <div style="font-size: 0.875rem; color: #999;">× ${quantity}</div>
-          </div>
-          <div style="text-align: right; font-weight: 600;">${subtotal.toFixed(2)} ${currency}</div>
-        </div>
-      `;
+  try {
+    // Get current state
+    const { 
+      getCalculatedPrices, 
+      getSelectedDeliveryMethod, 
+      getSelectedBranch 
+    } = await import('./checkout-core.js');
+    
+    const calculatedPrices = getCalculatedPrices();
+    const deliveryMethod = getSelectedDeliveryMethod();
+    const selectedBranch = getSelectedBranch();
+    
+    console.log('🔄 Order summary state:', {
+      calculatedPrices: !!calculatedPrices,
+      deliveryMethod,
+      selectedBranch,
+      cartItems: cart?.length || 0
     });
     
-    // المبلغ الفرعي
-    const subtotalText = lang === 'ar' ? 'المبلغ الفرعي' : 'Subtotal';
-    const subtotal = calculatedPrices.subtotal || 0;
-    html += `
-      <div style="display: flex; justify-content: space-between; padding: 8px 0; border-top: 1px solid #ddd; margin-top: 8px;">
-        <span>${subtotalText}</span>
-        <span style="font-weight: 600;">${subtotal.toFixed(2)} ${currency}</span>
-      </div>
-    `;
+    // Build items HTML
+    let itemsHtml = '';
     
-    // الخصم
-    if (calculatedPrices.discount && calculatedPrices.discount > 0) {
-      const discountPercentage = Math.round((calculatedPrices.discount / subtotal) * 100) || 0;
-      const discountText = lang === 'ar' ? 'خصم' : 'Discount';
-      
-      html += `
-        <div style="display: flex; justify-content: space-between; padding: 8px 0; color: #4CAF50;">
-          <span>${discountText} (${discountPercentage}%)</span>
-          <span style="font-weight: 600;">-${calculatedPrices.discount.toFixed(2)} ${currency}</span>
-        </div>
-      `;
-      
-      // رسالة الخصم
-      if (calculatedPrices.discountMessage) {
-        html += `
-          <div style="grid-column: 1 / -1; margin-top: 8px; padding: 8px 12px; background: #e8f5e9; border-radius: 8px; font-size: 0.875rem; color: #2e7d32;">
-            <i data-lucide="gift" style="width: 14px; height: 14px; display: inline; vertical-align: middle;"></i>
-            ${calculatedPrices.discountMessage}
+    if (calculatedPrices && calculatedPrices.items) {
+      // Use calculated items with server prices
+      calculatedPrices.items.forEach(item => {
+        itemsHtml += `
+          <div class="order-item">
+            <div class="order-item-info">
+              <div class="order-item-name">${item.name}</div>
+              <div class="order-item-details">
+                <span class="quantity">× ${item.quantity}</span>
+                <span class="unit-price">${formatPrice(item.price)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</span>
+              </div>
+            </div>
+            <div class="order-item-total">${formatPrice(item.total || item.price * item.quantity)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</div>
           </div>
         `;
-      }
-    }
-    
-    // رسوم التوصيل
-    if (calculatedPrices.deliveryFee && calculatedPrices.deliveryFee > 0) {
-      const deliveryText = lang === 'ar' ? 'رسوم التوصيل' : 'Delivery Fee';
-      html += `
-        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
-          <span>${deliveryText}</span>
-          <span style="font-weight: 600;">${calculatedPrices.deliveryFee.toFixed(2)} ${currency}</span>
-        </div>
-      `;
-    }
-    
-    // عرض معلومات الولاء
-    if (calculatedPrices.loyaltyReward?.eligible) {
-      const loyalty = calculatedPrices.loyaltyReward;
-      
-      html += `
-        <div class="loyalty-info" style="grid-column: 1 / -1; margin-top: 12px; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white;">
-          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-            ${getTierIcon(loyalty.tier)}
-            <span style="font-weight: 700; font-size: 1rem;">
-              ${lang === 'ar' ? loyalty.messageAr : loyalty.messageEn}
-            </span>
+      });
+    } else if (cart && cart.length > 0) {
+      // Use cart items with fallback prices
+      cart.forEach(item => {
+        const itemTotal = (item.price || 0) * item.quantity;
+        itemsHtml += `
+          <div class="order-item">
+            <div class="order-item-info">
+              <div class="order-item-name">${item.name}</div>
+              <div class="order-item-details">
+                <span class="quantity">× ${item.quantity}</span>
+                <span class="unit-price">${formatPrice(item.price || 0)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</span>
+              </div>
+            </div>
+            <div class="order-item-total">${formatPrice(itemTotal)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</div>
           </div>
-          
-          ${loyalty.nextTier ? `
-            <div style="font-size: 0.875rem; opacity: 0.9; display: flex; align-items: center; gap: 6px;">
-              <i data-lucide="arrow-up-circle" style="width: 14px; height: 14px;"></i>
-              <span>
-                ${lang === 'ar' 
-                  ? loyalty.nextTier.note || `باقي ${loyalty.nextTier.ordersNeeded} طلب للترقية`
-                  : `${loyalty.nextTier.ordersNeeded} orders to upgrade`
-                }
-              </span>
+        `;
+      });
+    }
+    
+    // Build totals HTML
+    let totalsHtml = '';
+    
+    if (calculatedPrices) {
+      const { subtotal, deliveryFee, discount, total } = calculatedPrices;
+      
+      totalsHtml = `
+        <div class="order-totals">
+          <div class="order-total-line">
+            <span>${lang === 'ar' ? 'المجموع الفرعي' : 'Subtotal'}</span>
+            <span>${formatPrice(subtotal)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</span>
+          </div>
+          ${deliveryFee > 0 ? `
+            <div class="order-total-line">
+              <span>${lang === 'ar' ? 'رسوم التوصيل' : 'Delivery Fee'}</span>
+              <span>${formatPrice(deliveryFee)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</span>
             </div>
           ` : ''}
-        </div>
-      `;
-    }
-    
-    // عرض Gamification
-    if (calculatedPrices.gamification) {
-      html += renderGamificationSummary(calculatedPrices.gamification, lang);
-    }
-    
-    // الإجمالي
-    const totalText = lang === 'ar' ? 'الإجمالي' : 'Total';
-    const total = calculatedPrices.total || 0;
-    html += `
-      <div style="display: flex; justify-content: space-between; padding: 12px 0; border-top: 2px solid #2196F3; margin-top: 8px; font-weight: 700; font-size: 1.1rem;">
-        <span>${totalText}</span>
-        <span style="color: #2196F3;">${total.toFixed(2)} ${currency}</span>
-      </div>
-    `;
-    
-  } else {
-    // عرض تقديري من السلة
-    if (!cart || cart.length === 0) {
-      html = `
-        <div style="text-align: center; padding: 20px; color: #999;">
-          <p>${lang === 'ar' ? 'السلة فارغة' : 'Cart is empty'}</p>
-        </div>
-      `;
-      orderItems.innerHTML = html;
-      return;
-    }
-    
-    let subtotal = 0;
-    
-    cart.forEach(item => {
-      const allProducts = window.productsManager?.getAllProducts?.() || [];
-      const product = allProducts.find(p => p.id === item.productId || p.id === item.id);
-      
-      if (product && product.price) {
-        const name = lang === 'ar' ? product.name : (product.nameEn || product.name);
-        const price = parseFloat(product.price) || 0;
-        const quantity = item.quantity || 1;
-        const itemTotal = price * quantity;
-        subtotal += itemTotal;
-        
-        html += `
-          <div class="order-item" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
-            <div style="flex: 1;">
-              <div style="font-weight: 600;">${name}</div>
-              <div style="font-size: 0.875rem; color: #999;">× ${quantity}</div>
+          ${discount > 0 ? `
+            <div class="order-total-line discount">
+              <span>${lang === 'ar' ? 'الخصم' : 'Discount'}</span>
+              <span>-${formatPrice(discount)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</span>
             </div>
-            <div style="text-align: right; font-weight: 600;">${itemTotal.toFixed(2)} ${currency}</div>
+          ` : ''}
+          <div class="order-total-line total">
+            <span>${lang === 'ar' ? 'الإجمالي' : 'Total'}</span>
+            <span>${formatPrice(total)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</span>
+          </div>
+        </div>
+      `;
+      
+      // Show offline indicator if applicable
+      if (calculatedPrices.isOffline) {
+        totalsHtml += `
+          <div class="offline-indicator" style="padding: 8px; background: #fff3cd; border-radius: 4px; color: #856404; font-size: 12px; text-align: center; margin-top: 8px;">
+            <i data-lucide="wifi-off" style="width: 14px; height: 14px;"></i>
+            ${lang === 'ar' ? 'الأسعار تقديرية - سيتم التأكيد' : 'Estimated prices - will be confirmed'}
           </div>
         `;
       }
-    });
-    
-    // المبلغ الفرعي
-    html += `
-      <div style="display: flex; justify-content: space-between; padding: 8px 0; border-top: 1px solid #ddd; margin-top: 8px;">
-        <span>${lang === 'ar' ? 'المبلغ الفرعي' : 'Subtotal'}</span>
-        <span style="font-weight: 600;">${subtotal.toFixed(2)} ${currency}</span>
-      </div>
-    `;
-    
-    // رسوم التوصيل تقديرية
-    let deliveryFee = selectedDeliveryMethod === 'delivery' ? 15 : 0;
-    if (deliveryFee > 0) {
-      html += `
-        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
-          <span>${lang === 'ar' ? 'رسوم التوصيل' : 'Delivery Fee'}</span>
-          <span style="font-weight: 600;">${deliveryFee} ${currency}</span>
+    } else if (deliveryMethod) {
+      // Show calculation in progress
+      totalsHtml = `
+        <div class="calculating-prices" style="padding: 16px; text-align: center; color: #666;">
+          <i data-lucide="loader" style="width: 20px; height: 20px; animation: spin 1s linear infinite;"></i>
+          <span style="margin-left: 8px;">${lang === 'ar' ? 'جاري حساب الأسعار...' : 'Calculating prices...'}</span>
         </div>
       `;
     }
     
-    // الإجمالي التقديري
-    const estimatedTotal = subtotal + deliveryFee;
-    html += `
-      <div style="display: flex; justify-content: space-between; padding: 12px 0; border-top: 2px solid #2196F3; margin-top: 8px; font-weight: 700; font-size: 1.1rem;">
-        <span>${lang === 'ar' ? 'الإجمالي (تقديري)' : 'Total (Estimated)'}</span>
-        <span style="color: #2196F3;">${estimatedTotal.toFixed(2)} ${currency}</span>
+    // Combine HTML
+    orderItems.innerHTML = itemsHtml + totalsHtml;
+    
+    // Add branch info if selected
+    if (deliveryMethod === 'pickup' && selectedBranch) {
+      try {
+        const { branches } = await import('./checkout-delivery.js');
+        const branch = branches[selectedBranch];
+        
+        if (branch) {
+          const branchInfo = `
+            <div class="selected-branch-info" style="margin-top: 12px; padding: 8px; background: #f0f7ff; border-radius: 6px; border-left: 3px solid #2196F3;">
+              <div style="font-size: 12px; color: #1976D2; margin-bottom: 4px;">
+                <i data-lucide="store" style="width: 14px; height: 14px;"></i>
+                ${lang === 'ar' ? 'فرع الاستلام' : 'Pickup Branch'}
+              </div>
+              <div style="font-weight: 600; color: #333;">${branch.name[lang]}</div>
+              <div style="font-size: 12px; color: #666;">${branch.address[lang]}</div>
+            </div>
+          `;
+          orderItems.insertAdjacentHTML('beforeend', branchInfo);
+        }
+      } catch (err) {
+        console.warn('⚠️ Could not load branch info:', err);
+      }
+    }
+    
+    // Refresh icons
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+    
+    console.log('✅ Order summary updated successfully');
+    
+  } catch (error) {
+    console.error('❌ Failed to update order summary:', error);
+    
+    // Fallback display
+    orderItems.innerHTML = `
+      <div class="error-message" style="padding: 16px; text-align: center; color: #d32f2f;">
+        <i data-lucide="alert-circle"></i>
+        <span style="margin-left: 8px;">${lang === 'ar' ? 'خطأ في تحميل الملخص' : 'Error loading summary'}</span>
       </div>
     `;
     
-    // ملاحظة
-    html += `
-      <div style="margin-top: 12px; padding: 8px 12px; background: #e3f2fd; border-radius: 8px; font-size: 0.8rem; color: #1565c0; text-align: center;">
-        <i data-lucide="info" style="width: 14px; height: 14px; display: inline; vertical-align: middle;"></i>
-        ${lang === 'ar' 
-          ? '* الأسعار النهائية سيتم حسابها عند تأكيد الطلب'
-          : '* Final prices will be calculated upon order confirmation'
-        }
-      </div>
-    `;
-  }
-  
-  orderItems.innerHTML = html;
-  
-  if (typeof lucide !== 'undefined') {
-    lucide.createIcons();
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
   }
 }
 
 // ================================================================
-// نافذة تأكيد الطلب
+// ✅ FIX 2: Enhanced Modal Management Functions
 // ================================================================
-export function showConfirmedModal(orderId, eta, phone, itemsText, orderData) {
-  const modal = document.getElementById('orderConfirmedModal');
-  if (!modal) return;
+export function closeCheckoutModal(event) {
+  if (event && event.target !== event.currentTarget) {
+    return; // Only close if clicked on overlay, not content
+  }
+  
+  console.log('🔄 Closing checkout modal...');
+  
+  const modals = [
+    'checkoutModal',
+    'permissionModal', 
+    'processingModal',
+    'orderConfirmedModal',
+    'trackingModal'
+  ];
+  
+  modals.forEach(modalId => {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.classList.remove('show');
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+    }
+  });
+  
+  // Restore body scroll
+  document.body.style.overflow = '';
+  
+  console.log('✅ Checkout modal closed');
+}
+
+export function showProcessingModal(show = true, showError = false, errorMessage = '') {
+  console.log('🔄 Processing modal:', { show, showError, errorMessage });
+  
+  const modal = document.getElementById('processingModal');
+  if (!modal) {
+    console.warn('⚠️ Processing modal not found');
+    return;
+  }
   
   const lang = window.currentLang || 'ar';
   
-  modal.classList.remove('hidden');
-  document.body.style.overflow = 'hidden';
-  
-  // رقم الطلب
-  const orderIdEl = document.getElementById('confirmedOrderId');
-  if (orderIdEl) orderIdEl.textContent = orderId;
-  
-  // الوقت المتوقع
-  const etaEl = document.getElementById('confirmedEta');
-  if (etaEl) {
-    const etaText = lang === 'ar' 
-      ? `الوقت المتوقع: ${eta}`
-      : `Estimated time: ${eta}`;
-    etaEl.textContent = etaText;
-  }
-  
-  // معلومات الفرع
-  const branchInfo = document.getElementById('selectedBranchInfo');
-  if (branchInfo && orderData.deliveryMethod === 'pickup' && orderData.branchInfo) {
-    branchInfo.style.display = 'block';
-    const branchName = document.getElementById('selectedBranchName');
-    const branchAddress = document.getElementById('selectedBranchAddress');
-    if (branchName) branchName.textContent = orderData.branchInfo.name[lang];
-    if (branchAddress) branchAddress.textContent = orderData.branchInfo.address[lang];
-  } else if (branchInfo) {
-    branchInfo.style.display = 'none';
-  }
-  
-  // رسالة الترقية
-  const loyaltyReward = orderData.loyaltyReward;
-  if (loyaltyReward?.justUpgraded) {
-    const upgradeMsg = document.getElementById('upgradeMessage');
-    if (upgradeMsg) {
-      upgradeMsg.style.display = 'block';
-      upgradeMsg.innerHTML = `
-        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px; border-radius: 12px; text-align: center; font-weight: 600; margin-top: 12px;">
-          ${getUpgradeMessage(loyaltyReward.tier, lang)}
-        </div>
-      `;
+  if (show) {
+    modal.classList.remove('hidden');
+    modal.classList.add('show');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    
+    const title = modal.querySelector('#processing-title');
+    const subtitle = modal.querySelector('#processing-subtitle');
+    const actions = modal.querySelector('#processingActions');
+    
+    if (showError) {
+      // Show error state
+      if (title) title.textContent = lang === 'ar' ? 'فشل في إرسال الطلب' : 'Order Failed';
+      if (subtitle) subtitle.textContent = errorMessage || (lang === 'ar' ? 'حدث خطأ أثناء معالجة طلبك' : 'An error occurred while processing your order');
+      if (actions) actions.style.display = 'block';
+    } else {
+      // Show loading state
+      if (title) title.textContent = lang === 'ar' ? 'جاري إرسال طلبك...' : 'Sending your order...';
+      if (subtitle) subtitle.textContent = lang === 'ar' ? 'الرجاء الانتظار، لا تغلق الصفحة' : 'Please wait, do not close the page';
+      if (actions) actions.style.display = 'none';
     }
+  } else {
+    modal.classList.remove('show');
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
   }
-  
-  // الأزرار
-  const total = orderData.calculatedPrices?.total || 0;
-  setupConfirmedModalButtons(orderId, itemsText, phone, total);
-  
-  if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-// ================================================================
-// إعداد أزرار نافذة التأكيد
-// ================================================================
-function setupConfirmedModalButtons(orderId, itemsText, phone, total) {
-  const copyBtn = document.getElementById('copyOrderIdBtn');
-  const whatsappBtn = document.getElementById('shareWhatsAppBtn');
-  const trackBtn = document.getElementById('trackOrderBtn');
-  const closeBtn = document.getElementById('closeConfirmedBtn');
-  const continueBtn = document.getElementById('continueShoppingBtn');
+export function showConfirmedModal(orderId, eta, customerPhone, itemsText, orderData) {
+  console.log('🔄 Showing confirmed modal:', { orderId, eta, customerPhone });
+  
+  const modal = document.getElementById('orderConfirmedModal');
+  if (!modal) {
+    console.warn('⚠️ Confirmed modal not found');
+    return;
+  }
+  
+  const lang = window.currentLang || 'ar';
+  
+  // Update modal content
+  const orderIdEl = modal.querySelector('#confirmedOrderId');
+  const etaEl = modal.querySelector('#confirmedEta');
+  const branchInfoEl = modal.querySelector('#selectedBranchInfo');
+  const branchNameEl = modal.querySelector('#selectedBranchName');
+  const branchAddressEl = modal.querySelector('#selectedBranchAddress');
+  
+  if (orderIdEl) orderIdEl.textContent = orderId;
+  if (etaEl) etaEl.textContent = lang === 'ar' ? `الوقت المتوقع: ≈ ${eta}` : `Estimated time: ≈ ${eta}`;
+  
+  // Show branch info if pickup
+  if (orderData?.deliveryMethod === 'pickup' && orderData?.branch && branchInfoEl) {
+    import('./checkout-delivery.js').then(({ branches }) => {
+      const branch = branches[orderData.branch];
+      if (branch && branchNameEl && branchAddressEl) {
+        branchNameEl.textContent = branch.name[lang];
+        branchAddressEl.textContent = branch.address[lang];
+        branchInfoEl.style.display = 'block';
+      }
+    }).catch(err => {
+      console.warn('⚠️ Could not load branch info for confirmed modal:', err);
+    });
+  } else if (branchInfoEl) {
+    branchInfoEl.style.display = 'none';
+  }
+  
+  // Setup event handlers
+  const copyBtn = modal.querySelector('#copyOrderIdBtn');
+  const whatsappBtn = modal.querySelector('#shareWhatsAppBtn');
+  const trackBtn = modal.querySelector('#trackOrderBtn');
+  const continueBtn = modal.querySelector('#continueShoppingBtn');
+  const closeBtn = modal.querySelector('#closeConfirmedBtn');
   
   if (copyBtn) {
     copyBtn.onclick = () => copyOrderId(orderId);
   }
   
   if (whatsappBtn) {
-    whatsappBtn.onclick = () => shareOnWhatsApp(orderId, itemsText, phone, total);
+    whatsappBtn.onclick = () => shareOnWhatsApp(orderId, itemsText, customerPhone);
   }
   
   if (trackBtn) {
     trackBtn.onclick = () => openTrackingModal(orderId);
   }
   
-  if (closeBtn) {
-    closeBtn.onclick = () => {
-      const modal = document.getElementById('orderConfirmedModal');
-      if (modal) modal.classList.add('hidden');
-      document.body.style.overflow = '';
-    };
+  if (continueBtn) {
+    continueBtn.onclick = closeCheckoutModal;
   }
   
-  if (continueBtn) {
-    continueBtn.onclick = () => {
-      const modal = document.getElementById('orderConfirmedModal');
-      if (modal) modal.classList.add('hidden');
-      document.body.style.overflow = '';
-    };
+  if (closeBtn) {
+    closeBtn.onclick = closeCheckoutModal;
   }
+  
+  // Show modal
+  modal.classList.remove('hidden');
+  modal.classList.add('show');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  
+  // Refresh icons
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
+  
+  console.log('✅ Confirmed modal shown');
 }
 
 // ================================================================
-// نسخ رقم الطلب
+// ✅ FIX 3: Enhanced Form Management
 // ================================================================
-function copyOrderId(orderId) {
-  const lang = window.currentLang || 'ar';
+export function resetFormFields() {
+  console.log('🔄 Resetting form fields...');
   
+  const fields = [
+    'customerName',
+    'customerPhone', 
+    'customerAddress',
+    'orderNotes',
+    'promoCodeInput'
+  ];
+  
+  fields.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field) {
+      field.value = '';
+      field.disabled = false;
+    }
+  });
+  
+  // Reset promo status
+  const promoStatus = document.getElementById('promoStatus');
+  if (promoStatus) {
+    promoStatus.style.display = 'none';
+    promoStatus.innerHTML = '';
+  }
+  
+  // Reset location button
+  const locationBtn = document.getElementById('locationBtn');
+  if (locationBtn) {
+    locationBtn.classList.remove('active');
+    locationBtn.disabled = false;
+    const lang = window.currentLang || 'ar';
+    locationBtn.innerHTML = `
+      <i data-lucide="navigation"></i>
+      <span>${lang === 'ar' ? 'استخدام الموقع الحالي' : 'Use Current Location'}</span>
+    `;
+  }
+  
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
+  
+  console.log('✅ Form fields reset');
+}
+
+export function fillSavedUserData() {
+  console.log('🔄 Filling saved user data...');
+  
+  const userData = storage.getUserData();
+  if (!userData) {
+    console.log('⚠️ No saved user data found');
+    return;
+  }
+  
+  // Fill name
+  const nameField = document.getElementById('customerName');
+  if (nameField && userData.name) {
+    nameField.value = userData.name;
+  }
+  
+  // Fill phone  
+  const phoneField = document.getElementById('customerPhone');
+  if (phoneField && userData.phone) {
+    phoneField.value = userData.phone;
+  }
+  
+  console.log('✅ Saved user data filled');
+}
+
+export function saveFormData() {
+  const nameField = document.getElementById('customerName');
+  const phoneField = document.getElementById('customerPhone');
+  
+  if (nameField?.value || phoneField?.value) {
+    const userData = storage.getUserData() || {};
+    
+    if (nameField?.value) userData.name = nameField.value;
+    if (phoneField?.value) userData.phone = phoneField.value;
+    
+    storage.setUserData(userData);
+    console.log('💾 Form data saved');
+  }
+}
+
+export function restoreFormData() {
+  saveFormData(); // Auto-save current data
+}
+
+// ================================================================
+// ✅ FIX 4: Enhanced UI Reset Function
+// ================================================================
+export function resetCheckoutUI() {
+  console.log('🔄 Resetting checkout UI...');
+  
+  // Reset delivery method selection
+  document.querySelectorAll('.delivery-option').forEach(option => {
+    option.classList.remove('selected');
+  });
+  
+  // Reset branch selection
+  document.querySelectorAll('.branch-card').forEach(card => {
+    card.classList.remove('selected');
+  });
+  
+  // Hide branch selection
+  const branchSelection = document.getElementById('branchSelection');
+  if (branchSelection) {
+    branchSelection.style.display = 'none';
+  }
+  
+  // Hide address group
+  const addressGroup = document.getElementById('addressGroup');
+  if (addressGroup) {
+    addressGroup.style.display = 'none';
+  }
+  
+  // Hide checkout form initially
+  const checkoutForm = document.getElementById('checkoutForm');
+  if (checkoutForm) {
+    checkoutForm.classList.remove('show');
+  }
+  
+  console.log('✅ Checkout UI reset');
+}
+
+// ================================================================
+// ✅ FIX 5: Enhanced Sharing Functions
+// ================================================================
+export function copyOrderId(orderId) {
   if (navigator.clipboard) {
     navigator.clipboard.writeText(orderId).then(() => {
+      const lang = window.currentLang || 'ar';
       showToast(
-        lang === 'ar' ? 'تم النسخ' : 'Copied',
+        lang === 'ar' ? 'تم النسخ!' : 'Copied!',
         lang === 'ar' ? 'تم نسخ رقم الطلب' : 'Order ID copied',
         'success'
       );
     }).catch(err => {
-      console.error('Copy failed:', err);
-      fallbackCopy(orderId);
+      console.warn('⚠️ Could not copy to clipboard:', err);
+      fallbackCopyTextToClipboard(orderId);
     });
   } else {
-    fallbackCopy(orderId);
+    fallbackCopyTextToClipboard(orderId);
   }
 }
 
-function fallbackCopy(text) {
-  const lang = window.currentLang || 'ar';
+function fallbackCopyTextToClipboard(text) {
   const textArea = document.createElement('textarea');
   textArea.value = text;
   textArea.style.position = 'fixed';
-  textArea.style.left = '-999999px';
+  textArea.style.top = '0';
+  textArea.style.left = '0';
+  textArea.style.width = '2em';
+  textArea.style.height = '2em';
+  textArea.style.padding = '0';
+  textArea.style.border = 'none';
+  textArea.style.outline = 'none';
+  textArea.style.boxShadow = 'none';
+  textArea.style.background = 'transparent';
   document.body.appendChild(textArea);
+  textArea.focus();
   textArea.select();
   
   try {
     document.execCommand('copy');
+    const lang = window.currentLang || 'ar';
     showToast(
-      lang === 'ar' ? 'تم النسخ' : 'Copied',
+      lang === 'ar' ? 'تم النسخ!' : 'Copied!',
       lang === 'ar' ? 'تم نسخ رقم الطلب' : 'Order ID copied',
       'success'
     );
   } catch (err) {
+    console.error('❌ Fallback copy failed:', err);
+    const lang = window.currentLang || 'ar';
     showToast(
       lang === 'ar' ? 'خطأ' : 'Error',
       lang === 'ar' ? 'فشل النسخ' : 'Copy failed',
@@ -367,64 +523,72 @@ function fallbackCopy(text) {
   document.body.removeChild(textArea);
 }
 
-// ================================================================
-// مشاركة عبر WhatsApp
-// ================================================================
-function shareOnWhatsApp(orderId, itemsText, phone, total) {
+export function shareOnWhatsApp(orderId, itemsText, customerPhone) {
   const lang = window.currentLang || 'ar';
-  const currency = window.i18n?.t?.[lang]?.currency || 'ج.م';
-  
-  const message = lang === 'ar'
-    ? `🎉 طلب جديد!\n\nرقم الطلب: ${orderId}\nالمنتجات: ${itemsText}\nالإجمالي: ${total.toFixed(2)} ${currency}\n\nشكراً لطلبك!`
-    : `🎉 New Order!\n\nOrder ID: ${orderId}\nItems: ${itemsText}\nTotal: ${total.toFixed(2)} ${currency}\n\nThank you!`;
+  const message = lang === 'ar' 
+    ? `طلبي من المطعم 🍕\nرقم الطلب: ${orderId}\nالطلبات: ${itemsText}\nللاستفسار: ${customerPhone}`
+    : `My restaurant order 🍕\nOrder ID: ${orderId}\nItems: ${itemsText}\nPhone: ${customerPhone}`;
   
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
   window.open(whatsappUrl, '_blank');
 }
 
 // ================================================================
-// فتح نافذة التتبع
+// ✅ FIX 6: Enhanced Tracking Functions  
 // ================================================================
 export function openTrackingModal(orderId = '') {
-  const modal = document.getElementById('trackingModal');
-  if (!modal) return;
+  console.log('🔄 Opening tracking modal with order ID:', orderId);
   
+  const modal = document.getElementById('trackingModal');
+  if (!modal) {
+    console.warn('⚠️ Tracking modal not found');
+    return;
+  }
+  
+  // Close other modals first
+  closeCheckoutModal();
+  
+  // Pre-fill order ID if provided
+  const trackingInput = document.getElementById('trackingInput');
+  if (trackingInput && orderId) {
+    trackingInput.value = orderId;
+  }
+  
+  // Clear previous results
+  const trackingResult = document.getElementById('trackingResult');
+  if (trackingResult) {
+    trackingResult.style.display = 'none';
+    trackingResult.innerHTML = '';
+  }
+  
+  // Show modal
   modal.classList.remove('hidden');
+  modal.classList.add('show');
+  modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
   
-  const input = document.getElementById('trackingInput');
-  if (input) {
-    input.value = orderId;
-    setTimeout(() => input.focus(), 100);
+  // Focus input
+  if (trackingInput) {
+    setTimeout(() => trackingInput.focus(), 100);
   }
   
-  const closeBtn = document.getElementById('closeTrackingBtn');
-  if (closeBtn) {
-    closeBtn.onclick = () => {
-      modal.classList.add('hidden');
-      document.body.style.overflow = '';
-    };
-  }
-  
-  const checkBtn = document.getElementById('checkStatusBtn');
-  if (checkBtn) {
-    checkBtn.onclick = () => checkOrderStatus();
-  }
-  
-  if (typeof lucide !== 'undefined') lucide.createIcons();
+  console.log('✅ Tracking modal opened');
 }
 
-// ================================================================
-// التحقق من حالة الطلب
-// ================================================================
 export async function checkOrderStatus() {
-  const input = document.getElementById('trackingInput');
-  const result = document.getElementById('trackingResult');
+  console.log('🔄 Checking order status...');
   
-  if (!input || !result) return;
+  const trackingInput = document.getElementById('trackingInput');
+  const trackingResult = document.getElementById('trackingResult');
+  const checkBtn = document.getElementById('checkStatusBtn');
   
+  if (!trackingInput || !trackingResult) {
+    console.warn('⚠️ Tracking elements not found');
+    return;
+  }
+  
+  const orderId = trackingInput.value.trim();
   const lang = window.currentLang || 'ar';
-  const orderId = input.value.trim();
   
   if (!orderId) {
     showToast(
@@ -435,182 +599,141 @@ export async function checkOrderStatus() {
     return;
   }
   
-  result.style.display = 'block';
-  result.innerHTML = `
-    <div style="text-align: center; padding: 20px;">
-      <div class="spinner" style="width: 40px; height: 40px; margin: 0 auto 16px; border: 3px solid #f3f3f3; border-top: 3px solid #2196F3; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-      <p>${lang === 'ar' ? 'جاري البحث...' : 'Searching...'}</p>
-    </div>
-  `;
+  // Show loading
+  if (checkBtn) {
+    checkBtn.disabled = true;
+    checkBtn.innerHTML = '<i data-lucide="loader"></i><span>جاري البحث...</span>';
+  }
   
   try {
-    const orderStatus = await api.trackOrder(orderId);
+    const { api } = await import('../api.js');
+    const result = await api.getOrderStatus(orderId);
     
-    console.log('✅ Order status:', orderStatus);
-    
-    const statusColor = orderStatus.status.includes('مقبول') || orderStatus.status.includes('accepted') 
-      ? '#4CAF50' 
-      : orderStatus.status.includes('مرفوض') || orderStatus.status.includes('rejected')
-      ? '#f44336'
-      : '#2196F3';
-    
-    const statusIcon = orderStatus.status.includes('مقبول') || orderStatus.status.includes('accepted')
-      ? 'check-circle'
-      : orderStatus.status.includes('مرفوض') || orderStatus.status.includes('rejected')
-      ? 'x-circle'
-      : 'clock';
-    
-    const html = `
-      <div style="text-align: center;">
-        <div style="width: 60px; height: 60px; background: ${statusColor}; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: white;">
-          <i data-lucide="${statusIcon}" style="width: 30px; height: 30px;"></i>
-        </div>
-        <h4 style="font-size: 18px; font-weight: 700; color: #1a1a1a; margin-bottom: 8px;">${orderStatus.status}</h4>
-        <p style="font-size: 14px; color: #666; margin-bottom: 16px;">
-          ${lang === 'ar' ? 'رقم الطلب:' : 'Order ID:'} <strong>${orderId}</strong>
-        </p>
-        <div style="background: white; padding: 16px; border-radius: 12px; margin-bottom: 12px; border: 1px solid #e0e0e0;">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-            <span style="font-size: 14px; color: #666;">${lang === 'ar' ? 'التاريخ:' : 'Date:'}</span>
-            <span style="font-size: 14px; font-weight: 600;">${orderStatus.date}</span>
+    if (result && result.found) {
+      const { status, eta, items, total, deliveryMethod, branch } = result;
+      
+      let statusText = status;
+      let statusColor = '#2196F3';
+      
+      // Map status to user-friendly text
+      const statusMap = {
+        'pending': { ar: 'قيد الانتظار', en: 'Pending', color: '#ff9800' },
+        'confirmed': { ar: 'تم التأكيد', en: 'Confirmed', color: '#2196F3' },
+        'preparing': { ar: 'قيد التحضير', en: 'Preparing', color: '#ff5722' },
+        'ready': { ar: 'جاهز للاستلام', en: 'Ready', color: '#4caf50' },
+        'out_for_delivery': { ar: 'في الطريق', en: 'Out for Delivery', color: '#9c27b0' },
+        'delivered': { ar: 'تم التوصيل', en: 'Delivered', color: '#4caf50' },
+        'cancelled': { ar: 'ملغي', en: 'Cancelled', color: '#f44336' }
+      };
+      
+      if (statusMap[status]) {
+        statusText = statusMap[status][lang];
+        statusColor = statusMap[status].color;
+      }
+      
+      // Build result HTML
+      let resultHtml = `
+        <div class="tracking-order-info" style="text-align: center; padding: 20px;">
+          <div class="tracking-status" style="margin-bottom: 16px;">
+            <div class="status-badge" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: ${statusColor}; color: white; border-radius: 20px; font-weight: 600;">
+              <i data-lucide="package"></i>
+              <span>${statusText}</span>
+            </div>
           </div>
-          <div style="display: flex; align-items: center; justify-content: space-between;">
-            <span style="font-size: 14px; color: #666;">${lang === 'ar' ? 'المبلغ:' : 'Total:'}</span>
-            <span style="font-size: 14px; font-weight: 600;">${orderStatus.total} ${lang === 'ar' ? 'ج.م' : 'EGP'}</span>
+          
+          <div class="tracking-details" style="background: #f8f9fa; border-radius: 8px; padding: 16px; text-align: left;">
+            <div class="detail-row" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <span style="color: #666;">${lang === 'ar' ? 'رقم الطلب:' : 'Order ID:'}</span>
+              <span style="font-weight: 600;">${orderId}</span>
+            </div>
+            
+            ${eta ? `
+              <div class="detail-row" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span style="color: #666;">${lang === 'ar' ? 'الوقت المتوقع:' : 'ETA:'}</span>
+                <span style="font-weight: 600;">${eta}</span>
+              </div>
+            ` : ''}
+            
+            ${total ? `
+              <div class="detail-row" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span style="color: #666;">${lang === 'ar' ? 'الإجمالي:' : 'Total:'}</span>
+                <span style="font-weight: 600;">${formatPrice(total)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</span>
+              </div>
+            ` : ''}
+            
+            <div class="detail-row" style="display: flex; justify-content: space-between;">
+              <span style="color: #666;">${lang === 'ar' ? 'طريقة الاستلام:' : 'Method:'}</span>
+              <span style="font-weight: 600;">${deliveryMethod === 'pickup' ? (lang === 'ar' ? 'استلام من الفرع' : 'Pickup') : (lang === 'ar' ? 'توصيل' : 'Delivery')}</span>
+            </div>
           </div>
+          
+          ${items && items.length > 0 ? `
+            <div class="tracking-items" style="margin-top: 16px; background: #f8f9fa; border-radius: 8px; padding: 16px;">
+              <div style="font-weight: 600; margin-bottom: 12px; color: #333;">${lang === 'ar' ? 'عناصر الطلب:' : 'Order Items:'}</div>
+              ${items.map(item => `
+                <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #eee;">
+                  <span>${item.name} × ${item.quantity}</span>
+                  <span>${formatPrice(item.total)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</span>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
         </div>
-        <div style="background: ${statusColor}20; padding: 12px; border-radius: 8px; font-size: 13px; color: ${statusColor};">
-          <i data-lucide="info" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle;"></i> 
-          ${lang === 'ar' ? 'سنوافيك بأي تحديثات عبر الهاتف' : 'We will update you via phone'}
+      `;
+      
+      trackingResult.innerHTML = resultHtml;
+      trackingResult.style.display = 'block';
+      
+    } else {
+      // Order not found
+      trackingResult.innerHTML = `
+        <div class="tracking-not-found" style="text-align: center; padding: 20px; color: #d32f2f;">
+          <i data-lucide="search-x" style="width: 48px; height: 48px; margin-bottom: 16px;"></i>
+          <h4>${lang === 'ar' ? 'الطلب غير موجود' : 'Order Not Found'}</h4>
+          <p>${lang === 'ar' ? 'تحقق من رقم الطلب وحاول مرة أخرى' : 'Check the order ID and try again'}</p>
         </div>
-      </div>
-    `;
-    
-    result.innerHTML = html;
-    
-    if (typeof lucide !== 'undefined') lucide.createIcons();
+      `;
+      trackingResult.style.display = 'block';
+    }
     
   } catch (error) {
-    console.error('❌ Order tracking failed:', error);
+    console.error('❌ Failed to check order status:', error);
     
-    const html = `
-      <div style="text-align: center;">
-        <div style="width: 60px; height: 60px; background: #ffebee; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: #f44336;">
-          <i data-lucide="search-x" style="width: 30px; height: 30px;"></i>
-        </div>
-        <h4 style="font-size: 18px; font-weight: 700; color: #1a1a1a; margin-bottom: 8px;">
-          ${lang === 'ar' ? 'لم يتم العثور على الطلب' : 'Order Not Found'}
-        </h4>
-        <p style="font-size: 14px; color: #666; margin-bottom: 16px;">
-          ${lang === 'ar' ? 'تأكد من رقم الطلب وحاول مرة أخرى' : 'Check the order ID and try again'}
-        </p>
+    trackingResult.innerHTML = `
+      <div class="tracking-error" style="text-align: center; padding: 20px; color: #d32f2f;">
+        <i data-lucide="alert-circle" style="width: 48px; height: 48px; margin-bottom: 16px;"></i>
+        <h4>${lang === 'ar' ? 'خطأ في التحقق' : 'Check Failed'}</h4>
+        <p>${error.message || (lang === 'ar' ? 'حدث خطأ أثناء التحقق من الطلب' : 'An error occurred while checking the order')}</p>
       </div>
     `;
+    trackingResult.style.display = 'block';
     
-    result.innerHTML = html;
+  } finally {
+    // Reset button
+    if (checkBtn) {
+      checkBtn.disabled = false;
+      checkBtn.innerHTML = '<i data-lucide="search"></i><span>تحقق</span>';
+    }
     
-    if (typeof lucide !== 'undefined') lucide.createIcons();
+    // Refresh icons
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
   }
 }
 
 // ================================================================
-// باقي دوال الـ UI
+// ✅ FIX 7: Permission Modal Functions
 // ================================================================
-export function resetFormFields() {
-  const fields = ['customerName', 'customerPhone', 'customerAddress', 'orderNotes', 'promoCodeInput'];
-  fields.forEach(fieldId => {
-    const field = document.getElementById(fieldId);
-    if (field) field.value = '';
-  });
+export function closePermissionModal() {
+  console.log('🔄 Closing permission modal...');
   
-  const promoStatus = document.getElementById('promoStatus');
-  if (promoStatus) promoStatus.style.display = 'none';
-}
-
-export function fillSavedUserData() {
-  const userData = storage.getUserData();
-  
-  if (userData) {
-    const nameField = document.getElementById('customerName');
-    const phoneField = document.getElementById('customerPhone');
-    
-    if (nameField && userData.name) nameField.value = userData.name;
-    if (phoneField && userData.phone) phoneField.value = userData.phone;
-  }
-}
-
-export function resetCheckoutUI() {
-  document.querySelectorAll('.delivery-option').forEach(opt => {
-    opt.classList.remove('selected');
-  });
-  
-  document.querySelectorAll('.branch-card').forEach(card => {
-    card.classList.remove('selected');
-  });
-  
-  const branchSelection = document.getElementById('branchSelection');
-  if (branchSelection) branchSelection.style.display = 'none';
-  
-  const checkoutForm = document.getElementById('checkoutForm');
-  if (checkoutForm) checkoutForm.classList.remove('show');
-}
-
-export function closeCheckoutModal(event) {
-  if (event && !event.target.classList.contains('checkout-modal-overlay')) return;
-  
-  const modal = document.getElementById('checkoutModal');
-  if (modal) modal.classList.remove('show');
-  document.body.style.overflow = '';
-}
-
-export function showProcessingModal(show, withActions = false) {
-  const modal = document.getElementById('processingModal');
-  if (!modal) return;
-  
-  if (show) {
-    modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-  } else {
+  const modal = document.getElementById('permissionModal');
+  if (modal) {
+    modal.classList.remove('show');
     modal.classList.add('hidden');
-    document.body.style.overflow = '';
+    modal.style.display = 'none';
   }
-  
-  const actions = document.getElementById('processingActions');
-  if (actions) {
-    actions.style.display = withActions ? 'block' : 'none';
-  }
-  
-  if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-export function saveFormData() {
-  const nameField = document.getElementById('customerName');
-  const phoneField = document.getElementById('customerPhone');
-  const addressField = document.getElementById('customerAddress');
-  const notesField = document.getElementById('orderNotes');
-  
-  const formData = {
-    name: nameField?.value || '',
-    phone: phoneField?.value || '',
-    address: addressField?.value || '',
-    notes: notesField?.value || ''
-  };
-  
-  storage.setCheckoutFormData(formData);
-}
-
-export function restoreFormData() {
-  const formData = storage.getCheckoutFormData();
-  
-  if (!formData) return;
-  
-  const nameField = document.getElementById('customerName');
-  const phoneField = document.getElementById('customerPhone');
-  const addressField = document.getElementById('customerAddress');
-  const notesField = document.getElementById('orderNotes');
-  
-  if (formData.name && nameField) nameField.value = formData.name;
-  if (formData.phone && phoneField) phoneField.value = formData.phone;
-  if (formData.address && addressField) addressField.value = formData.address;
-  if (formData.notes && notesField) notesField.value = formData.notes;
-}
+console.log('✅ checkout-ui.js loaded successfully');

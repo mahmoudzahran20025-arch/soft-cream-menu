@@ -1,14 +1,19 @@
 // ================================================================
-// CHECKOUT CORE - الوظائف الأساسية (FIXED - Minimal Changes)
+// CHECKOUT CORE - الوظائف الأساسية (FIXED VERSION)
 // ================================================================
 
+console.log('🔄 Loading checkout-core.js');
+
+// ================================================================
+// Static Imports - الوحدات المطلوبة دائماً
+// ================================================================
 import { cart, clearCart } from '../cart.js';
 import { api } from '../api.js';
 import { storage } from '../storage.js';
 import { showToast, generateUUID } from '../utils.js';
 
 // ================================================================
-// المتغيرات العامة
+// المتغيرات العامة - State Management
 // ================================================================
 export let selectedDeliveryMethod = null;
 export let selectedBranch = null;
@@ -18,30 +23,40 @@ export let calculatedPrices = null;
 export let activePromoCode = null;
 
 // ================================================================
-// Setters (للسماح بالتعديل من خارج الملف)
+// ✅ FIX 1: Enhanced Setters with Logging
 // ================================================================
 export function setDeliveryMethod(method) {
+  console.log('🔄 Setting delivery method:', method);
   selectedDeliveryMethod = method;
 }
 
 export function setBranch(branch) {
+  console.log('🔄 Setting branch:', branch);
   selectedBranch = branch;
 }
 
 export function setUserLocation(location) {
+  console.log('🔄 Setting user location:', location);
   userLocation = location;
 }
 
 export function setCalculatedPrices(prices) {
+  console.log('🔄 Setting calculated prices:', prices);
   calculatedPrices = prices;
 }
 
 export function setActivePromoCode(code) {
+  console.log('🔄 Setting active promo code:', code);
   activePromoCode = code;
 }
 
+export function setCurrentOrderData(data) {
+  console.log('🔄 Setting current order data:', data);
+  currentOrderData = data;
+}
+
 // ================================================================
-// ✅ NEW: Getters (للوصول إلى القيم الحالية)
+// ✅ FIX 2: Enhanced Getters
 // ================================================================
 export function getSelectedDeliveryMethod() {
   return selectedDeliveryMethod;
@@ -68,213 +83,47 @@ export function getCurrentOrderData() {
 }
 
 // ================================================================
-// بدء عملية الشراء
-// ================================================================
-/*
-export async function initiateCheckout() {
-  console.log('🔹 initiateCheckout called');
-  console.log('🔹 Cart contents:', cart);
-
-  if (!cart || cart.length === 0) {
-    const lang = window.currentLang || 'ar';
-    showToast(
-      lang === 'ar' ? 'السلة فارغة' : 'Cart is empty',
-      lang === 'ar' ? 'أضف بعض المنتجات أولاً' : 'Add some products first',
-      'error'
-    );
-    return;
-  }
-
-  // إعادة تعيين
-  selectedDeliveryMethod = null;
-  selectedBranch = null;
-  calculatedPrices = null;
-  activePromoCode = null;
-
-  try {
-    const { resetFormFields, fillSavedUserData, resetCheckoutUI, updateOrderSummary } = await import('./checkout-ui.js');
-    const { loadBranches } = await import('./checkout-delivery.js');
-
-    await loadBranches();
-    console.log('🔹 loadBranches done');
-
-    resetFormFields();
-    fillSavedUserData();
-    updateOrderSummary();
-    resetCheckoutUI();
-    console.log('🔹 UI reset done');
-  } catch (err) {
-    console.error('❌ Error in checkout setup:', err);
-  }
-
-  // إظهار Modal
-  const modal = document.getElementById('checkoutModal');
-  if (modal) {
-    modal.classList.remove('hidden');
-    modal.classList.add('show');
-    document.body.style.overflow = 'hidden';
-    console.log('🔹 Modal opened');
-  }
-
-  if (typeof lucide !== 'undefined') {
-    lucide.createIcons();
-  }
-}*/
-if (typeof window !== 'undefined') {
-  // تعريف واضح للـ initiateCheckout
-  window.initiateCheckout = async function() {
-    console.log('🚀 Starting checkout process...');
-    
-    // 1. التحقق من وجود منتجات في السلة
-    if (!cart || cart.length === 0) {
-      const lang = window.currentLang || 'ar';
-      showToast(
-        lang === 'ar' ? 'السلة فارغة' : 'Cart is empty',
-        lang === 'ar' ? 'أضف بعض المنتجات أولاً' : 'Add some products first',
-        'error'
-      );
-      return;
-    }
-    
-    // 2. عرض Modal الـ checkout
-    const modal = document.getElementById('checkoutModal');
-    if (!modal) {
-      console.error('❌ Checkout modal not found!');
-      return;
-    }
-
-    try {
-      // Show modal first
-      modal.style.display = 'block';
-      modal.classList.add('show');
-      document.body.style.overflow = 'hidden';
-      
-      // 3. تهيئة الـ checkout
-      if (typeof window.checkoutModule?.initiateCheckout === 'function') {
-        await window.checkoutModule.initiateCheckout();
-      }
-      
-      // إعادة تعيين الحقول
-      const { resetFormFields, fillSavedUserData, resetCheckoutUI } = await import('./checkout/checkout-ui.js');
-      const { updateOrderSummary } = await import('./checkout/checkout-ui.js');
-      const { loadBranches } = await import('./checkout/checkout-delivery.js');
-    
-      await loadBranches();
-      resetFormFields();
-      fillSavedUserData();
-      updateOrderSummary();
-      resetCheckoutUI();
-
-      // تحديث الأيقونات
-      if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
-      }
-      
-      console.log('✅ Checkout initiated successfully');
-    } catch (error) {
-      console.error('❌ Error during checkout:', error);
-      // Hide modal on error
-      modal.style.display = 'none';
-      modal.classList.remove('show');
-      document.body.style.overflow = '';
-      
-      const lang = window.currentLang || 'ar';
-      showToast(
-        lang === 'ar' ? 'خطأ' : 'Error',
-        error.message || (lang === 'ar' ? 'حدث خطأ أثناء التحميل' : 'Error during loading'),
-        'error'
-      );
-    }
-  };
-
-  // للتأكد من تحميل كل شيء
-  window.debugCheckout = () => {
-    console.log({
-      initiateCheckoutExists: typeof window.initiateCheckout === 'function',
-      moduleExists: typeof window.checkoutModule === 'object',
-      modalExists: !!document.getElementById('checkoutModal'),
-      modalState: {
-        element: document.getElementById('checkoutModal'),
-        display: document.getElementById('checkoutModal')?.style.display,
-        classes: document.getElementById('checkoutModal')?.classList.toString()
-      }
-    });
-  };
-}
-import { cart } from './cart.js';
-import { showToast } from './utils.js';
-import { initiateCheckout as coreInitiate } from './checkout/checkout-core.js';
-
-if (typeof window !== 'undefined') {
-  // تعريف واضح للـ initiateCheckout
-  window.initiateCheckout = async function() {
-    console.log('🚀 Starting checkout process...');
-    
-    // 1. التحقق من وجود منتجات في السلة
-    if (!cart || cart.length === 0) {
-      const lang = window.currentLang || 'ar';
-      showToast(
-        lang === 'ar' ? 'السلة فارغة' : 'Cart is empty',
-        lang === 'ar' ? 'أضف بعض المنتجات أولاً' : 'Add some products first',
-        'error'
-      );
-      return;
-    }
-    
-    // 2. عرض Modal الـ checkout
-    const modal = document.getElementById('checkoutModal');
-    if (!modal) {
-      console.error('❌ Checkout modal not found!');
-      return;
-    }
-
-    try {
-      modal.style.display = 'block';
-      modal.classList.add('show');
-      document.body.style.overflow = 'hidden';
-      
-      // 3. تهيئة الـ checkout
-      await coreInitiate();
-      
-      console.log('✅ Checkout initiated successfully');
-    } catch (error) {
-      console.error('❌ Error during checkout:', error);
-      modal.style.display = 'none';
-      modal.classList.remove('show');
-      document.body.style.overflow = '';
-      
-      const lang = window.currentLang || 'ar';
-      showToast(
-        lang === 'ar' ? 'خطأ' : 'Error',
-        error.message || (lang === 'ar' ? 'حدث خطأ أثناء التحميل' : 'Error during loading'),
-        'error'
-      );
-    }
-  };
-}
-
-// Export for ES modules
-export { initiateCheckout };
-
-// ================================================================
-// ✅ FIX 1: إعادة حساب الأسعار من Backend
+// ✅ FIX 3: Enhanced recalculatePrices with Better Error Handling
 // ================================================================
 export async function recalculatePrices() {
+  console.log('🔄 Recalculating prices...');
+  console.log('🔄 Current state:', {
+    deliveryMethod: selectedDeliveryMethod,
+    branch: selectedBranch,
+    promoCode: activePromoCode,
+    cartItems: cart?.length || 0
+  });
+
   if (!selectedDeliveryMethod) {
+    console.log('⚠️ No delivery method selected, clearing prices');
     calculatedPrices = null;
-    const { updateOrderSummary } = await import('./checkout-ui.js');
-    updateOrderSummary();
+    
+    // Update UI
+    try {
+      const { updateOrderSummary } = await import('./checkout-ui.js');
+      updateOrderSummary();
+    } catch (err) {
+      console.warn('⚠️ Could not update order summary:', err);
+    }
     return;
   }
 
   try {
-    const { getCustomerPhone } = await import('./checkout-loyalty.js');
-    const customerPhone = getCustomerPhone();
+    // Get customer phone
+    let customerPhone = null;
+    try {
+      const { getCustomerPhone } = await import('./checkout-loyalty.js');
+      customerPhone = getCustomerPhone();
+    } catch (err) {
+      console.warn('⚠️ Could not get customer phone:', err);
+    }
     
     const request = {
       items: cart.map(item => ({ 
         productId: item.id || item.productId, 
-        quantity: item.quantity 
+        quantity: item.quantity,
+        price: item.price || 0,
+        name: item.name || ''
       })),
       deliveryMethod: selectedDeliveryMethod,
       branch: selectedBranch,
@@ -283,83 +132,143 @@ export async function recalculatePrices() {
       customerPhone: customerPhone
     };
 
-    console.log('📤 Requesting prices:', request);
+    console.log('📤 Requesting price calculation:', request);
 
     const result = await api.request('POST', '/orders/prices', request);
     
-    // ✅ FIX: استخدام result.data بدل result مباشرة
-    calculatedPrices = result.data?.calculatedPrices || result.data;
+    // Handle different response formats
+    if (result && result.data) {
+      calculatedPrices = result.data.calculatedPrices || result.data;
+    } else if (result) {
+      calculatedPrices = result.calculatedPrices || result;
+    } else {
+      throw new Error('Empty response from price calculation');
+    }
 
-    console.log('✅ Prices calculated:', calculatedPrices);
+    console.log('✅ Prices calculated successfully:', calculatedPrices);
     
-    const { updateOrderSummary } = await import('./checkout-ui.js');
-    updateOrderSummary();
+    // Update UI
+    try {
+      const { updateOrderSummary } = await import('./checkout-ui.js');
+      updateOrderSummary();
+    } catch (err) {
+      console.warn('⚠️ Could not update order summary:', err);
+    }
 
   } catch (error) {
     console.error('❌ Failed to calculate prices:', error);
-    calculatedPrices = null;
-    const { updateOrderSummary } = await import('./checkout-ui.js');
-    updateOrderSummary();
+    
+    // Fallback calculation
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const deliveryFee = selectedDeliveryMethod === 'delivery' ? 15 : 0;
+    const discount = activePromoCode ? Math.round(subtotal * 0.1) : 0;
+    const total = subtotal + deliveryFee - discount;
+    
+    calculatedPrices = {
+      items: cart.map(item => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        total: item.price * item.quantity
+      })),
+      subtotal,
+      deliveryFee,
+      discount,
+      total,
+      isOffline: true
+    };
+    
+    console.log('⚠️ Using fallback price calculation:', calculatedPrices);
+    
+    // Update UI with fallback data
+    try {
+      const { updateOrderSummary } = await import('./checkout-ui.js');
+      updateOrderSummary();
+    } catch (err) {
+      console.warn('⚠️ Could not update order summary:', err);
+    }
   }
 }
 
 // ================================================================
-// ✅ FIX 2: تأكيد الطلب (مع customerPhone منفصل)
+// ✅ FIX 4: Enhanced confirmOrder with Better Error Handling
 // ================================================================
 export async function confirmOrder() {
+  console.log('🔄 Starting order confirmation...');
   const lang = window.currentLang || 'ar';
   
-  const { validateOrder } = await import('./checkout-validation.js');
-  const validation = validateOrder();
-  
-  if (!validation.valid) {
-    showToast(
-      lang === 'ar' ? 'خطأ' : 'Error',
-      validation.message,
-      'error'
-    );
-    return;
-  }
-  
-  const { closeCheckoutModal, showProcessingModal } = await import('./checkout-ui.js');
-  
-  closeCheckoutModal();
-  showProcessingModal(true, false);
-  
-  // ✅ FIX: إضافة customerPhone منفصل
-  const orderData = {
-    items: cart.map(item => ({
-      productId: item.id || item.productId,
-      quantity: item.quantity
-    })),
-    customer: validation.customer,
-    customerPhone: validation.customer.phone, // ✅ إضافة هذا السطر
-    deliveryMethod: selectedDeliveryMethod,
-    branch: selectedBranch,
-    location: userLocation,
-    promoCode: activePromoCode,
-    idempotencyKey: generateUUID()
-  };
-  
-  console.log('📤 Submitting order:', orderData);
-  
   try {
+    // Validate order
+    const { validateOrder } = await import('./checkout-validation.js');
+    const validation = validateOrder();
+    
+    if (!validation.valid) {
+      console.log('❌ Order validation failed:', validation.message);
+      showToast(
+        lang === 'ar' ? 'خطأ' : 'Error',
+        validation.message,
+        'error'
+      );
+      return;
+    }
+    
+    console.log('✅ Order validation passed');
+    
+    // Close checkout modal and show processing
+    const { closeCheckoutModal, showProcessingModal } = await import('./checkout-ui.js');
+    
+    closeCheckoutModal();
+    showProcessingModal(true, false);
+    
+    // Prepare order data
+    const orderData = {
+      items: cart.map(item => ({
+        productId: item.id || item.productId,
+        quantity: item.quantity,
+        price: item.price || 0,
+        name: item.name || ''
+      })),
+      customer: validation.customer,
+      customerPhone: validation.customer.phone,
+      deliveryMethod: selectedDeliveryMethod,
+      branch: selectedBranch,
+      location: userLocation,
+      promoCode: activePromoCode,
+      calculatedPrices: calculatedPrices,
+      idempotencyKey: generateUUID()
+    };
+    
+    console.log('📤 Submitting order:', {
+      ...orderData,
+      items: orderData.items.length + ' items'
+    });
+    
+    // Submit order
     const result = await api.submitOrder(orderData);
-    console.log('✅ Order submitted:', result);
+    console.log('✅ Order submitted successfully:', result);
     
-    const { orderId, eta, etaEn, calculatedPrices: prices, loyaltyReward } = result;
+    // Extract result data
+    const { 
+      orderId, 
+      eta, 
+      etaEn, 
+      calculatedPrices: serverPrices, 
+      loyaltyReward 
+    } = result;
     
+    // Update current order data
     currentOrderData = {
       id: orderId,
       customer: orderData.customer,
       deliveryMethod: selectedDeliveryMethod,
       branch: selectedBranch,
-      items: prices.items,
-      calculatedPrices: prices,
+      items: serverPrices?.items || calculatedPrices?.items || orderData.items,
+      calculatedPrices: serverPrices || calculatedPrices,
       loyaltyReward
     };
     
-    // حفظ بيانات المستخدم
+    // Save user data for future use
     const userData = {
       name: validation.customer.name,
       phone: validation.customer.phone,
@@ -367,14 +276,27 @@ export async function confirmOrder() {
     };
     storage.setUserData(userData);
     
+    // Clear cart
     clearCart();
+    
+    // Hide processing modal
     showProcessingModal(false);
     
+    // Show success modal
     const { showConfirmedModal } = await import('./checkout-ui.js');
-    const itemsText = prices.items.map(i => `${i.name} × ${i.quantity}`).join(', ');
-    showConfirmedModal(orderId, eta, validation.customer.phone, itemsText, currentOrderData);
+    const itemsText = (serverPrices?.items || calculatedPrices?.items || orderData.items)
+      .map(i => `${i.name} × ${i.quantity}`)
+      .join(', ');
     
-    // التحقق من الترقية (مع حماية من الأخطاء)
+    showConfirmedModal(
+      orderId, 
+      eta || (lang === 'ar' ? '30 دقيقة' : '30 minutes'), 
+      validation.customer.phone, 
+      itemsText, 
+      currentOrderData
+    );
+    
+    // Handle loyalty upgrade if applicable
     if (loyaltyReward?.justUpgraded) {
       try {
         const { showTierUpgradeModal } = await import('./checkout-loyalty.js');
@@ -388,57 +310,82 @@ export async function confirmOrder() {
       }
     }
     
+    // Show success toast
     showToast(
       lang === 'ar' ? 'تم إرسال الطلب بنجاح! 🎉' : 'Order sent successfully! 🎉',
-      eta,
+      eta || (lang === 'ar' ? 'خلال 30 دقيقة' : 'Within 30 minutes'),
       'success'
     );
     
-    api.trackEvent({
-      name: 'order_completed',
-      orderId: orderId,
-      total: prices.total,
-      itemsCount: prices.items.length
-    });
+    // Track event
+    if (api.trackEvent) {
+      api.trackEvent({
+        name: 'order_completed',
+        orderId: orderId,
+        total: (serverPrices || calculatedPrices)?.total || 0,
+        itemsCount: orderData.items.length
+      });
+    }
     
   } catch (error) {
-    console.error('❌ Order failed:', error);
-    showProcessingModal(false);
+    console.error('❌ Order confirmation failed:', error);
     
-    // ✅ استخدام getErrorMessage إذا كان موجود
-    let errorMessage = error.message;
+    // Hide processing modal
+    try {
+      const { showProcessingModal } = await import('./checkout-ui.js');
+      showProcessingModal(false);
+    } catch (err) {
+      console.warn('⚠️ Could not hide processing modal:', err);
+    }
+    
+    // Get error message
+    let errorMessage = error.message || 'حدث خطأ غير متوقع';
     if (typeof api.getErrorMessage === 'function') {
       errorMessage = api.getErrorMessage(error, lang);
     }
     
+    // Show error
     showToast(
       lang === 'ar' ? 'فشل إرسال الطلب' : 'Order Failed',
       errorMessage,
       'error'
     );
     
+    // Reopen checkout modal
     const modal = document.getElementById('checkoutModal');
-    if (modal) modal.classList.add('show');
+    if (modal) {
+      modal.classList.remove('hidden');
+      modal.classList.add('show');
+      modal.style.display = 'flex';
+    }
     
-    api.trackEvent({
-      name: 'order_failed',
-      error: error.message,
-      step: 'submission'
-    });
+    // Track error
+    if (api.trackEvent) {
+      api.trackEvent({
+        name: 'order_failed',
+        error: error.message,
+        step: 'submission'
+      });
+    }
   }
 }
 
 // ================================================================
-// ✅ FIX 3: كود الخصم (استخدام calculatedPrices.subtotal)
+// ✅ FIX 5: Enhanced applyPromoCode with Better Validation
 // ================================================================
 export async function applyPromoCode() {
+  console.log('🔄 Applying promo code...');
+  
   const promoInput = document.getElementById('promoCodeInput');
   const promoStatus = document.getElementById('promoStatus');
   
-  if (!promoInput || !promoStatus) return;
+  if (!promoInput || !promoStatus) {
+    console.warn('⚠️ Promo input elements not found');
+    return;
+  }
   
   const lang = window.currentLang || 'ar';
-  const code = promoInput.value.trim();
+  const code = promoInput.value.trim().toUpperCase();
   
   if (!code) {
     showToast(
@@ -449,28 +396,42 @@ export async function applyPromoCode() {
     return;
   }
   
-  // ✅ FIX: استخدام subtotal من calculatedPrices إذا كان موجود
-  const subtotal = calculatedPrices?.subtotal || 
-                   cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  // Disable button during processing
+  const applyBtn = document.getElementById('applyPromoBtn');
+  if (applyBtn) {
+    applyBtn.disabled = true;
+    applyBtn.innerHTML = '<i data-lucide="loader"></i><span>جاري التحقق...</span>';
+  }
   
   try {
+    // Get subtotal for validation
+    const subtotal = calculatedPrices?.subtotal || 
+                     cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    
+    console.log('📤 Validating promo code:', { code, subtotal });
+    
+    // Validate with API
     const result = await api.validatePromoCode(code, subtotal);
     
     if (result.valid) {
+      console.log('✅ Promo code validated:', result);
+      
       activePromoCode = code;
       
+      // Show success status
       promoStatus.innerHTML = `
-        <div class="promo-success">
-          <i data-lucide="check-circle"></i>
-          <span>${result.message}</span>
-          <button onclick="checkoutModule.removePromoCode()" class="remove-promo">
-            <i data-lucide="x"></i>
+        <div class="promo-success" style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #e8f5e8; border-radius: 6px; color: #2e7d32;">
+          <i data-lucide="check-circle" style="width: 16px; height: 16px;"></i>
+          <span style="flex: 1;">${result.message}</span>
+          <button onclick="checkoutModule.removePromoCode()" class="remove-promo" style="background: none; border: none; color: #d32f2f; cursor: pointer; padding: 4px;">
+            <i data-lucide="x" style="width: 14px; height: 14px;"></i>
           </button>
         </div>
       `;
       promoStatus.style.display = 'block';
       promoInput.disabled = true;
       
+      // Recalculate prices
       await recalculatePrices();
       
       showToast(
@@ -478,32 +439,50 @@ export async function applyPromoCode() {
         result.message,
         'success'
       );
+    } else {
+      throw new Error(result.message || 'كود الخصم غير صحيح');
     }
     
   } catch (error) {
-    console.error('Promo validation failed:', error);
+    console.error('❌ Promo code validation failed:', error);
     
-    // ✅ استخدام getErrorMessage إذا كان موجود
-    let errorMessage = error.message;
+    // Get error message
+    let errorMessage = error.message || 'كود الخصم غير صحيح';
     if (typeof api.getErrorMessage === 'function') {
       errorMessage = api.getErrorMessage(error, lang);
     }
     
+    // Show error status
     promoStatus.innerHTML = `
-      <div class="promo-error">
-        <i data-lucide="alert-circle"></i>
+      <div class="promo-error" style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #ffeaea; border-radius: 6px; color: #d32f2f;">
+        <i data-lucide="alert-circle" style="width: 16px; height: 16px;"></i>
         <span>${errorMessage}</span>
       </div>
     `;
     promoStatus.style.display = 'block';
     
     showToast(lang === 'ar' ? 'خطأ' : 'Error', errorMessage, 'error');
+    
   } finally {
-    if (typeof lucide !== 'undefined') lucide.createIcons();
+    // Re-enable button
+    if (applyBtn) {
+      applyBtn.disabled = false;
+      applyBtn.innerHTML = '<span id="apply-promo-text">تطبيق</span>';
+    }
+    
+    // Refresh icons
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
   }
 }
 
+// ================================================================
+// ✅ FIX 6: Enhanced removePromoCode
+// ================================================================
 export async function removePromoCode() {
+  console.log('🔄 Removing promo code...');
+  
   activePromoCode = null;
   
   const promoInput = document.getElementById('promoCodeInput');
@@ -529,366 +508,36 @@ export async function removePromoCode() {
   );
 }
 
-/*
 // ================================================================
-// CHECKOUT CORE - الوظائف الأساسية (FIXED VERSION)
+// ✅ FIX 7: State Reset Function
 // ================================================================
-
-import { cart, clearCart } from '../cart.js';
-import { api } from '../api.js';
-import { storage } from '../storage.js';
-import { showToast, generateUUID } from '../utils.js';
-
-// ================================================================
-// المتغيرات العامة
-// ================================================================
-export let selectedDeliveryMethod = null;
-export let selectedBranch = null;
-export let userLocation = null;
-export let currentOrderData = null;
-export let calculatedPrices = null;
-export let activePromoCode = null;
-
-// ================================================================
-// Setters (للسماح بالتعديل من خارج الملف)
-// ================================================================
-export function setDeliveryMethod(method) {
-  selectedDeliveryMethod = method;
-}
-
-export function setBranch(branch) {
-  selectedBranch = branch;
-}
-
-export function setUserLocation(location) {
-  userLocation = location;
-}
-
-export function setCalculatedPrices(prices) {
-  calculatedPrices = prices;
-}
-
-export function setActivePromoCode(code) {
-  activePromoCode = code;
-}
-
-// ================================================================
-// بدء عملية الشراء
-// ================================================================
-export async function initiateCheckout() {
-  if (!cart || cart.length === 0) {
-    const lang = window.currentLang || 'ar';
-    showToast(
-      lang === 'ar' ? 'السلة فارغة' : 'Cart is empty',
-      lang === 'ar' ? 'أضف بعض المنتجات أولاً' : 'Add some products first',
-      'error'
-    );
-    return;
-  }
+export function resetCheckoutState() {
+  console.log('🔄 Resetting checkout state...');
   
-  // إعادة تعيين
   selectedDeliveryMethod = null;
   selectedBranch = null;
+  userLocation = null;
+  currentOrderData = null;
   calculatedPrices = null;
   activePromoCode = null;
   
-  // استدعاء باقي الوظائف من الموديولات الأخرى
-  const { resetFormFields, fillSavedUserData, resetCheckoutUI } = await import('./checkout-ui.js');
-  const { updateOrderSummary } = await import('./checkout-ui.js');
-  const { loadBranches } = await import('./checkout-delivery.js');
-  
-  await loadBranches();
-  resetFormFields();
-  fillSavedUserData();
-  updateOrderSummary();
-  resetCheckoutUI();
-  
-  // إظهار Modal
-  const modal = document.getElementById('checkoutModal');
-  if (modal) {
-    modal.classList.add('show');
-    document.body.style.overflow = 'hidden';
-  }
-  
-  if (typeof lucide !== 'undefined') {
-    lucide.createIcons();
-  }
+  console.log('✅ Checkout state reset');
 }
 
 // ================================================================
-// إعادة حساب الأسعار من Backend
+// ✅ FIX 8: Debug Function
 // ================================================================
-export async function recalculatePrices() {
-  if (!selectedDeliveryMethod) {
-    calculatedPrices = null;
-    const { updateOrderSummary } = await import('./checkout-ui.js');
-    updateOrderSummary();
-    return;
-  }
-
-  try {
-    // الحصول على رقم الهاتف للـ loyalty calculation
-    const { getCustomerPhone } = await import('./checkout-loyalty.js');
-    const customerPhone = getCustomerPhone();
-    
-    const request = {
-      items: cart.map(item => ({ 
-        productId: item.id || item.productId, 
-        quantity: item.quantity 
-      })),
-      deliveryMethod: selectedDeliveryMethod,
-      branch: selectedBranch,
-      promoCode: activePromoCode,
-      location: userLocation,
-      customerPhone: customerPhone // ✅ للـ loyalty
-    };
-
-    console.log('📤 Requesting prices:', request);
-
-    const result = await api.request('POST', '/orders/prices', request);
-    
-    // ✅ FIX: استخدام result.data بدلاً من result مباشرة
-    calculatedPrices = result.data?.calculatedPrices || result.data;
-
-    console.log('✅ Prices calculated:', calculatedPrices);
-    
-    const { updateOrderSummary } = await import('./checkout-ui.js');
-    updateOrderSummary();
-
-  } catch (error) {
-    console.error('❌ Failed to calculate prices:', error);
-    calculatedPrices = null;
-    const { updateOrderSummary } = await import('./checkout-ui.js');
-    updateOrderSummary();
-  }
-}
-
-// ================================================================
-// تأكيد الطلب
-// ================================================================
-export async function confirmOrder() {
-  const lang = window.currentLang || 'ar';
-  
-  // استدعاء التحقق من الصحة
-  const { validateOrder } = await import('./checkout-validation.js');
-  const validation = validateOrder();
-  
-  if (!validation.valid) {
-    showToast(
-      lang === 'ar' ? 'خطأ' : 'Error',
-      validation.message,
-      'error'
-    );
-    return;
-  }
-  
-  const { closeCheckoutModal, showProcessingModal } = await import('./checkout-ui.js');
-  
-  closeCheckoutModal();
-  showProcessingModal(true, false);
-  
-  // تحضير البيانات
-  const orderData = {
-    items: cart.map(item => ({
-      productId: item.id || item.productId,
-      quantity: item.quantity
-    })),
-    customer: validation.customer,
-    customerPhone: validation.customer.phone, // ✅ FIX: إضافة customerPhone للـ loyalty
-    deliveryMethod: selectedDeliveryMethod,
-    branch: selectedBranch,
-    location: userLocation,
-    promoCode: activePromoCode,
-    idempotencyKey: generateUUID()
+export function getCheckoutDebugInfo() {
+  return {
+    selectedDeliveryMethod,
+    selectedBranch,
+    userLocation,
+    currentOrderData,
+    calculatedPrices,
+    activePromoCode,
+    cartItems: cart?.length || 0,
+    timestamp: new Date().toISOString()
   };
-  
-  console.log('📤 Submitting order:', orderData);
-  
-  try {
-    const result = await api.submitOrder(orderData);
-    console.log('✅ Order submitted:', result);
-    
-    const { orderId, eta, etaEn, calculatedPrices: prices, loyaltyReward } = result;
-    
-    currentOrderData = {
-      id: orderId,
-      customer: orderData.customer,
-      deliveryMethod: selectedDeliveryMethod,
-      branch: selectedBranch,
-      items: prices.items,
-      calculatedPrices: prices,
-      loyaltyReward
-    };
-    
-    // حفظ بيانات المستخدم
-    const userData = {
-      name: validation.customer.name,
-      phone: validation.customer.phone,
-      visitCount: (storage.getUserData()?.visitCount || 0) + 1
-    };
-    storage.setUserData(userData);
-    
-    clearCart();
-    showProcessingModal(false);
-    
-    const { showConfirmedModal } = await import('./checkout-ui.js');
-    const itemsText = prices.items.map(i => `${i.name} × ${i.quantity}`).join(', ');
-    showConfirmedModal(orderId, eta, validation.customer.phone, itemsText, currentOrderData);
-    
-    // ✅ FIX: حماية استدعاء showTierUpgradeModal
-    if (loyaltyReward?.justUpgraded) {
-      try {
-        const { showTierUpgradeModal } = await import('./checkout-loyalty.js');
-        if (typeof showTierUpgradeModal === 'function') {
-          setTimeout(() => {
-            showTierUpgradeModal(loyaltyReward.tier, lang);
-          }, 1000);
-        }
-      } catch (err) {
-        console.warn('⚠️ Tier upgrade modal not available:', err);
-      }
-    }
-    
-    showToast(
-      lang === 'ar' ? 'تم إرسال الطلب بنجاح! 🎉' : 'Order sent successfully! 🎉',
-      eta,
-      'success'
-    );
-    
-    api.trackEvent({
-      name: 'order_completed',
-      orderId: orderId,
-      total: prices.total,
-      itemsCount: prices.items.length
-    });
-    
-  } catch (error) {
-    console.error('❌ Order failed:', error);
-    showProcessingModal(false);
-    
-    // ✅ FIX: حماية استدعاء getErrorMessage
-    let errorMessage = error.message || (lang === 'ar' ? 'حدث خطأ' : 'An error occurred');
-    
-    if (typeof api.getErrorMessage === 'function') {
-      errorMessage = api.getErrorMessage(error, lang);
-    }
-    
-    showToast(
-      lang === 'ar' ? 'فشل إرسال الطلب' : 'Order Failed',
-      errorMessage,
-      'error'
-    );
-    
-    const modal = document.getElementById('checkoutModal');
-    if (modal) modal.classList.add('show');
-    
-    api.trackEvent({
-      name: 'order_failed',
-      error: error.message,
-      step: 'submission'
-    });
-  }
 }
 
-// ================================================================
-// كود الخصم
-// ================================================================
-export async function applyPromoCode() {
-  const promoInput = document.getElementById('promoCodeInput');
-  const promoStatus = document.getElementById('promoStatus');
-  
-  if (!promoInput || !promoStatus) return;
-  
-  const lang = window.currentLang || 'ar';
-  const code = promoInput.value.trim();
-  
-  if (!code) {
-    showToast(
-      lang === 'ar' ? 'خطأ' : 'Error',
-      lang === 'ar' ? 'الرجاء إدخال كود الخصم' : 'Please enter promo code',
-      'error'
-    );
-    return;
-  }
-  
-  // ✅ FIX: استخدام subtotal من calculatedPrices إذا كان موجود
-  // لأن الـ subtotal هنا يجب أن يكون بعد loyalty discount
-  const subtotal = calculatedPrices?.subtotal || 
-                   cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  
-  try {
-    const result = await api.validatePromoCode(code, subtotal);
-    
-    if (result.valid) {
-      activePromoCode = code;
-      
-      promoStatus.innerHTML = `
-        <div class="promo-success">
-          <i data-lucide="check-circle"></i>
-          <span>${result.message}</span>
-          <button onclick="checkoutModule.removePromoCode()" class="remove-promo">
-            <i data-lucide="x"></i>
-          </button>
-        </div>
-      `;
-      promoStatus.style.display = 'block';
-      promoInput.disabled = true;
-      
-      await recalculatePrices();
-      
-      showToast(
-        lang === 'ar' ? 'تم بنجاح!' : 'Success!',
-        result.message,
-        'success'
-      );
-    }
-    
-  } catch (error) {
-    console.error('Promo validation failed:', error);
-    
-    // ✅ FIX: حماية استدعاء getErrorMessage
-    let errorMessage = error.message || (lang === 'ar' ? 'كود غير صحيح' : 'Invalid code');
-    
-    if (typeof api.getErrorMessage === 'function') {
-      errorMessage = api.getErrorMessage(error, lang);
-    }
-    
-    promoStatus.innerHTML = `
-      <div class="promo-error">
-        <i data-lucide="alert-circle"></i>
-        <span>${errorMessage}</span>
-      </div>
-    `;
-    promoStatus.style.display = 'block';
-    
-    showToast(lang === 'ar' ? 'خطأ' : 'Error', errorMessage, 'error');
-  } finally {
-    if (typeof lucide !== 'undefined') lucide.createIcons();
-  }
-}
-
-export async function removePromoCode() {
-  activePromoCode = null;
-  
-  const promoInput = document.getElementById('promoCodeInput');
-  const promoStatus = document.getElementById('promoStatus');
-  
-  if (promoInput) {
-    promoInput.value = '';
-    promoInput.disabled = false;
-  }
-  
-  if (promoStatus) {
-    promoStatus.style.display = 'none';
-    promoStatus.innerHTML = '';
-  }
-  
-  await recalculatePrices();
-  
-  const lang = window.currentLang || 'ar';
-  showToast(
-    lang === 'ar' ? 'تم' : 'Done',
-    lang === 'ar' ? 'تم إزالة كود الخصم' : 'Promo code removed',
-    'info'
-  );
-}*/
+console.log('✅ checkout-core.js loaded successfully');

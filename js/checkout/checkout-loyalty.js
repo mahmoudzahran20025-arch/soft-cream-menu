@@ -1,51 +1,115 @@
 // ================================================================
-// CHECKOUT LOYALTY - الولاء والـ Gamification
+// CHECKOUT LOYALTY - الولاء والـ Gamification (FIXED VERSION)
 // ================================================================
 
+console.log('🔄 Loading checkout-loyalty.js');
+
+// ================================================================
+// Static Imports
+// ================================================================
 import { storage } from '../storage.js';
 import { api } from '../api.js';
+import { showToast } from '../utils.js';
 
 // ================================================================
-// جلب رقم الهاتف
+// ✅ FIX 1: Enhanced getCustomerPhone with Better Validation
 // ================================================================
 export function getCustomerPhone() {
+  console.log('🔄 Getting customer phone...');
+  
+  // Try to get from form field first
   const phoneField = document.getElementById('customerPhone');
-  if (phoneField?.value) {
-    return phoneField.value.trim();
+  if (phoneField?.value?.trim()) {
+    const phone = phoneField.value.trim();
+    console.log('✅ Phone from form field:', phone);
+    return phone;
   }
   
+  // Fallback to stored user data
   const userData = storage.getUserData();
-  if (userData?.phone) {
-    return userData.phone;
+  if (userData?.phone?.trim()) {
+    const phone = userData.phone.trim();
+    console.log('✅ Phone from storage:', phone);
+    return phone;
   }
   
+  console.log('⚠️ No customer phone found');
   return null;
 }
 
 // ================================================================
-// أيقونة المستوى
+// ✅ FIX 2: Enhanced Tier Management
 // ================================================================
 export function getTierIcon(tier) {
   const icons = {
     new: '🆕',
-    returning: '🎁',
-    vip: '💎'
+    returning: '🎁', 
+    vip: '💎',
+    bronze: '🥉',
+    silver: '🥈',
+    gold: '🥇',
+    platinum: '💍'
   };
-  return `<span style="font-size: 1.5rem;">${icons[tier] || '🔹'}</span>`;
+  
+  return icons[tier] || '🔹';
+}
+
+export function getTierColor(tier) {
+  const colors = {
+    new: '#4caf50',
+    returning: '#2196F3',
+    vip: '#9c27b0',
+    bronze: '#8d6e63',
+    silver: '#607d8b',
+    gold: '#ff9800',
+    platinum: '#e91e63'
+  };
+  
+  return colors[tier] || '#666';
+}
+
+export function getTierName(tier, lang = 'ar') {
+  const names = {
+    new: { ar: 'عميل جديد', en: 'New Customer' },
+    returning: { ar: 'عميل عائد', en: 'Returning Customer' },
+    vip: { ar: 'عميل مميز', en: 'VIP Customer' },
+    bronze: { ar: 'برونزي', en: 'Bronze' },
+    silver: { ar: 'فضي', en: 'Silver' },
+    gold: { ar: 'ذهبي', en: 'Gold' },
+    platinum: { ar: 'بلاتيني', en: 'Platinum' }
+  };
+  
+  return names[tier]?.[lang] || tier;
 }
 
 // ================================================================
-// رسالة الترقية
+// ✅ FIX 3: Enhanced Upgrade Messages
 // ================================================================
-export function getUpgradeMessage(tier, lang) {
+export function getUpgradeMessage(tier, lang = 'ar') {
   const messages = {
     returning: {
       ar: '🎉 مبروك! أصبحت عميل عائد - خصم 15% على طلباتك القادمة',
-      en: '🎉 Congratulations! You\'re now a Returning Customer - 15% off'
+      en: '🎉 Congratulations! You\'re now a Returning Customer - 15% off your next orders'
     },
     vip: {
       ar: '⭐ مبروك! أصبحت عميل VIP - خصم 20% + توصيل مجاني',
       en: '⭐ Congratulations! You\'re now VIP - 20% off + Free delivery'
+    },
+    bronze: {
+      ar: '🥉 مبروك! وصلت للمستوى البرونزي - مكافآت وخصومات حصرية',
+      en: '🥉 Congratulations! You\'re now Bronze tier - Exclusive rewards and discounts'
+    },
+    silver: {
+      ar: '🥈 مبروك! وصلت للمستوى الفضي - مكافآت أكبر ونقاط إضافية',
+      en: '🥈 Congratulations! You\'re now Silver tier - Bigger rewards and bonus points'
+    },
+    gold: {
+      ar: '🥇 مبروك! وصلت للمستوى الذهبي - أولوية في الخدمة وعروض حصرية',
+      en: '🥇 Congratulations! You\'re now Gold tier - Priority service and exclusive offers'
+    },
+    platinum: {
+      ar: '💍 مذهل! وصلت للمستوى البلاتيني - أفضل المكافآت والخدمات المميزة',
+      en: '💍 Amazing! You\'re now Platinum tier - Best rewards and premium services'
     }
   };
   
@@ -53,336 +117,463 @@ export function getUpgradeMessage(tier, lang) {
 }
 
 // ================================================================
-// Modal الاحتفال بالترقية
+// ✅ FIX 4: Enhanced Tier Upgrade Modal
 // ================================================================
-export function showTierUpgradeModal(tier, lang) {
-  const messages = {
+export function showTierUpgradeModal(tier, lang = 'ar') {
+  console.log('🔄 Showing tier upgrade modal:', { tier, lang });
+  
+  const tierData = {
     returning: {
       title: lang === 'ar' ? '🎉 مبروك الترقية!' : '🎉 Congratulations!',
-      subtitle: lang === 'ar' ? 'أصبحت عميل عائد' : 'Returning Customer',
+      subtitle: getTierName(tier, lang),
       benefits: [
-        lang === 'ar' ? '✨ خصم 15%' : '✨ 15% off',
-        lang === 'ar' ? '🎁 عروض حصرية' : '🎁 Exclusive offers'
+        lang === 'ar' ? '✨ خصم 15% على الطلبات' : '✨ 15% off orders',
+        lang === 'ar' ? '🎁 عروض حصرية' : '🎁 Exclusive offers',
+        lang === 'ar' ? '⏰ أولوية في الخدمة' : '⏰ Priority service'
       ],
-      color: '#667eea',
-      icon: '🎁'
+      color: getTierColor(tier),
+      icon: getTierIcon(tier)
     },
     vip: {
       title: lang === 'ar' ? '⭐ أهلاً بك في VIP!' : '⭐ Welcome to VIP!',
-      subtitle: lang === 'ar' ? 'أصبحت عميل مميز' : 'VIP Customer',
+      subtitle: getTierName(tier, lang),
       benefits: [
-        lang === 'ar' ? '💎 خصم 20%' : '💎 20% off',
-        lang === 'ar' ? '🚚 توصيل مجاني' : '🚚 Free delivery'
+        lang === 'ar' ? '💎 خصم 20% على جميع الطلبات' : '💎 20% off all orders',
+        lang === 'ar' ? '🚚 توصيل مجاني' : '🚚 Free delivery',
+        lang === 'ar' ? '⭐ دعم مميز 24/7' : '⭐ Premium 24/7 support',
+        lang === 'ar' ? '🎯 عروض حصرية فقط لك' : '🎯 Exclusive offers just for you'
       ],
-      color: '#ff9800',
-      icon: '💎'
+      color: getTierColor(tier),
+      icon: getTierIcon(tier)
     }
   };
   
-  const msg = messages[tier];
-  if (!msg) return;
+  const data = tierData[tier] || tierData.returning;
   
+  // Create modal if it doesn't exist
+  let modal = document.getElementById('tierUpgradeModal');
+  if (!modal) {
+    modal = createTierUpgradeModal();
+    document.body.appendChild(modal);
+  }
+  
+  // Update modal content
+  updateTierUpgradeModal(modal, data, lang);
+  
+  // Show modal with animation
+  modal.classList.remove('hidden');
+  modal.classList.add('show');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  
+  // Auto-hide after 8 seconds
+  setTimeout(() => {
+    closeTierUpgradeModal();
+  }, 8000);
+  
+  console.log('✅ Tier upgrade modal shown');
+}
+
+function createTierUpgradeModal() {
   const modal = document.createElement('div');
   modal.id = 'tierUpgradeModal';
-  modal.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 10000;';
+  modal.className = 'tier-upgrade-modal';
+  modal.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    backdrop-filter: blur(4px);
+  `;
   
   modal.innerHTML = `
-    <div style="background: white; border-radius: 24px; padding: 32px; max-width: 400px; width: 90%; text-align: center;">
-      <div style="font-size: 4rem; margin-bottom: 16px;">${msg.icon}</div>
-      <h2 style="font-size: 1.75rem; font-weight: 700; color: ${msg.color}; margin-bottom: 8px;">${msg.title}</h2>
-      <p style="font-size: 1.125rem; color: #666; margin-bottom: 24px;">${msg.subtitle}</p>
+    <div class="tier-upgrade-content" style="
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      animation: tierUpgradeSlideIn 0.5s ease;
+    ">
+      <button class="tier-upgrade-close" onclick="closeTierUpgradeModal()" style="
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #666;
+      ">×</button>
       
-      <div style="text-align: right; margin-bottom: 24px;">
-        ${msg.benefits.map(b => `
-          <div style="padding: 12px; background: #f8f9fa; border-radius: 12px; margin-bottom: 8px;">
-            ${b}
-          </div>
-        `).join('')}
-      </div>
+      <div class="tier-upgrade-icon" style="font-size: 64px; margin-bottom: 16px;"></div>
+      <h2 class="tier-upgrade-title" style="margin: 0 0 8px; color: #333;"></h2>
+      <p class="tier-upgrade-subtitle" style="margin: 0 0 24px; color: #666; font-size: 18px;"></p>
       
-      <button onclick="closeTierUpgradeModal()" style="background: ${msg.color}; color: white; border: none; padding: 14px 32px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer;">
-        ${lang === 'ar' ? 'رائع! 🎊' : 'Awesome! 🎊'}
+      <div class="tier-upgrade-benefits" style="text-align: left; margin-bottom: 24px;"></div>
+      
+      <button class="tier-upgrade-continue" onclick="closeTierUpgradeModal()" style="
+        background: linear-gradient(45deg, #2196F3, #21CBF3);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+      ">
+        <span class="continue-text">متابعة</span>
       </button>
     </div>
   `;
   
-  document.body.appendChild(modal);
-  document.body.style.overflow = 'hidden';
+  return modal;
 }
 
-window.closeTierUpgradeModal = function() {
+function updateTierUpgradeModal(modal, data, lang) {
+  const icon = modal.querySelector('.tier-upgrade-icon');
+  const title = modal.querySelector('.tier-upgrade-title');
+  const subtitle = modal.querySelector('.tier-upgrade-subtitle');
+  const benefits = modal.querySelector('.tier-upgrade-benefits');
+  const continueBtn = modal.querySelector('.continue-text');
+  
+  if (icon) icon.textContent = data.icon;
+  if (title) title.textContent = data.title;
+  if (subtitle) {
+    subtitle.textContent = data.subtitle;
+    subtitle.style.color = data.color;
+  }
+  
+  if (benefits && data.benefits) {
+    benefits.innerHTML = data.benefits.map(benefit => `
+      <div style="display: flex; align-items: center; margin-bottom: 8px; padding: 8px; background: #f8f9fa; border-radius: 6px;">
+        <span>${benefit}</span>
+      </div>
+    `).join('');
+  }
+  
+  if (continueBtn) {
+    continueBtn.textContent = lang === 'ar' ? 'متابعة' : 'Continue';
+  }
+}
+
+function closeTierUpgradeModal() {
   const modal = document.getElementById('tierUpgradeModal');
   if (modal) {
-    modal.remove();
+    modal.classList.remove('show');
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
     document.body.style.overflow = '';
   }
-};
-
-// ================================================================
-// عرض Gamification في الملخص
-// ================================================================
-export function renderGamificationSummary(gamification, lang) {
-  if (!gamification) return '';
-  
-  const { badges, points, availableDiscount, challenges } = gamification;
-  
-  let html = `<div style="grid-column: 1 / -1; margin-top: 12px; padding: 12px; background: #f8f9fa; border-radius: 12px; border: 2px solid #e9ecef;">`;
-  
-  // الشارات
-  if (badges?.length > 0) {
-    html += `<div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">`;
-    badges.forEach(badge => {
-      html += `
-        <div style="background: white; padding: 6px 12px; border-radius: 20px; font-size: 0.875rem; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-          <span>${badge.icon}</span>
-          <span style="font-weight: 600;">${lang === 'ar' ? badge.nameAr : badge.nameEn}</span>
-        </div>
-      `;
-    });
-    html += `</div>`;
-  }
-  
-  // النقاط
-  if (points > 0) {
-    html += `
-      <div style="background: white; padding: 8px 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-        <span style="display: flex; align-items: center; gap: 6px;">
-          <span style="font-size: 1.25rem;">💰</span>
-          <span style="font-weight: 600;">${lang === 'ar' ? 'نقاطك' : 'Your Points'}</span>
-        </span>
-        <span style="font-weight: 700; color: #2196F3; font-size: 1.1rem;">${points}</span>
-      </div>
-    `;
-    
-    if (availableDiscount > 0) {
-      html += `
-        <div style="background: #e8f5e9; padding: 8px 12px; border-radius: 8px; font-size: 0.875rem; color: #2e7d32; text-align: center;">
-          <i data-lucide="gift" style="width: 14px; height: 14px; display: inline; vertical-align: middle;"></i>
-          ${lang === 'ar' 
-            ? `يمكنك استخدام ${availableDiscount} ج.م خصم من نقاطك!`
-            : `You can use ${availableDiscount} EGP discount from your points!`
-          }
-        </div>
-      `;
-    }
-  }
-  
-  // التحديات
-  if (challenges?.length > 0) {
-    const challenge = challenges[0];
-    const progress = (challenge.current / challenge.target) * 100;
-    
-    html += `
-      <div style="margin-top: 12px; padding: 12px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); border-radius: 8px; color: white;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-          <span style="font-size: 0.875rem; font-weight: 600;">
-            🎯 ${lang === 'ar' ? challenge.nameAr : challenge.nameEn}
-          </span>
-          <span style="font-size: 0.75rem; background: rgba(255,255,255,0.3); padding: 4px 8px; border-radius: 12px;">
-            ${challenge.reward}
-          </span>
-        </div>
-        <div style="background: rgba(255,255,255,0.3); height: 6px; border-radius: 3px; overflow: hidden;">
-          <div style="background: white; height: 100%; width: ${progress}%; transition: width 0.3s;"></div>
-        </div>
-        <div style="font-size: 0.75rem; margin-top: 6px; opacity: 0.9;">
-          ${challenge.current} / ${challenge.target} 
-          <span style="opacity: 0.8;">
-            (${lang === 'ar' ? `باقي ${challenge.remaining}` : `${challenge.remaining} remaining`})
-          </span>
-        </div>
-      </div>
-    `;
-  }
-  
-  html += `</div>`;
-  return html;
 }
 
+// Make function globally available
+window.closeTierUpgradeModal = closeTierUpgradeModal;
+
 // ================================================================
-// صفحة Gamification الكاملة
+// ✅ FIX 5: Enhanced Gamification Functions
 // ================================================================
 export async function loadGamificationPage() {
-  const phone = getCustomerPhone();
-  if (!phone) {
+  console.log('🔄 Loading gamification page...');
+  
+  const customerPhone = getCustomerPhone();
+  if (!customerPhone) {
     const lang = window.currentLang || 'ar';
     showToast(
-      lang === 'ar' ? 'خطأ' : 'Error',
-      lang === 'ar' ? 'الرجاء تسجيل رقم الهاتف أولاً' : 'Please enter your phone number first',
-      'error'
+      lang === 'ar' ? 'تنبيه' : 'Notice',
+      lang === 'ar' ? 'الرجاء إدخال رقم الهاتف أولاً' : 'Please enter phone number first',
+      'warning'
     );
     return;
   }
   
   try {
-    const data = await api.request('GET', `/gamification?phone=${encodeURIComponent(phone)}`);
+    const loyaltyData = await api.getLoyaltyData(customerPhone);
+    console.log('✅ Loyalty data loaded:', loyaltyData);
     
-    if (!data) {
-      console.warn('No gamification data');
-      return;
-    }
-    
-    const lang = window.currentLang || 'ar';
-    const container = document.getElementById('gamificationContainer');
-    if (!container) return;
-    
-    container.innerHTML = `
-      ${renderGamificationStats(data.stats, lang)}
-      ${renderGamificationBadges(data.badges, lang)}
-      ${renderGamificationPoints(data.points, data.availableDiscount, lang)}
-      ${renderGamificationChallenges(data.challenges, lang)}
-    `;
-    
-    if (typeof lucide !== 'undefined') lucide.createIcons();
+    showGamificationModal(loyaltyData);
     
   } catch (error) {
-    console.error('Failed to load gamification:', error);
+    console.error('❌ Failed to load gamification data:', error);
+    const lang = window.currentLang || 'ar';
+    showToast(
+      lang === 'ar' ? 'خطأ' : 'Error',
+      lang === 'ar' ? 'فشل في تحميل بيانات الولاء' : 'Failed to load loyalty data',
+      'error'
+    );
   }
 }
 
-
-
-// ================================================================
-// دوال عرض صفحة Gamification الكاملة
-// ================================================================
-
-/**
- * عرض إحصائيات Gamification
- */
-function renderGamificationStats(stats, lang) {
-  if (!stats) return '';
+function showGamificationModal(loyaltyData) {
+  const lang = window.currentLang || 'ar';
   
-  return `
-    <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 24px;">
-      <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 16px; color: white; text-align: center; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">
-        <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 8px;">${stats.totalOrders || 0}</div>
-        <div style="font-size: 0.875rem; opacity: 0.9;">${lang === 'ar' ? 'إجمالي الطلبات' : 'Total Orders'}</div>
+  // Create or get existing modal
+  let modal = document.getElementById('gamificationModal');
+  if (!modal) {
+    modal = createGamificationModal();
+    document.body.appendChild(modal);
+  }
+  
+  // Update modal content
+  updateGamificationModal(modal, loyaltyData, lang);
+  
+  // Show modal
+  modal.classList.remove('hidden');
+  modal.classList.add('show');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function createGamificationModal() {
+  const modal = document.createElement('div');
+  modal.id = 'gamificationModal';
+  modal.className = 'gamification-modal';
+  modal.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(4px);
+  `;
+  
+  modal.innerHTML = `
+    <div class="gamification-content" style="
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    ">
+      <button class="gamification-close" onclick="closeGamificationModal()" style="
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #666;
+      ">×</button>
+      
+      <div class="gamification-header" style="text-align: center; margin-bottom: 24px;">
+        <h2 style="margin: 0 0 8px; color: #333;">برنامج الولاء</h2>
+        <p style="margin: 0; color: #666;">نقاطك ومكافآتك</p>
       </div>
       
-      <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 20px; border-radius: 16px; color: white; text-align: center; box-shadow: 0 4px 12px rgba(240, 147, 251, 0.3);">
-        <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 8px;">${(stats.totalSpent || 0).toFixed(0)}</div>
-        <div style="font-size: 0.875rem; opacity: 0.9;">${lang === 'ar' ? 'إجمالي الشراء (ج.م)' : 'Total Spent (EGP)'}</div>
+      <div class="gamification-body">
+        <!-- Will be filled dynamically -->
       </div>
       
-      <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 20px; border-radius: 16px; color: white; text-align: center; box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);">
-        <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 8px;">${stats.lastMonthOrders || 0}</div>
-        <div style="font-size: 0.875rem; opacity: 0.9;">${lang === 'ar' ? 'آخر 30 يوم' : 'Last 30 Days'}</div>
+      <div class="gamification-actions" style="text-align: center; margin-top: 24px;">
+        <button onclick="closeGamificationModal()" style="
+          background: #2196F3;
+          color: white;
+          border: none;
+          padding: 12px 24px;
+          border-radius: 8px;
+          font-size: 16px;
+          cursor: pointer;
+        ">إغلاق</button>
       </div>
     </div>
   `;
+  
+  return modal;
 }
 
-/**
- * عرض الشارات
- */
-function renderGamificationBadges(badges, lang) {
-  if (!badges || badges.length === 0) return '';
+function updateGamificationModal(modal, loyaltyData, lang) {
+  const body = modal.querySelector('.gamification-body');
+  const header = modal.querySelector('.gamification-header h2');
+  const subtitle = modal.querySelector('.gamification-header p');
+  
+  if (header) header.textContent = lang === 'ar' ? 'برنامج الولاء' : 'Loyalty Program';
+  if (subtitle) subtitle.textContent = lang === 'ar' ? 'نقاطك ومكافآتك' : 'Your Points & Rewards';
+  
+  if (body && loyaltyData) {
+    body.innerHTML = renderGamificationContent(loyaltyData, lang);
+  }
+}
+
+function renderGamificationContent(data, lang) {
+  const {
+    currentTier = 'new',
+    points = 0,
+    totalOrders = 0,
+    totalSpent = 0,
+    nextTierPoints = 100,
+    badges = [],
+    challenges = [],
+    recentActivity = []
+  } = data;
   
   return `
-    <div class="badges-section" style="margin-bottom: 24px;">
-      <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 16px; color: #1a1a1a;">
-        ${lang === 'ar' ? '🏆 شاراتك' : '🏆 Your Badges'}
-      </h3>
-      <div class="badges-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px;">
-        ${badges.map(badge => `
-          <div class="badge-card" style="background: white; padding: 16px; border-radius: 16px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 2px solid #f0f0f0; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
-            <div style="font-size: 3rem; margin-bottom: 8px;">${badge.icon}</div>
-            <div style="font-weight: 600; font-size: 0.875rem; color: #1a1a1a;">
-              ${lang === 'ar' ? badge.nameAr : badge.nameEn}
+    <!-- Current Status -->
+    <div class="loyalty-status" style="background: linear-gradient(45deg, ${getTierColor(currentTier)}, ${getTierColor(currentTier)}AA); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px;">
+      <div style="font-size: 48px; margin-bottom: 8px;">${getTierIcon(currentTier)}</div>
+      <h3 style="margin: 0 0 8px;">${getTierName(currentTier, lang)}</h3>
+      <div style="font-size: 24px; font-weight: 600;">${points} ${lang === 'ar' ? 'نقطة' : 'Points'}</div>
+    </div>
+    
+    <!-- Progress to Next Tier -->
+    ${nextTierPoints > points ? `
+      <div class="tier-progress" style="background: #f8f9fa; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+          <span>${lang === 'ar' ? 'التقدم للمستوى التالي:' : 'Progress to next tier:'}</span>
+          <span>${points}/${nextTierPoints}</span>
+        </div>
+        <div style="background: #e0e0e0; height: 8px; border-radius: 4px; overflow: hidden;">
+          <div style="background: ${getTierColor(currentTier)}; height: 100%; width: ${(points / nextTierPoints) * 100}%; transition: width 0.3s ease;"></div>
+        </div>
+        <div style="font-size: 12px; color: #666; margin-top: 4px;">
+          ${lang === 'ar' ? `${nextTierPoints - points} نقطة متبقية` : `${nextTierPoints - points} points remaining`}
+        </div>
+      </div>
+    ` : ''}
+    
+    <!-- Stats -->
+    <div class="loyalty-stats" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+      <div style="background: #f8f9fa; padding: 16px; border-radius: 8px; text-align: center;">
+        <div style="font-size: 24px; font-weight: 600; color: #2196F3;">${totalOrders}</div>
+        <div style="font-size: 12px; color: #666;">${lang === 'ar' ? 'إجمالي الطلبات' : 'Total Orders'}</div>
+      </div>
+      <div style="background: #f8f9fa; padding: 16px; border-radius: 8px; text-align: center;">
+        <div style="font-size: 24px; font-weight: 600; color: #4caf50;">${totalSpent} ${lang === 'ar' ? 'ج.م' : 'EGP'}</div>
+        <div style="font-size: 12px; color: #666;">${lang === 'ar' ? 'إجمالي الإنفاق' : 'Total Spent'}</div>
+      </div>
+    </div>
+    
+    <!-- Badges -->
+    ${badges.length > 0 ? `
+      <div class="loyalty-badges" style="margin-bottom: 20px;">
+        <h4 style="margin: 0 0 12px; color: #333;">${lang === 'ar' ? 'الأوسمة المكتسبة' : 'Earned Badges'}</h4>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+          ${badges.map(badge => `
+            <div style="background: #fff3e0; color: #f57c00; padding: 8px 12px; border-radius: 16px; font-size: 12px; font-weight: 600;">
+              ${badge.icon} ${badge.name[lang]}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    ` : ''}
+    
+    <!-- Active Challenges -->
+    ${challenges.length > 0 ? `
+      <div class="loyalty-challenges" style="margin-bottom: 20px;">
+        <h4 style="margin: 0 0 12px; color: #333;">${lang === 'ar' ? 'التحديات النشطة' : 'Active Challenges'}</h4>
+        ${challenges.map(challenge => `
+          <div style="background: #f0f7ff; border: 1px solid #2196F3; border-radius: 8px; padding: 12px; margin-bottom: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="font-weight: 600; color: #1976D2;">${challenge.name[lang]}</span>
+              <span style="background: #2196F3; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px;">
+                +${challenge.reward} ${lang === 'ar' ? 'نقاط' : 'pts'}
+              </span>
+            </div>
+            <div style="font-size: 12px; color: #666; margin-bottom: 8px;">${challenge.description[lang]}</div>
+            <div style="background: #e3f2fd; height: 6px; border-radius: 3px; overflow: hidden;">
+              <div style="background: #2196F3; height: 100%; width: ${(challenge.progress / challenge.target) * 100}%;"></div>
+            </div>
+            <div style="font-size: 11px; color: #1976D2; margin-top: 4px;">
+              ${challenge.progress}/${challenge.target} ${challenge.unit[lang]}
             </div>
           </div>
         `).join('')}
       </div>
-    </div>
+    ` : ''}
   `;
 }
 
-/**
- * عرض النقاط والخصم المتاح
- */
-function renderGamificationPoints(points, availableDiscount, lang) {
-  return `
-    <div class="points-section" style="margin-bottom: 24px; background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%); padding: 24px; border-radius: 16px; box-shadow: 0 8px 24px rgba(253, 203, 110, 0.3);">
-      <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 16px; color: #2d3436;">
-        💰 ${lang === 'ar' ? 'نقاطك' : 'Your Points'}
-      </h3>
-      
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 16px;">
-        <div style="flex: 1; min-width: 150px;">
-          <div style="font-size: 3rem; font-weight: 700; color: #2d3436;">${points || 0}</div>
-          <div style="font-size: 0.875rem; color: #636e72;">
-            ${lang === 'ar' ? 'نقطة متاحة' : 'Points Available'}
+function closeGamificationModal() {
+  const modal = document.getElementById('gamificationModal');
+  if (modal) {
+    modal.classList.remove('show');
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+}
+
+// Make function globally available
+window.closeGamificationModal = closeGamificationModal;
+
+// ================================================================
+// ✅ FIX 6: Loyalty Integration with Order Summary
+// ================================================================
+export function renderGamificationSummary() {
+  console.log('🔄 Rendering gamification summary...');
+  
+  const upgradeMessage = document.getElementById('upgradeMessage');
+  if (!upgradeMessage) return;
+  
+  const customerPhone = getCustomerPhone();
+  if (!customerPhone) return;
+  
+  const lang = window.currentLang || 'ar';
+  
+  // Try to get loyalty data from storage or API
+  const userData = storage.getUserData();
+  if (userData?.tier) {
+    const message = getUpgradeMessage(userData.tier, lang);
+    if (message) {
+      upgradeMessage.innerHTML = `
+        <div style="background: linear-gradient(45deg, ${getTierColor(userData.tier)}, ${getTierColor(userData.tier)}AA); color: white; padding: 12px; border-radius: 8px; text-align: center;">
+          <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <span style="font-size: 20px;">${getTierIcon(userData.tier)}</span>
+            <span style="font-weight: 600;">${message}</span>
           </div>
         </div>
-        
-        ${availableDiscount > 0 ? `
-          <div style="background: #00b894; color: white; padding: 16px 24px; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(0, 184, 148, 0.3);">
-            <div style="font-size: 1.75rem; font-weight: 700; margin-bottom: 4px;">${availableDiscount} ${lang === 'ar' ? 'ج.م' : 'EGP'}</div>
-            <div style="font-size: 0.75rem; opacity: 0.9;">${lang === 'ar' ? 'خصم متاح' : 'Discount Available'}</div>
-          </div>
-        ` : ''}
-      </div>
-      
-      <div style="background: rgba(255,255,255,0.5); padding: 12px; border-radius: 12px; font-size: 0.875rem; color: #2d3436; text-align: center;">
-        <i data-lucide="info" style="width: 14px; height: 14px; display: inline; vertical-align: middle;"></i>
-        ${lang === 'ar' 
-          ? 'كل 100 جنيه = 10 نقاط | كل 100 نقطة = 10 ج.م خصم' 
-          : '100 EGP = 10 points | 100 points = 10 EGP discount'
-        }
-      </div>
-    </div>
-  `;
+      `;
+      upgradeMessage.style.display = 'block';
+    }
+  }
 }
 
-/**
- * عرض التحديات
- */
-function renderGamificationChallenges(challenges, lang) {
-  if (!challenges || challenges.length === 0) return '';
+// ================================================================
+// ✅ FIX 7: Phone Validation Helper
+// ================================================================
+export function isValidEgyptianPhone(phone) {
+  if (!phone || typeof phone !== 'string') return false;
   
-  return `
-    <div class="challenges-section" style="margin-bottom: 24px;">
-      <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 16px; color: #1a1a1a;">
-        ${lang === 'ar' ? '🎯 التحديات' : '🎯 Challenges'}
-      </h3>
-      <div style="display: flex; flex-direction: column; gap: 12px;">
-        ${challenges.map(challenge => {
-          const progress = (challenge.current / challenge.target) * 100;
-          return `
-            <div class="challenge-card" style="background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-left: 4px solid #2196F3;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-                <h4 style="font-size: 1rem; font-weight: 600; color: #1a1a1a; margin: 0;">
-                  ${lang === 'ar' ? challenge.nameAr : challenge.nameEn}
-                </h4>
-                <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; white-space: nowrap;">
-                  ${challenge.reward}
-                </span>
-              </div>
-              
-              <div style="background: #e0e0e0; height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 8px;">
-                <div style="background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); height: 100%; width: ${progress}%; transition: width 0.5s ease;"></div>
-              </div>
-              
-              <div style="display: flex; justify-content: space-between; font-size: 0.875rem; color: #666;">
-                <span>${challenge.current} / ${challenge.target}</span>
-                <span style="color: #2196F3; font-weight: 600;">
-                  ${lang === 'ar' ? `باقي ${challenge.remaining}` : `${challenge.remaining} remaining`}
-                </span>
-              </div>
-            </div>
-          `;
-        }).join('')}
-      </div>
-    </div>
-  `;
+  // Remove any non-digit characters
+  const cleanPhone = phone.replace(/\D/g, '');
+  
+  // Egyptian phone patterns:
+  // Mobile: 010xxxxxxxx, 011xxxxxxxx, 012xxxxxxxx, 015xxxxxxxx (11 digits)
+  // Or with country code: +20 10xxxxxxxx (13 digits with +20)
+  const mobilePattern = /^(010|011|012|015)\d{8}$/;
+  const mobileWithCountryPattern = /^20(010|011|012|015)\d{8}$/;
+  
+  return mobilePattern.test(cleanPhone) || mobileWithCountryPattern.test(cleanPhone);
 }
 
-// ================================================================
-// تصدير الدوال
-// ================================================================
-export {
-  renderGamificationStats,
-  renderGamificationBadges,
-  renderGamificationPoints,
-  renderGamificationChallenges
-};
+export function formatEgyptianPhone(phone) {
+  if (!phone) return '';
+  
+  const cleanPhone = phone.replace(/\D/g, '');
+  
+  // If it starts with 20, remove country code for display
+  if (cleanPhone.startsWith('20') && cleanPhone.length === 13) {
+    return cleanPhone.substring(2);
+  }
+  
+  return cleanPhone;
+}
+
+console.log('✅ checkout-loyalty.js loaded successfully');

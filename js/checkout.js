@@ -1,99 +1,301 @@
 // ================================================================
-// CHECKOUT - الملف الرئيسي (Entry Point)
+// CHECKOUT MAIN - نقطة الدخول الرئيسية (FIXED VERSION)
 // ================================================================
 
-import { 
-  initiateCheckout, 
-  confirmOrder, 
-  applyPromoCode, 
-  removePromoCode,
-  recalculatePrices
-} from './checkout/checkout-core.js';
-
-import { 
-  selectDeliveryMethod, 
-  selectBranch, 
-  requestLocation, 
-  allowLocation,
-  loadBranches,
-  branches 
-} from './checkout/checkout-delivery.js';
-
-import { 
-  updateOrderSummary,
-  closeCheckoutModal,
-  showConfirmedModal,
-  openTrackingModal,
-  checkOrderStatus,
-  resetFormFields,
-  fillSavedUserData,
-  saveFormData,
-  restoreFormData
-} from './checkout/checkout-ui.js';
-
-import { 
-  getCustomerPhone,
-  loadGamificationPage 
-} from './checkout/checkout-loyalty.js';
-
-import { setupFocusTrap } from './utils.js';
+console.log('🔄 Loading checkout.js - Main Entry Point');
 
 // ================================================================
-// تصدير للنافذة العامة
+// Static Imports - الوحدات الأساسية المطلوبة فوراً
 // ================================================================
-if (typeof window !== 'undefined') {
-  // للـ module style
-  window.checkoutModule = {
-    // Core
-    initiateCheckout,
-    confirmOrder,
-    applyPromoCode,
-    removePromoCode,
-    recalculatePrices,
-    
-    // Delivery
-    selectDeliveryMethod,
-    selectBranch,
-    requestLocation,
-    allowLocation,
-    loadBranches,
-    getBranches: () => branches,
-    
-    // UI
-    updateOrderSummary,
-    closeCheckoutModal,
-    openTrackingModal,
-    checkOrderStatus,
-    restoreFormData,
-    
-    // Loyalty
-    getCustomerPhone,
-    loadGamificationPage
-  };
+import { cart } from './cart.js';
+import { showToast } from './utils.js';
+
+// ================================================================
+// Global State & Module Cache
+// ================================================================
+let checkoutModules = {
+  core: null,
+  ui: null,
+  delivery: null,
+  loyalty: null,
+  validation: null
+};
+
+let isInitialized = false;
+
+// ================================================================
+// ✅ FIX 1: Pre-load Critical Modules
+// ================================================================
+async function loadCheckoutModules() {
+  console.log('🔄 Pre-loading checkout modules...');
   
-  // ✅ للـ onclick المباشر (لسهولة الاستخدام في HTML)
-  window.initiateCheckout = initiateCheckout;
-  window.confirmOrder = confirmOrder;
-  window.selectDeliveryMethod = selectDeliveryMethod;
-  window.selectBranch = selectBranch;
-  window.requestLocation = requestLocation;
-  window.allowLocation = allowLocation;
-  window.closeCheckoutModal = (event) => {
-    if (event && !event.target?.classList?.contains('checkout-modal-overlay')) return;
-    const modal = document.getElementById('checkoutModal');
-    if (modal) modal.classList.remove('show');
-    document.body.style.overflow = '';
-  };
-  window.closePermissionModal = () => {
-    const modal = document.getElementById('permissionModal');
-    if (modal) modal.style.display = 'none';
-  };
-  window.checkOrderStatus = checkOrderStatus;
+  try {
+    // Load all modules in parallel
+    const [coreModule, uiModule, deliveryModule, loyaltyModule, validationModule] = await Promise.all([
+      import('./checkout/checkout-core.js'),
+      import('./checkout/checkout-ui.js'),
+      import('./checkout/checkout-delivery.js'),
+      import('./checkout/checkout-loyalty.js'),
+      import('./checkout/checkout-validation.js')
+    ]);
+
+    checkoutModules.core = coreModule;
+    checkoutModules.ui = uiModule;
+    checkoutModules.delivery = deliveryModule;
+    checkoutModules.loyalty = loyaltyModule;
+    checkoutModules.validation = validationModule;
+
+    console.log('✅ All checkout modules loaded successfully');
+    return true;
+  } catch (error) {
+    console.error('❌ Failed to load checkout modules:', error);
+    return false;
+  }
 }
 
 // ================================================================
-// Utility: Debounce Function
+// ✅ FIX 2: Enhanced initiateCheckout with Detailed Logging
 // ================================================================
+async function initiateCheckout() {
+  console.log('🔹 initiateCheckout called');
+  console.log('🔹 Cart state:', { 
+    exists: !!cart, 
+    length: cart?.length || 0, 
+    items: cart?.map(item => ({ id: item.id, name: item.name, quantity: item.quantity })) || [] 
+  });
+
+  // Check cart first
+  if (!cart || cart.length === 0) {
+    console.log('⚠️ Cart is empty, showing error');
+    const lang = window.currentLang || 'ar';
+    showToast(
+      lang === 'ar' ? 'السلة فارغة' : 'Cart is empty',
+      lang === 'ar' ? 'أضف بعض المنتجات أولاً' : 'Add some products first',
+      'error'
+    );
+    return;
+  }
+
+  // Ensure modules are loaded
+  if (!checkoutModules.core) {
+    console.log('🔄 Modules not loaded, loading now...');
+    const loaded = await loadCheckoutModules();
+    if (!loaded) {
+      console.error('❌ Failed to load modules, aborting checkout');
+      showToast('خطأ', 'فشل في تحميل نظام الدفع', 'error');
+      return;
+    }
+  }
+
+  console.log('🔄 Starting checkout initialization...');
+
+  try {
+    // Reset checkout state
+    checkoutModules.core.setDeliveryMethod(null);
+    checkoutModules.core.setBranch(null);
+    checkoutModules.core.setCalculatedPrices(null);
+    checkoutModules.core.setActivePromoCode(null);
+    console.log('🔄 State reset completed');
+
+    // Load branches first
+    await checkoutModules.delivery.loadBranches();
+    console.log('🔄 Branches loaded');
+
+    // Reset and fill UI
+    checkoutModules.ui.resetFormFields();
+    checkoutModules.ui.fillSavedUserData();
+    checkoutModules.ui.updateOrderSummary();
+    checkoutModules.ui.resetCheckoutUI();
+    console.log('🔄 UI reset completed');
+
+    // Show modal
+    const modal = document.getElementById('checkoutModal');
+    if (modal) {
+      console.log('🔄 Modal element found, opening...');
+      modal.classList.remove('hidden');
+      modal.classList.add('show');
+      modal.style.display = 'flex'; // Ensure display is set
+      document.body.style.overflow = 'hidden';
+      console.log('✅ Modal opened successfully');
+    } else {
+      console.error('❌ Modal element #checkoutModal not found in DOM');
+      showToast('خطأ', 'عنصر المودال غير موجود', 'error');
+      return;
+    }
+
+    // Refresh icons
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+      console.log('🔄 Lucide icons refreshed');
+    }
+
+    console.log('✅ Checkout initiated successfully');
+
+  } catch (error) {
+    console.error('❌ Error during checkout initialization:', error);
+    showToast('خطأ', 'حدث خطأ أثناء فتح نظام الدفع', 'error');
+  }
+}
+
+// ================================================================
+// ✅ FIX 3: Safe Function Wrappers with Error Handling
+// ================================================================
+function createSafeWrapper(moduleName, functionName) {
+  return async function(...args) {
+    try {
+      console.log(`🔄 Calling ${moduleName}.${functionName}`, args);
+      
+      if (!checkoutModules[moduleName]) {
+        console.log(`🔄 ${moduleName} not loaded, loading now...`);
+        await loadCheckoutModules();
+      }
+      
+      if (!checkoutModules[moduleName] || !checkoutModules[moduleName][functionName]) {
+        throw new Error(`Function ${functionName} not found in ${moduleName}`);
+      }
+      
+      const result = await checkoutModules[moduleName][functionName](...args);
+      console.log(`✅ ${moduleName}.${functionName} completed`);
+      return result;
+    } catch (error) {
+      console.error(`❌ Error in ${moduleName}.${functionName}:`, error);
+      const lang = window.currentLang || 'ar';
+      showToast('خطأ', `فشل في تنفيذ ${functionName}`, 'error');
+    }
+  };
+}
+
+// ================================================================
+// ✅ FIX 4: Enhanced Global Window Object
+// ================================================================
+function setupGlobalCheckoutModule() {
+  console.log('🔄 Setting up global checkout module...');
+  
+  // Create the global object with safe wrappers
+  window.checkoutModule = {
+    // Core functions
+    initiateCheckout,
+    confirmOrder: createSafeWrapper('core', 'confirmOrder'),
+    applyPromoCode: createSafeWrapper('core', 'applyPromoCode'),
+    removePromoCode: createSafeWrapper('core', 'removePromoCode'),
+    recalculatePrices: createSafeWrapper('core', 'recalculatePrices'),
+    
+    // Delivery functions
+    selectDeliveryMethod: createSafeWrapper('delivery', 'selectDeliveryMethod'),
+    selectBranch: createSafeWrapper('delivery', 'selectBranch'),
+    requestLocation: createSafeWrapper('delivery', 'requestLocation'),
+    allowLocation: createSafeWrapper('delivery', 'allowLocation'),
+    loadBranches: createSafeWrapper('delivery', 'loadBranches'),
+    getBranches: () => checkoutModules.delivery?.branches || {},
+    
+    // UI functions
+    updateOrderSummary: createSafeWrapper('ui', 'updateOrderSummary'),
+    closeCheckoutModal: createSafeWrapper('ui', 'closeCheckoutModal'),
+    openTrackingModal: createSafeWrapper('ui', 'openTrackingModal'),
+    checkOrderStatus: createSafeWrapper('ui', 'checkOrderStatus'),
+    restoreFormData: createSafeWrapper('ui', 'restoreFormData'),
+    showProcessingModal: createSafeWrapper('ui', 'showProcessingModal'),
+    closePermissionModal: createSafeWrapper('ui', 'closePermissionModal'),
+    copyOrderId: createSafeWrapper('ui', 'copyOrderId'),
+    shareOnWhatsApp: createSafeWrapper('ui', 'shareOnWhatsApp'),
+    
+    // Loyalty functions
+    getCustomerPhone: createSafeWrapper('loyalty', 'getCustomerPhone'),
+    loadGamificationPage: createSafeWrapper('loyalty', 'loadGamificationPage'),
+    
+    // Utility functions
+    isReady: () => isInitialized,
+    getModules: () => checkoutModules,
+    reload: loadCheckoutModules
+  };
+
+  // Also set individual global functions for direct HTML access
+  window.initiateCheckout = initiateCheckout;
+  
+  console.log('✅ Global checkout module setup completed');
+}
+
+// ================================================================
+// ✅ FIX 5: Enhanced Initialization with Event Handlers
+// ================================================================
+function setupCheckoutEventHandlers() {
+  console.log('🔄 Setting up checkout event handlers...');
+  
+  // Main checkout button listener
+  const checkoutBtns = document.querySelectorAll('.checkout-btn');
+  checkoutBtns.forEach(btn => {
+    console.log('🔄 Attaching click listener to checkout button:', btn);
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      console.log('🔹 Checkout button clicked');
+      initiateCheckout();
+    });
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const visibleModal = document.querySelector('.checkout-modal-overlay.show, .permission-modal.show, .processing-modal.show, .confirmed-modal.show, .tracking-modal.show');
+      if (visibleModal && window.checkoutModule?.closeCheckoutModal) {
+        console.log('🔹 ESC pressed, closing modal');
+        window.checkoutModule.closeCheckoutModal();
+      }
+    }
+  });
+
+  // Form auto-save setup
+  const formFields = ['customerName', 'customerPhone', 'customerAddress', 'orderNotes'];
+  formFields.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field) {
+      field.addEventListener('input', debounce(() => {
+        if (window.checkoutModule?.restoreFormData) {
+          window.checkoutModule.restoreFormData();
+        }
+      }, 500));
+    }
+  });
+
+  // Phone input formatting
+  const phoneInput = document.getElementById('customerPhone');
+  if (phoneInput) {
+    phoneInput.addEventListener('input', (e) => {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length > 11) value = value.substring(0, 11);
+      e.target.value = value;
+    });
+  }
+
+  // Promo code enter key
+  const promoInput = document.getElementById('promoCodeInput');
+  if (promoInput) {
+    promoInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (window.checkoutModule?.applyPromoCode) {
+          window.checkoutModule.applyPromoCode();
+        }
+      }
+    });
+  }
+
+  // Tracking input enter key
+  const trackingInput = document.getElementById('trackingInput');
+  if (trackingInput) {
+    trackingInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (window.checkoutModule?.checkOrderStatus) {
+          window.checkoutModule.checkOrderStatus();
+        }
+      }
+    });
+  }
+
+  console.log('✅ Event handlers setup completed');
+}
+
+// Simple debounce utility
 function debounce(func, wait) {
   let timeout;
   return function executedFunction(...args) {
@@ -107,189 +309,79 @@ function debounce(func, wait) {
 }
 
 // ================================================================
-// Event Handlers Setup
+// ✅ FIX 6: Enhanced DOMContentLoaded Initialization
 // ================================================================
-function setupCheckoutEventHandlers() {
-  console.log('🔧 Setting up checkout event handlers...');
+async function initializeCheckout() {
+  console.log('🔄 Initializing checkout system...');
   
-  // Focus Trap للـ Modals
-  setupFocusTrap('checkoutModal');
-  setupFocusTrap('permissionModal');
-  setupFocusTrap('processingModal');
-  setupFocusTrap('orderConfirmedModal');
-  setupFocusTrap('trackingModal');
-  
-  // Enter key للتتبع
-  const trackingInput = document.getElementById('trackingInput');
-  if (trackingInput) {
-    trackingInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        checkOrderStatus();
-      }
-    });
-  }
-  
-  // Enter key لكود الخصم
-  const promoInput = document.getElementById('promoCodeInput');
-  if (promoInput) {
-    promoInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        applyPromoCode();
-      }
-    });
-  }
-  
-  // تنسيق رقم الهاتف (أرقام فقط)
-  const phoneInput = document.getElementById('customerPhone');
-  if (phoneInput) {
-    phoneInput.addEventListener('input', (e) => {
-      let value = e.target.value.replace(/\D/g, '');
-      if (value.length > 11) {
-        value = value.substring(0, 11);
-      }
-      e.target.value = value;
-    });
-  }
-  
-  // حفظ بيانات النموذج تلقائياً
-  const formFields = ['customerName', 'customerPhone', 'customerAddress', 'orderNotes'];
-  formFields.forEach(id => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.addEventListener('input', () => {
-        saveFormData();
+  try {
+    // Setup global module first
+    setupGlobalCheckoutModule();
+    
+    // Pre-load modules
+    const loaded = await loadCheckoutModules();
+    if (!loaded) {
+      console.error('❌ Failed to pre-load modules');
+      return;
+    }
+    
+    // Setup event handlers
+    setupCheckoutEventHandlers();
+    
+    // Load branches in background
+    if (checkoutModules.delivery?.loadBranches) {
+      checkoutModules.delivery.loadBranches().catch(err => {
+        console.warn('⚠️ Failed to load branches in background:', err);
       });
     }
-  });
-  
-  // ESC لإغلاق Modals
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      closeAllCheckoutModals();
+    
+    // Restore saved form data
+    if (checkoutModules.ui?.restoreFormData) {
+      checkoutModules.ui.restoreFormData();
     }
-  });
-  
-  // منع إرسال النموذج عند الضغط على Enter
-  const checkoutForm = document.getElementById('checkoutForm');
-  if (checkoutForm) {
-    checkoutForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-    });
-  }
-  
-  console.log('✅ Checkout event handlers setup complete');
-}
-
-// ================================================================
-// إغلاق جميع نوافذ Checkout
-// ================================================================
-function closeAllCheckoutModals() {
-  const modals = [
-    'checkoutModal',
-    'permissionModal',
-    'processingModal',
-    'orderConfirmedModal',
-    'trackingModal'
-  ];
-  
-  modals.forEach(modalId => {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-      if (modal.classList.contains('show')) {
-        modal.classList.remove('show');
-      }
-      if (!modal.classList.contains('hidden')) {
-        modal.classList.add('hidden');
-      }
-    }
-  });
-  
-  document.body.style.overflow = '';
-}
-
-// ================================================================
-// Auto-initialize عند تحميل الصفحة
-// ================================================================
-if (typeof window !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', async () => {
-      console.log('📦 Initializing checkout module...');
-      
-      try {
-        await loadBranches();
-        setupCheckoutEventHandlers();
-        restoreFormData();
-        
-        console.log('✅ Checkout module initialized successfully');
-      } catch (error) {
-        console.error('❌ Failed to initialize checkout:', error);
-      }
-    });
-  } else {
-    // DOM already loaded
-    (async () => {
-      console.log('📦 Initializing checkout module (late)...');
-      
-      try {
-        await loadBranches();
-        setupCheckoutEventHandlers();
-        restoreFormData();
-        
-        console.log('✅ Checkout module initialized successfully');
-      } catch (error) {
-        console.error('❌ Failed to initialize checkout:', error);
-      }
-    })();
+    
+    // Mark as initialized
+    isInitialized = true;
+    console.log('✅ Checkout system initialized successfully');
+    
+    // Dispatch ready event
+    window.dispatchEvent(new CustomEvent('checkoutReady', { 
+      detail: { modules: checkoutModules } 
+    }));
+    
+  } catch (error) {
+    console.error('❌ Failed to initialize checkout system:', error);
   }
 }
 
-console.log('✅ Checkout module loaded (Modular Architecture)');
-// في checkout.js
-// Add this after the window.checkoutModule definition
-window.debugCheckout = () => {
-  console.log({
-    initiateCheckoutExists: typeof window.initiateCheckout === 'function',
-    moduleExists: typeof window.checkoutModule === 'object',
-    modalExists: !!document.getElementById('checkoutModal'),
-    modalState: {
-      element: document.getElementById('checkoutModal'),
-      display: document.getElementById('checkoutModal')?.style.display,
-      classes: document.getElementById('checkoutModal')?.classList.toString()
+// ================================================================
+// ✅ FIX 7: Enhanced Loading Strategy
+// ================================================================
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeCheckout);
+} else {
+  // DOM already loaded
+  initializeCheckout();
+}
+
+// Also handle dynamic loading
+if (window.addEventListener) {
+  window.addEventListener('load', () => {
+    if (!isInitialized) {
+      console.log('🔄 Window loaded but checkout not initialized, initializing now...');
+      initializeCheckout();
     }
   });
-};
-console.log('🧠 Debug:', {
-  windowExists: typeof window !== 'undefined',
-  initiateCheckoutType: typeof initiateCheckout,
-  windowInitiate: typeof window.initiateCheckout,
-  module: window.checkoutModule
-});
-document.addEventListener('DOMContentLoaded', () => {
-  const btn = document.querySelector('.checkout-btn');
-  if (btn) {
-    btn.addEventListener('click', initiateCheckout);
-  }
-});
-
-
-// في زر التأكيد في HTML
-
+}
 
 // ================================================================
-// تصدير للاستخدام كـ ES Module
+// ✅ FIX 8: Export for ES Module Usage
 // ================================================================
-export {
+export { 
   initiateCheckout,
-  confirmOrder,
-  selectDeliveryMethod,
-  selectBranch,
-  updateOrderSummary,
-  applyPromoCode,
-  removePromoCode,
-  openTrackingModal,
-  checkOrderStatus,
-  getCustomerPhone,
-  loadGamificationPage
+  loadCheckoutModules,
+  setupGlobalCheckoutModule,
+  checkoutModules
 };
+
+console.log('✅ checkout.js loaded successfully');
