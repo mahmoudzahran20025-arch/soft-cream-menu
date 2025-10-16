@@ -70,6 +70,7 @@ export function getCurrentOrderData() {
 // ================================================================
 // بدء عملية الشراء
 // ================================================================
+/*
 export async function initiateCheckout() {
   console.log('🔹 initiateCheckout called');
   console.log('🔹 Cart contents:', cart);
@@ -118,6 +119,87 @@ export async function initiateCheckout() {
   if (typeof lucide !== 'undefined') {
     lucide.createIcons();
   }
+}*/
+if (typeof window !== 'undefined') {
+  // تعريف واضح للـ initiateCheckout
+  window.initiateCheckout = async function() {
+    console.log('🚀 Starting checkout process...');
+    
+    // 1. التحقق من وجود منتجات في السلة
+    if (!cart || cart.length === 0) {
+      const lang = window.currentLang || 'ar';
+      showToast(
+        lang === 'ar' ? 'السلة فارغة' : 'Cart is empty',
+        lang === 'ar' ? 'أضف بعض المنتجات أولاً' : 'Add some products first',
+        'error'
+      );
+      return;
+    }
+    
+    // 2. عرض Modal الـ checkout
+    const modal = document.getElementById('checkoutModal');
+    if (!modal) {
+      console.error('❌ Checkout modal not found!');
+      return;
+    }
+
+    try {
+      // Show modal first
+      modal.style.display = 'block';
+      modal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+      
+      // 3. تهيئة الـ checkout
+      if (typeof window.checkoutModule?.initiateCheckout === 'function') {
+        await window.checkoutModule.initiateCheckout();
+      }
+      
+      // إعادة تعيين الحقول
+      const { resetFormFields, fillSavedUserData, resetCheckoutUI } = await import('./checkout/checkout-ui.js');
+      const { updateOrderSummary } = await import('./checkout/checkout-ui.js');
+      const { loadBranches } = await import('./checkout/checkout-delivery.js');
+    
+      await loadBranches();
+      resetFormFields();
+      fillSavedUserData();
+      updateOrderSummary();
+      resetCheckoutUI();
+
+      // تحديث الأيقونات
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      }
+      
+      console.log('✅ Checkout initiated successfully');
+    } catch (error) {
+      console.error('❌ Error during checkout:', error);
+      // Hide modal on error
+      modal.style.display = 'none';
+      modal.classList.remove('show');
+      document.body.style.overflow = '';
+      
+      const lang = window.currentLang || 'ar';
+      showToast(
+        lang === 'ar' ? 'خطأ' : 'Error',
+        error.message || (lang === 'ar' ? 'حدث خطأ أثناء التحميل' : 'Error during loading'),
+        'error'
+      );
+    }
+  };
+
+  // للتأكد من تحميل كل شيء
+  window.debugCheckout = () => {
+    console.log({
+      initiateCheckoutExists: typeof window.initiateCheckout === 'function',
+      moduleExists: typeof window.checkoutModule === 'object',
+      modalExists: !!document.getElementById('checkoutModal'),
+      modalState: {
+        element: document.getElementById('checkoutModal'),
+        display: document.getElementById('checkoutModal')?.style.display,
+        classes: document.getElementById('checkoutModal')?.classList.toString()
+      }
+    });
+  };
 }
 
 
