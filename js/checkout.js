@@ -258,7 +258,6 @@ window.initiateCheckout = async () => {
 };
 
 // في زر التأكيد في HTML
-<button onclick="initiateCheckout()">تأكيد الطلب</button>
 
 
 // ================================================================
