@@ -42,6 +42,7 @@ import { setupFocusTrap } from './utils.js';
 // تصدير للنافذة العامة
 // ================================================================
 if (typeof window !== 'undefined') {
+  // للـ module style
   window.checkoutModule = {
     // Core
     initiateCheckout,
@@ -68,6 +69,40 @@ if (typeof window !== 'undefined') {
     // Loyalty
     getCustomerPhone,
     loadGamificationPage
+  };
+  
+  // ✅ للـ onclick المباشر (لسهولة الاستخدام في HTML)
+  window.initiateCheckout = initiateCheckout;
+  window.confirmOrder = confirmOrder;
+  window.selectDeliveryMethod = selectDeliveryMethod;
+  window.selectBranch = selectBranch;
+  window.requestLocation = requestLocation;
+  window.allowLocation = allowLocation;
+  window.closeCheckoutModal = (event) => {
+    if (event && !event.target?.classList?.contains('checkout-modal-overlay')) return;
+    const modal = document.getElementById('checkoutModal');
+    if (modal) modal.classList.remove('show');
+    document.body.style.overflow = '';
+  };
+  window.closePermissionModal = () => {
+    const modal = document.getElementById('permissionModal');
+    if (modal) modal.style.display = 'none';
+  };
+  window.checkOrderStatus = checkOrderStatus;
+}
+
+// ================================================================
+// Utility: Debounce Function
+// ================================================================
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
   };
 }
 
@@ -120,13 +155,11 @@ function setupCheckoutEventHandlers() {
   
   // حفظ بيانات النموذج تلقائياً
   const formFields = ['customerName', 'customerPhone', 'customerAddress', 'orderNotes'];
-  const debouncedSave = debounce(saveFormData, 500);
-
   formFields.forEach(id => {
     const element = document.getElementById(id);
     if (element) {
       element.addEventListener('input', () => {
-        debouncedSave(); // ✅ ينتظر 500ms بعد آخر تغيير
+        saveFormData();
       });
     }
   });
