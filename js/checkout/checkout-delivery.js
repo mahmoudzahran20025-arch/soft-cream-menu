@@ -14,19 +14,19 @@ import { calculateDistance, showToast } from '../utils.js';
 // State Management
 // ================================================================
 export let branches = {};
-let isLoadingBranches = false;
+let _isLoadingBranches = false;
 
 // ================================================================
 // ✅ FIX 1: Enhanced loadBranches with Better Error Handling
 // ================================================================
 export async function loadBranches() {
-  if (isLoadingBranches) {
+  if (_isLoadingBranches) {
     console.log('⚠️ Branches already loading, waiting...');
     return;
   }
   
   console.log('🔄 Loading branches...');
-  isLoadingBranches = true;
+  _isLoadingBranches = true;
   
   try {
     const branchesData = await api.getBranches();
@@ -97,7 +97,7 @@ export async function loadBranches() {
     console.log('⚠️ Using fallback branches:', Object.keys(branches).length);
     renderBranchSelection();
   } finally {
-    isLoadingBranches = false;
+    _isLoadingBranches = false;
   }
 }
 
@@ -653,7 +653,7 @@ export function getBranch(branchId) {
 }
 
 export function isLoadingBranches() {
-  return isLoadingBranches;
+  return _isLoadingBranches;
 }
 
 // ================================================================

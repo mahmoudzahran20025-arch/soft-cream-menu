@@ -544,3 +544,43 @@ console.log('✅ Utils module loaded (Secure & Optimized)');
 
 // Soft Ice Cream GSAP Animations - Isolated
 // Soft Ice Cream GSAP - Isolated Version
+// utils.js
+
+/**
+ * Format a number as a price string
+ * @param {number} value - الرقم المراد تحويله
+ * @param {string} lang - 'ar' للعربية، أي قيمة أخرى للإنجليزية
+ * @returns {string} السعر مع التنسيق والعملة
+ */
+export function formatPrice(value, lang = 'ar') {
+  if (isNaN(value) || value === null) value = 0;
+
+  const formatted = Number(value).toLocaleString(
+    lang === 'ar' ? 'ar-EG' : 'en-US', 
+    { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+  );
+
+  const currency = lang === 'ar' ? 'ج.م' : 'EGP';
+  return `${formatted} ${currency}`;
+}
+
+// ================================================================
+// Utility: حساب المسافة بين نقطتين (lat/lng) بالكيلومتر
+// ================================================================
+export function calculateDistance(lat1, lng1, lat2, lng2) {
+  const toRad = (value) => (value * Math.PI) / 180;
+
+  const R = 6371; // نصف قطر الأرض بالكيلومتر
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+
+  const a = 
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+    Math.sin(dLng / 2) ** 2;
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = R * c;
+
+  return distance; // بالكيلومتر
+}
