@@ -246,7 +246,19 @@ if (typeof window !== 'undefined') {
 }
 
 console.log('✅ Checkout module loaded (Modular Architecture)');
+// في checkout.js
+window.initiateCheckout = async () => {
+  console.log('🚀 Starting checkout...');
+  try {
+    await initiateCheckout();
+    console.log('✅ Checkout initiated successfully');
+  } catch (error) {
+    console.error('❌ Error initiating checkout:', error);
+  }
+};
 
+// في زر التأكيد في HTML
+<button onclick="initiateCheckout()">تأكيد الطلب</button>
 
 
 // ================================================================
