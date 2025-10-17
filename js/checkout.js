@@ -9,6 +9,7 @@ console.log('🔄 Loading checkout.js - Main Entry Point');
 // ================================================================
 import { getCart, isCartEmpty, getCartLength } from './cart.js';  // ✅
 import { showToast } from './utils.js';
+import { setupModalCloseHandlers, closeTrackingModal, showTrackingModal } from './checkout/checkout-ui.js';
 
 // ================================================================
 // Global State & Module Cache
