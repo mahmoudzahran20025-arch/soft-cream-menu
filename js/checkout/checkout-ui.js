@@ -635,6 +635,7 @@ export function shareOnWhatsApp(orderId, itemsText, customerPhone) {
 // ================================================================
 // ✅ Enhanced Tracking Functions  
 // ================================================================
+/*
 export function showTrackingModal(orderId) {
   console.log('🔍 Opening tracking modal for:', orderId);
   
@@ -668,6 +669,66 @@ export function showTrackingModal(orderId) {
   
   // Show loading
   const content = document.getElementById('trackingContent');
+  content.innerHTML = `
+    <div style="text-align: center; padding: 40px 20px;">
+      <div class="loading-spinner" style="width: 48px; height: 48px; border: 4px solid #f3f3f3; border-top: 4px solid #2196F3; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+      <p>${lang === 'ar' ? 'جاري البحث عن الطلب...' : 'Searching for order...'}</p>
+    </div>
+    <style>
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+  `;
+  
+  // Show modal
+  modal.classList.add('show');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  
+  // Fetch order data
+  fetchOrderStatus(orderId);
+}*/
+export function showTrackingModal(orderId) {
+  console.log('🔍 Opening tracking modal for:', orderId);
+  
+  const lang = window.currentLang || 'ar';
+  
+  // First create and append modal
+  let modal = document.getElementById('trackingModal');
+  
+  if (!modal) {
+    // Create modal with content div included
+    modal = document.createElement('div');
+    modal.id = 'trackingModal';
+    modal.className = 'modal-overlay tracking-modal';
+    modal.innerHTML = `
+      <div class="modal-content" style="max-width: 500px; background: white; padding: 30px; border-radius: 12px; position: relative;">
+        <button class="close-modal" onclick="window.closeTrackingModal?.()" style="position: absolute; top: 15px; ${lang === 'ar' ? 'left' : 'right'}: 15px; background: none; border: none; cursor: pointer; padding: 5px; opacity: 0.6;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+        </button>
+        <div id="trackingContent"></div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    
+    // Add click outside listener
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) {
+        closeTrackingModal();
+      }
+    });
+  }
+
+  // Now it's safe to get trackingContent since modal is in DOM
+  const content = document.getElementById('trackingContent');
+  if (!content) {
+    console.error('❌ Tracking content div not found');
+    return;
+  }
+  
+  // Show loading state
   content.innerHTML = `
     <div style="text-align: center; padding: 40px 20px;">
       <div class="loading-spinner" style="width: 48px; height: 48px; border: 4px solid #f3f3f3; border-top: 4px solid #2196F3; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
