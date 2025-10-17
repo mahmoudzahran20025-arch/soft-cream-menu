@@ -7,7 +7,7 @@ console.log('🔄 Loading checkout.js - Main Entry Point');
 // ================================================================
 // Static Imports - الوحدات الأساسية المطلوبة فوراً
 // ================================================================
-import { cart } from './cart.js';
+import { getCart, isCartEmpty, getCartLength } from './cart.js';  // ✅
 import { showToast } from './utils.js';
 
 // ================================================================
@@ -58,14 +58,19 @@ async function loadCheckoutModules() {
 // ================================================================
 async function initiateCheckout() {
   console.log('🔹 initiateCheckout called');
+  const currentCart = getCart();
+
   console.log('🔹 Cart state:', { 
-    exists: !!cart, 
-    length: cart?.length || 0, 
-    items: cart?.map(item => ({ id: item.id, name: item.name, quantity: item.quantity })) || [] 
+    exists: !isCartEmpty(),                    // ✅
+    length: getCartLength(),                   // ✅
+    items: getCart().map(item => ({ 
+      id: item.productId, 
+      quantity: item.quantity 
+    }))
   });
 
   // Check cart first
-  if (!cart || cart.length === 0) {
+  if (isCartEmpty()) {  // ✅ FIX
     console.log('⚠️ Cart is empty, showing error');
     const lang = window.currentLang || 'ar';
     showToast(

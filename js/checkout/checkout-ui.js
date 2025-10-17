@@ -7,8 +7,7 @@ console.log('🔄 Loading checkout-ui.js');
 // ================================================================
 // Static Imports
 // ================================================================
-import { cart, getCart } from '../cart.js';  // ✅ Add getCart to imports
-import { storage } from '../storage.js';
+import { getCart, isCartEmpty } from '../cart.js';  // ✅ إزالة cartimport { storage } from '../storage.js';
 import { showToast } from '../utils.js';
 
 // ================================================================
@@ -26,7 +25,7 @@ export async function updateOrderSummary() {
   }
 
   const lang = window.currentLang || 'ar';
-  const cart = getCart();  // ✅ الحصول على السلة الحالية
+  const currentCart = getCart();  // ✅ تغيير الاسم لتفادي التضارب
   
   try {
     // Get current state
@@ -44,7 +43,7 @@ export async function updateOrderSummary() {
       calculatedPrices: !!calculatedPrices,
       deliveryMethod,
       selectedBranch,
-      cartItems: cart?.length || 0
+      cartItems: currentCart?.length || 0  // ✅
     });
 
     // إخفاء ملخص الطلب في البداية

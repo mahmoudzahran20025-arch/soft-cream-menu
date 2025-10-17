@@ -7,11 +7,11 @@ console.log('🔄 Loading checkout-core.js');
 // ================================================================
 // Static Imports - الوحدات المطلوبة دائماً
 // ================================================================
-import { cart, clearCart } from '../cart.js';
+import { getCart, isCartEmpty, getCartLength, clearCart } from '../cart.js';  // ✅ التعديل هنا
 import { api } from '../api.js';
 import { storage } from '../storage.js';
 import { showToast, generateUUID } from '../utils.js';
-import { productsManager } from '../products.js';  // ✅ إضافة مهمة!
+import { productsManager } from '../products.js';
 
 // ================================================================
 // المتغيرات العامة - State Management
@@ -118,7 +118,7 @@ async function enrichCartItems(cartItems) {
 // ================================================================
 export async function recalculatePrices() {
   console.log('🔄 Recalculating prices...');
-  console.log('🔄 Current cart:', cart.length, 'items');
+  console.log('🔄 Current cart:', getCartLength(), 'items');  // ✅ التعديل
 
   if (!selectedDeliveryMethod) {
     console.log('⚠️ No delivery method selected, clearing prices');
@@ -134,15 +134,18 @@ export async function recalculatePrices() {
   }
 
   // ✅ تحقق من وجود عناصر في السلة
-  if (!cart || cart.length === 0) {
+  if (isCartEmpty()) {  // ✅ التعديل
     console.warn('⚠️ Cart is empty, cannot calculate prices');
     calculatedPrices = null;
     return;
   }
 
   try {
+    // ✅ الحصول على السلة
+    const currentCart = getCart();  // ✅ التعديل
+    
     // ✅ إثراء عناصر السلة ببيانات المنتجات
-    const enrichedItems = await enrichCartItems(cart);
+    const enrichedItems = await enrichCartItems(currentCart);  // ✅ التعديل
     
     if (enrichedItems.length === 0) {
       throw new Error('No valid items in cart');
@@ -160,7 +163,7 @@ export async function recalculatePrices() {
     }
     
     const request = {
-      items: enrichedItems,  // ✅ استخدام العناصر المُثراة
+      items: enrichedItems,
       deliveryMethod: selectedDeliveryMethod,
       branch: selectedBranch,
       promoCode: activePromoCode,
@@ -192,9 +195,10 @@ export async function recalculatePrices() {
   } catch (error) {
     console.error('❌ Failed to calculate prices:', error);
     
-    // ✅ Fallback calculation مع إثراء العناصر
+    // ✅ Fallback calculation
     try {
-      const enrichedItems = await enrichCartItems(cart);
+      const currentCart = getCart();  // ✅ التعديل
+      const enrichedItems = await enrichCartItems(currentCart);
       const subtotal = enrichedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
       const deliveryFee = selectedDeliveryMethod === 'delivery' ? 15 : 0;
       const discount = activePromoCode ? Math.round(subtotal * 0.1) : 0;
@@ -235,12 +239,12 @@ export async function recalculatePrices() {
 // ================================================================
 export async function confirmOrder() {
   console.log('🔄 Starting order confirmation...');
-  console.log('🔄 Current cart:', cart.length, 'items');
+  console.log('🔄 Current cart:', getCartLength(), 'items');  // ✅ التعديل
   
   const lang = window.currentLang || 'ar';
   
   // ✅ تحقق من السلة أولاً
-  if (!cart || cart.length === 0) {
+  if (isCartEmpty()) {  // ✅ التعديل
     console.error('❌ Cart is empty!');
     showToast(
       lang === 'ar' ? 'خطأ' : 'Error',
@@ -273,8 +277,11 @@ export async function confirmOrder() {
     closeCheckoutModal();
     showProcessingModal(true, false);
     
+    // ✅ الحصول على السلة
+    const currentCart = getCart();  // ✅ التعديل
+    
     // ✅ إثراء عناصر السلة قبل الإرسال
-    const enrichedItems = await enrichCartItems(cart);
+    const enrichedItems = await enrichCartItems(currentCart);  // ✅ التعديل
     
     if (enrichedItems.length === 0) {
       throw new Error(lang === 'ar' ? 'فشل في تحميل بيانات المنتجات' : 'Failed to load product data');
@@ -284,7 +291,7 @@ export async function confirmOrder() {
     
     // Prepare order data
     const orderData = {
-      items: enrichedItems,  // ✅ استخدام العناصر المُثراة
+      items: enrichedItems,
       customer: validation.customer,
       customerPhone: validation.customer.phone,
       deliveryMethod: selectedDeliveryMethod,
@@ -463,8 +470,9 @@ export async function applyPromoCode() {
     // ✅ حساب الـ subtotal من العناصر المُثراة
     let subtotal = calculatedPrices?.subtotal || 0;
     
-    if (!subtotal && cart && cart.length > 0) {
-      const enrichedItems = await enrichCartItems(cart);
+    if (!subtotal && !isCartEmpty()) {  // ✅ التعديل
+      const currentCart = getCart();  // ✅ التعديل
+      const enrichedItems = await enrichCartItems(currentCart);
       subtotal = enrichedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     }
     
@@ -591,8 +599,8 @@ export function getCheckoutDebugInfo() {
     currentOrderData,
     calculatedPrices,
     activePromoCode,
-    cartItems: cart?.length || 0,
-    cartContent: cart,
+    cartItems: getCartLength(),  // ✅ التعديل
+    cartContent: getCart(),  // ✅ التعديل
     timestamp: new Date().toISOString()
   };
 }
