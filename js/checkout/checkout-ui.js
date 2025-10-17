@@ -7,7 +7,7 @@ console.log('🔄 Loading checkout-ui.js');
 // ================================================================
 // Static Imports
 // ================================================================
-import { cart } from '../cart.js';  // ✅ الآن يعمل مباشرة!
+import { cart, getCart } from '../cart.js';  // ✅ Add getCart to imports
 import { storage } from '../storage.js';
 import { showToast } from '../utils.js';
 
