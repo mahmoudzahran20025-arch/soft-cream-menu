@@ -312,6 +312,7 @@ class APIService {
     // ================================================================
     // ===== ✅ NEW: Get Error Message =====
     // ================================================================
+    /*
     getErrorMessage(error, lang = 'ar') {
         // AbortError
         if (error.name === 'AbortError') {
@@ -366,7 +367,59 @@ class APIService {
         
         // Default
         return error.message || (lang === 'ar' ? 'حدث خطأ. حاول مرة أخرى' : 'An error occurred. Try again');
-    }
+    }*/
+    // ================================================================
+    // ✅ ENHANCED: Error Message Handler
+    // ================================================================
+    getErrorMessage(error, lang = 'ar') {
+        // Handle specific error patterns
+        if (error.name === 'AbortError') {
+            return lang === 'ar' ? 'تم إلغاء الطلب' : 'Request cancelled';
+        }
+
+        if (error.message?.includes('Rate limit') || error.message?.includes('Too many')) {
+            return lang === 'ar' 
+                ? 'عدد كبير من المحاولات. يرجى الانتظار قليلاً'
+                : 'Too many attempts. Please wait a moment';
+        }
+        
+        if (error.message?.includes('timeout')) {
+            return lang === 'ar'
+                ? 'انتهت مهلة الاتصال. تحقق من الإنترنت'
+                : 'Connection timeout. Check your internet';
+        }
+
+        if (error.message?.includes('Network') || error.message?.includes('Failed to fetch')) {
+            return lang === 'ar'
+                ? 'مشكلة في الاتصال. تحقق من الإنترنت'
+                : 'Connection problem. Check your internet';
+        }
+        
+        // Backend error messages
+        if (error.data?.error) {
+            return error.data.error;
+        }
+        
+        // HTTP status errors
+        if (error.status >= 400 && error.status < 500) {
+            if (error.status === 404) {
+                return lang === 'ar' ? 'المورد غير موجود' : 'Resource not found';
+            }
+            if (error.status === 400) {
+                return lang === 'ar' ? 'بيانات غير صحيحة' : 'Invalid data';
+            }
+            return error.message;
+        }
+
+        if (error.status >= 500) {
+            return lang === 'ar'
+                ? 'خطأ في الخادم. حاول مرة أخرى'
+                : 'Server error. Try again';
+        }
+
+        // Default
+        return error.message || (lang === 'ar' ? 'حدث خطأ. حاول مرة أخرى' : 'An error occurred. Try again');
+    }  
 
     // ================================================================
     // ===== Authentication =====
@@ -401,6 +454,7 @@ class APIService {
     // ================================================================
     // ===== ORDER ENDPOINTS =====
     // ================================================================
+    /*
     async submitOrder(orderData) {
         if (orderData.items.some(item => item.price || item.subtotal)) {
             console.error('❌ SECURITY WARNING: Frontend should not send prices!');
@@ -438,7 +492,77 @@ class APIService {
         console.log('💰 Received calculated prices from backend:', result.data.calculatedPrices);
 
         return result.data;
+    }*/
+    // ================================================================
+    // ✅ FIXED: Submit Order - يتعامل مع البنية الصحيحة
+    // ================================================================
+    async submitOrder(orderData) {
+        // Security validation
+        if (orderData.items.some(item => item.price || item.subtotal)) {
+            console.error('❌ SECURITY WARNING: Frontend should not send prices!');
+            throw new Error('Invalid order data: prices should not be sent from frontend');
+        }
+
+        if (orderData.subtotal || orderData.total || orderData.discount) {
+            console.error('❌ SECURITY WARNING: Frontend should not send totals!');
+            throw new Error('Invalid order data: totals should not be sent from frontend');
+        }
+
+        const idempotencyKey = orderData.idempotencyKey || this.generateIdempotencyKey();
+
+        const cleanOrderData = {
+            items: orderData.items.map(item => ({
+                productId: item.productId,
+                quantity: item.quantity
+            })),
+            customer: orderData.customer,
+            deliveryMethod: orderData.deliveryMethod || 'delivery',
+            branch: orderData.branch || null,
+            location: orderData.location || null,
+            customerPhone: orderData.customerPhone || orderData.customer?.phone,
+            promoCode: orderData.promoCode || null,
+            idempotencyKey: idempotencyKey
+        };
+
+        console.log('📦 Submitting order (IDs only):', cleanOrderData);
+
+        try {
+            const result = await this.request('POST', '/orders/submit', cleanOrderData, {
+                idempotencyKey: idempotencyKey,
+                retries: 3
+            });
+
+            console.log('📥 Raw submit response:', result);
+
+            // ✅ FIX: Extract data correctly
+            let responseData = null;
+            
+            if (result.data) {
+                responseData = result.data;
+            } else if (result) {
+                responseData = result;
+            } else {
+                throw new Error('Empty response from order submission');
+            }
+            
+            console.log('✅ Extracted response data:', responseData);
+            
+            // Validate required fields
+            if (!responseData.orderId) {
+                console.error('❌ Missing orderId in response:', responseData);
+                throw new Error('Invalid response: missing orderId');
+            }
+            
+            console.log('💰 Received calculated prices from backend:', responseData.calculatedPrices);
+            
+            return responseData;
+            
+        } catch (error) {
+            console.error('❌ Order submission failed:', error);
+            throw error;
+        }
     }
+
 
     async trackOrder(orderId) {
         return this.request('GET', '/orders/track', { orderId });
@@ -451,17 +575,55 @@ class APIService {
     // ================================================================
     // ===== ✅ FIXED: Calculate Order Prices =====
     // ================================================================
+    // ================================================================
+    // ✅ FIXED: Calculate Order Prices - يتعامل مع البنية الصحيحة
+    // ================================================================
     async calculateOrderPrices(items, promoCode = null, deliveryMethod = 'delivery', customerPhone = null) {
-        const result = await this.request('POST', '/orders/prices', {
-            items,
-            promoCode,
-            deliveryMethod,
-            customerPhone
-        });
-        
-        // ✅ Fixed: result.data contains calculatedPrices
-        return result.data?.calculatedPrices || result.data;
+        try {
+            console.log('📤 Requesting price calculation:', { items, promoCode, deliveryMethod, customerPhone });
+            
+            const result = await this.request('POST', '/orders/prices', {
+                items,
+                promoCode,
+                deliveryMethod,
+                customerPhone
+            });
+            
+            console.log('📥 Raw API response:', result);
+            
+            // ✅ FIX: Handle nested structure correctly
+            let calculatedPrices = null;
+            
+            if (result.data?.calculatedPrices) {
+                // Backend structure: { success: true, data: { calculatedPrices: {...} } }
+                calculatedPrices = result.data.calculatedPrices;
+            } else if (result.data) {
+                // Fallback: { success: true, data: {...} }
+                calculatedPrices = result.data;
+            } else if (result.calculatedPrices) {
+                // Direct structure: { calculatedPrices: {...} }
+                calculatedPrices = result.calculatedPrices;
+            } else {
+                console.error('❌ Unexpected response structure:', result);
+                throw new Error('Invalid response structure from price calculation');
+            }
+            
+            console.log('✅ Extracted calculatedPrices:', calculatedPrices);
+            
+            // Validate required fields
+            if (!calculatedPrices.items || !calculatedPrices.subtotal === undefined) {
+                console.error('❌ Missing required fields in calculatedPrices:', calculatedPrices);
+                throw new Error('Incomplete price data received');
+            }
+            
+            return calculatedPrices;
+            
+        } catch (error) {
+            console.error('❌ Price calculation failed:', error);
+            throw error;
+        }
     }
+
 
     // ================================================================
     // ===== PRODUCT ENDPOINTS =====
@@ -587,18 +749,53 @@ class APIService {
         }
     }*/
    // ابحث عن دالة trackEvent في api.js
+    // ================================================================
+    // ✅ FIXED: Track Event - معالجة أفضل للأخطاء
+    // ================================================================
     async trackEvent(event) {
-    try {
-        // ✅ FIX: Don't throw error if analytics fails
-        console.log('📊 Tracking event:', event);
-        
-        const response = await this.request('POST', '/analytics/event', event);
-        return response;
-    } catch (error) {
-        // ⚠️ Analytics is non-critical, just log warning
-        console.warn('⚠️ Analytics tracking failed (non-critical):', error);
-        return { success: false, error: error.message };
-    }
+        try {
+            console.log('📊 Tracking event:', event);
+            
+            const enrichedEvent = {
+                eventName: event.name || event.eventName,
+                eventData: {
+                    ...event,
+                    timestamp: Date.now(),
+                    sessionId: this.getSessionId(),
+                    userAgent: navigator.userAgent,
+                    url: window.location.href
+                }
+            };
+            
+            // ✅ FIX: Use keepalive fetch instead of regular request
+            const url = `${this.baseURL}?path=${encodeURIComponent('/analytics/event')}`;
+            
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Origin': window.location.origin
+                },
+                body: JSON.stringify(enrichedEvent),
+                keepalive: true,
+                mode: 'cors',
+                credentials: 'omit'
+            });
+            
+            if (!response.ok) {
+                // ⚠️ Analytics failure is non-critical
+                console.warn(`⚠️ Analytics returned ${response.status} (non-critical)`);
+                return { success: false };
+            }
+            
+            console.log('✅ Event tracked successfully');
+            return { success: true };
+            
+        } catch (error) {
+            // ⚠️ Analytics is non-critical, just log warning
+            console.warn('⚠️ Analytics tracking failed (non-critical):', error.message);
+            return { success: false, error: error.message };
+        }
     }
 }
 

@@ -194,6 +194,9 @@ async function prepareCartItemsForSubmit(cartItems) {
 // ================================================================
 // ✅ FIXED: recalculatePrices with enriched items for display
 // ================================================================
+// ================================================================
+// ✅ FIXED: recalculatePrices - معالجة صحيحة للاستجابة
+// ================================================================
 export async function recalculatePrices() {
   console.log('🔄 Recalculating prices...');
   console.log('🔄 Current cart:', getCartLength(), 'items');
@@ -220,17 +223,14 @@ export async function recalculatePrices() {
   try {
     const currentCart = getCart();
     
-    // ✅ إثراء العناصر للعرض المحلي فقط
-    const enrichedItems = await enrichCartItemsForDisplay(currentCart);
+    // ✅ تحضير العناصر للإرسال (IDs only)
+    const itemsForAPI = await prepareCartItemsForSubmit(currentCart);
     
-    if (enrichedItems.length === 0) {
+    if (itemsForAPI.length === 0) {
       throw new Error('No valid items in cart');
     }
     
-    console.log('📦 Enriched items for display:', enrichedItems);
-    
-    // ✅ تحضير العناصر للإرسال (بدون أسعار)
-    const itemsForAPI = await prepareCartItemsForSubmit(currentCart);
+    console.log('📦 Items for API (IDs only):', itemsForAPI);
     
     // Get customer phone
     let customerPhone = null;
@@ -241,8 +241,8 @@ export async function recalculatePrices() {
       console.warn('⚠️ Could not get customer phone:', err);
     }
     
-    const request = {
-      items: itemsForAPI,  // ✅ إرسال IDs فقط
+    const requestData = {
+      items: itemsForAPI,
       deliveryMethod: selectedDeliveryMethod,
       branch: selectedBranch,
       promoCode: activePromoCode,
@@ -250,20 +250,27 @@ export async function recalculatePrices() {
       customerPhone: customerPhone
     };
 
-    console.log('📤 Requesting price calculation (IDs only):', request);
+    console.log('📤 Requesting price calculation:', requestData);
 
-    const result = await api.request('POST', '/orders/prices', request);
+    // ✅ FIX: استخدام الدالة المُحدثة من api.js
+    const pricesResult = await api.calculateOrderPrices(
+      itemsForAPI,
+      activePromoCode,
+      selectedDeliveryMethod,
+      customerPhone
+    );
     
-    if (result && result.data) {
-      calculatedPrices = result.data.calculatedPrices || result.data;
-    } else if (result) {
-      calculatedPrices = result.calculatedPrices || result;
-    } else {
-      throw new Error('Empty response from price calculation');
+    console.log('📥 Received prices from API:', pricesResult);
+    
+    // ✅ FIX: pricesResult is already the calculatedPrices object
+    if (!pricesResult || !pricesResult.items) {
+      throw new Error('Invalid price data received');
     }
-
+    
+    calculatedPrices = pricesResult;
     console.log('✅ Prices calculated successfully:', calculatedPrices);
     
+    // Update UI
     try {
       const { updateOrderSummary } = await import('./checkout-ui.js');
       updateOrderSummary();
@@ -274,7 +281,7 @@ export async function recalculatePrices() {
   } catch (error) {
     console.error('❌ Failed to calculate prices:', error);
     
-    // ✅ Fallback calculation
+    // ✅ Fallback calculation with enriched items
     try {
       const currentCart = getCart();
       const enrichedItems = await enrichCartItemsForDisplay(currentCart);
@@ -289,7 +296,7 @@ export async function recalculatePrices() {
           name: item.name,
           price: item.price,
           quantity: item.quantity,
-          total: item.price * item.quantity
+          subtotal: item.price * item.quantity
         })),
         subtotal,
         deliveryFee,
@@ -304,6 +311,7 @@ export async function recalculatePrices() {
       calculatedPrices = null;
     }
     
+    // Update UI
     try {
       const { updateOrderSummary } = await import('./checkout-ui.js');
       updateOrderSummary();
@@ -313,8 +321,9 @@ export async function recalculatePrices() {
   }
 }
 
+
 // ================================================================
-// ✅ FIXED: confirmOrder with separate functions
+// ✅ FIXED: confirmOrder - معالجة محسّنة للاستجابة
 // ================================================================
 export async function confirmOrder() {
   console.log('🔄 Starting order confirmation...');
@@ -357,7 +366,7 @@ export async function confirmOrder() {
     
     const currentCart = getCart();
     
-    // ✅ تحضير العناصر للإرسال (IDs only - بدون أسعار)
+    // ✅ تحضير العناصر للإرسال (IDs only)
     const itemsToSubmit = await prepareCartItemsForSubmit(currentCart);
     
     if (itemsToSubmit.length === 0) {
@@ -368,7 +377,7 @@ export async function confirmOrder() {
     
     // Prepare order data
     const orderData = {
-      items: itemsToSubmit,  // ✅ IDs فقط بدون أسعار
+      items: itemsToSubmit,
       customer: validation.customer,
       customerPhone: validation.customer.phone,
       deliveryMethod: selectedDeliveryMethod,
@@ -383,11 +392,11 @@ export async function confirmOrder() {
       items: orderData.items.length + ' items (IDs only)'
     });
     
-    // Submit order
+    // Submit order - api.submitOrder now returns the correct structure
     const result = await api.submitOrder(orderData);
-    console.log('✅ Order submitted successfully:', result);
+    console.log('✅ Order submitted, received:', result);
     
-    // Extract result data
+    // ✅ FIX: Extract data correctly (result is already the responseData)
     const { 
       orderId, 
       eta, 
@@ -395,6 +404,10 @@ export async function confirmOrder() {
       calculatedPrices: serverPrices, 
       loyaltyReward 
     } = result;
+    
+    if (!orderId) {
+      throw new Error('No order ID received from server');
+    }
     
     // Update current order data
     currentOrderData = {
@@ -407,7 +420,7 @@ export async function confirmOrder() {
       loyaltyReward
     };
     
-    // Save user data for future use
+    // Save user data
     const userData = {
       name: validation.customer.name,
       phone: validation.customer.phone,
@@ -424,7 +437,6 @@ export async function confirmOrder() {
     // Show success modal
     const { showConfirmedModal } = await import('./checkout-ui.js');
     
-    // ✅ إثراء العناصر للعرض فقط
     const enrichedItemsForDisplay = await enrichCartItemsForDisplay(currentCart);
     const itemsText = (serverPrices?.items || enrichedItemsForDisplay)
       .map(i => `${i.name} × ${i.quantity}`)
@@ -432,13 +444,13 @@ export async function confirmOrder() {
     
     showConfirmedModal(
       orderId, 
-      eta || (lang === 'ar' ? '30 دقيقة' : '30 minutes'), 
+      eta || etaEn || (lang === 'ar' ? '30 دقيقة' : '30 minutes'), 
       validation.customer.phone, 
       itemsText, 
       currentOrderData
     );
     
-    // Handle loyalty upgrade if applicable
+    // Handle loyalty upgrade
     if (loyaltyReward?.justUpgraded) {
       try {
         const { showTierUpgradeModal } = await import('./checkout-loyalty.js');
@@ -455,20 +467,18 @@ export async function confirmOrder() {
     // Show success toast
     showToast(
       lang === 'ar' ? 'تم إرسال الطلب بنجاح! 🎉' : 'Order sent successfully! 🎉',
-      eta || (lang === 'ar' ? 'خلال 30 دقيقة' : 'Within 30 minutes'),
+      eta || etaEn || (lang === 'ar' ? 'خلال 30 دقيقة' : 'Within 30 minutes'),
       'success'
     );
     
-    // ✅ Track event (non-critical - won't stop order completion)
+    // ✅ Track event (non-critical)
     try {
-      if (api.trackEvent) {
-        await api.trackEvent({
-          name: 'order_completed',
-          orderId: orderId,
-          total: (serverPrices || calculatedPrices)?.total || 0,
-          itemsCount: itemsToSubmit.length
-        });
-      }
+      await api.trackEvent({
+        name: 'order_completed',
+        orderId: orderId,
+        total: (serverPrices || calculatedPrices)?.total || 0,
+        itemsCount: itemsToSubmit.length
+      });
     } catch (trackError) {
       console.warn('⚠️ Analytics tracking failed (non-critical):', trackError.message);
     }
@@ -484,11 +494,8 @@ export async function confirmOrder() {
       console.warn('⚠️ Could not hide processing modal:', err);
     }
     
-    // Get error message
-    let errorMessage = error.message || 'حدث خطأ غير متوقع';
-    if (typeof api.getErrorMessage === 'function') {
-      errorMessage = api.getErrorMessage(error, lang);
-    }
+    // Get error message using the enhanced handler
+    const errorMessage = api.getErrorMessage(error, lang);
     
     // Show error
     showToast(
@@ -507,13 +514,11 @@ export async function confirmOrder() {
     
     // Track error (non-critical)
     try {
-      if (api.trackEvent) {
-        await api.trackEvent({
-          name: 'order_failed',
-          error: error.message,
-          step: 'submission'
-        });
-      }
+      await api.trackEvent({
+        name: 'order_failed',
+        error: error.message,
+        step: 'submission'
+      });
     } catch (trackError) {
       console.warn('⚠️ Error tracking failed (non-critical):', trackError.message);
     }
