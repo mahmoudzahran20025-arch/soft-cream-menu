@@ -298,7 +298,7 @@ export async function confirmOrder() {
       branch: selectedBranch,
       location: userLocation,
       promoCode: activePromoCode,
-      calculatedPrices: calculatedPrices,
+      //calculatedPrices: calculatedPrices,
       idempotencyKey: generateUUID()
     };
     
