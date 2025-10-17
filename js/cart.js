@@ -391,18 +391,31 @@ export function closeCartModal(event) {
 // ================================================================
 // ===== تصدير الوحدة للنافذة العامة =====
 // ================================================================
+export function isCartEmpty() {
+  const currentCart = getCart();
+  return !currentCart || currentCart.length === 0;
+}
+
+// Update window.cartModule to include all necessary functions
 if (typeof window !== 'undefined') {
   window.cartModule = {
+    cart,
+    getCart,
     addToCart,
     updateQuantity,
     removeFromCart,
-    openCartModal,
-    closeCartModal,
-    clearCart,
-    getCart: () => cartData.items,
-    cart: cart,  // ✅ إضافة cart للنافذة أيضاً
-    getCartTotals: calculateCartTotals
+    calculateCartTotals,
+    isCartEmpty,  // Add this line
+    updateCartUI: async () => {
+      try {
+        await updateCartUI();
+      } catch (error) {
+        console.error('Error updating cart UI:', error);
+      }
+    }
   };
+  
+  console.log('✅ Cart module initialized with functions:', 
+    Object.keys(window.cartModule).join(', ')
+  );
 }
-
-console.log('✅ Cart module loaded (Secure - No Prices - Simple Fix)');
