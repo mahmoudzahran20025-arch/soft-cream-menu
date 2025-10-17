@@ -23,7 +23,7 @@ export function validateOrder() {
     import('./checkout-core.js').then(({ 
       getSelectedDeliveryMethod, 
       getSelectedBranch, 
-      cart 
+      cat 
     }) => {
       const deliveryMethod = getSelectedDeliveryMethod();
       const selectedBranch = getSelectedBranch();
@@ -31,14 +31,14 @@ export function validateOrder() {
       console.log('🔄 Validation state:', {
         deliveryMethod,
         selectedBranch,
-        cartItems: window.cart?.length || 0
+        cartItems: window.cartModule?.getCartLength?.() || 0  // ✅ FIX
       });
     }).catch(err => {
       console.warn('⚠️ Could not get checkout state for logging:', err);
     });
     
     // 1. Check cart
-    if (!window.cart || window.cart.length === 0) {
+    if (!window.cartModule || window.cartModule.isCartEmpty()) {  // ✅ FIX
       validation.message = lang === 'ar' ? 'السلة فارغة' : 'Cart is empty';
       validation.issues.push('empty_cart');
       return validation;
