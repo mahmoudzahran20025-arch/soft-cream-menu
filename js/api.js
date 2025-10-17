@@ -548,6 +548,14 @@ class APIService {
     // ================================================================
     // ===== ✅ FIXED: Analytics with keepalive =====
     // ================================================================
+    /*
+    إذا حابب تخلي الـ analytics يشتغل صح، لازم تعدل في Backend:
+
+        تأكد إن endpoint /analytics/event موجود
+        تأكد إنه بيقبل POST request
+        تأكد من الـ payload format المتوقع
+
+        لكن ده مش ضروري دلوقتي - النظام شغال كويس! 🎉
     async trackEvent(event) {
         try {
             const enrichedEvent = {
@@ -577,6 +585,20 @@ class APIService {
         } catch (error) {
             console.warn('Analytics error:', error.message);
         }
+    }*/
+   // ابحث عن دالة trackEvent في api.js
+    async trackEvent(event) {
+    try {
+        // ✅ FIX: Don't throw error if analytics fails
+        console.log('📊 Tracking event:', event);
+        
+        const response = await this.request('POST', '/analytics/event', event);
+        return response;
+    } catch (error) {
+        // ⚠️ Analytics is non-critical, just log warning
+        console.warn('⚠️ Analytics tracking failed (non-critical):', error);
+        return { success: false, error: error.message };
+    }
     }
 }
 
