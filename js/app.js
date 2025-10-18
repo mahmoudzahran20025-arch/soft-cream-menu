@@ -254,7 +254,8 @@ async function initApp() {
     
     // 5️⃣ تهيئة البحث (Fuse.js)
     initFuse();
-    
+    initSidebar();
+
     // 6️⃣ عرض التصنيفات والمنتجات
     renderCategories();
     await renderProducts();
