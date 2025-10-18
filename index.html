@@ -4657,7 +4657,7 @@ body.dark-mode .sidebar-footer {
   display: none; /* Hidden on mobile by default */
   position: fixed;
   top: 80px; /* Below header */
-  right: 20px;
+  left: 20px;
   width: 340px;
   height: calc(100vh - 100px);
   z-index: 900;
@@ -5005,6 +5005,374 @@ body.dark-mode .cart-sidebar .cart-item:hover {
   .cart-sidebar-desktop {
     display: none !important;
   }
+}
+
+/* ========================================
+   Cart Modal (Mobile) - Overlay
+======================================== */
+.cart-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(16px);
+  z-index: 150;
+  display: none;
+  align-items: flex-end;
+  animation: fadeIn 0.3s ease;
+}
+
+.cart-modal-overlay.show {
+  display: flex;
+}
+
+/* ========================================
+   Cart Modal (Mobile) - Container
+======================================== */
+.cart-modal {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+  width: 100%;
+  max-height: 85vh; /* ✅ كان 87vh - أصغر شوية */
+  box-shadow: var(--shadow-xl);
+  animation: slideUpModal 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ========================================
+   Cart Header - Mobile & Desktop
+======================================== */
+.cart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem; /* ✅ كان 1.5rem 1.75rem */
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0; /* ✅ جديد - عشان ميتقلصش */
+}
+
+.cart-title {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem; /* ✅ كان 0.75rem */
+  font-size: 1.25rem; /* ✅ كان 1.5rem */
+  font-weight: 900;
+}
+
+.cart-title svg {
+  width: 22px; /* ✅ جديد */
+  height: 22px; /* ✅ جديد */
+}
+
+.cart-badge {
+  background: var(--color-primary);
+  color: white;
+  padding: 0.25rem 0.65rem; /* ✅ كان 0.3rem 0.75rem */
+  border-radius: var(--radius-full);
+  font-size: 0.8rem; /* ✅ كان 0.9rem */
+  font-weight: 700;
+  min-width: 24px; /* ✅ كان 26px */
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.cart-close {
+  width: 36px; /* ✅ كان 40px */
+  height: 36px; /* ✅ كان 40px */
+  border-radius: var(--radius-full);
+  border: none;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-base);
+}
+
+.cart-close svg {
+  width: 18px; /* ✅ جديد */
+  height: 18px; /* ✅ جديد */
+}
+
+.cart-close:hover {
+  transform: scale(1.1) rotate(90deg);
+  background: rgba(255, 107, 157, 0.15);
+}
+
+.cart-close:active {
+  transform: scale(0.95);
+}
+
+/* ========================================
+   Cart Items Container
+======================================== */
+.cart-items {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1rem 1.25rem; /* ✅ كان 1.25rem 1.75rem */
+  min-height: 0; /* ✅ جديد - مهم للـ overflow */
+}
+
+/* Custom Scrollbar */
+.cart-items::-webkit-scrollbar {
+  width: 5px; /* ✅ جديد */
+}
+
+.cart-items::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.cart-items::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: var(--radius-full);
+}
+
+.cart-items::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* ========================================
+   Cart Empty State
+======================================== */
+.cart-empty {
+  text-align: center;
+  padding: 2.5rem 1.25rem; /* ✅ كان 3.5rem 1.5rem */
+  color: var(--text-secondary);
+}
+
+.cart-empty-icon {
+  width: 70px; /* ✅ كان 90px */
+  height: 70px; /* ✅ كان 90px */
+  margin: 0 auto 1rem; /* ✅ كان 1.25rem */
+  opacity: 0.25;
+  color: var(--text-secondary);
+  display: flex; /* ✅ جديد */
+  align-items: center; /* ✅ جديد */
+  justify-content: center; /* ✅ جديد */
+}
+
+.cart-empty-icon svg {
+  width: 36px; /* ✅ جديد */
+  height: 36px; /* ✅ جديد */
+}
+
+/* ========================================
+   Cart Item Card
+======================================== */
+.cart-item {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 0.9rem; /* ✅ كان 1.25rem */
+  margin-bottom: 0.85rem; /* ✅ كان 1rem */
+  animation: slideInRight 0.3s ease;
+  transition: all var(--transition-base);
+}
+
+.cart-item:last-child {
+  margin-bottom: 0; /* ✅ جديد */
+}
+
+.cart-item:hover {
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px); /* ✅ جديد */
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ========================================
+   Cart Item Header
+======================================== */
+.cart-item-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 0.75rem; /* ✅ كان 1rem */
+  gap: 0.75rem; /* ✅ كان 1rem */
+}
+
+.cart-item-name {
+  font-weight: 700;
+  font-size: 0.95rem; /* ✅ كان 1.05rem */
+  flex: 1;
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+
+.cart-item-remove {
+  width: 30px; /* ✅ كان 36px */
+  height: 30px; /* ✅ كان 36px */
+  border-radius: var(--radius-full);
+  border: none;
+  background: transparent;
+  color: var(--color-destructive);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-base);
+  flex-shrink: 0;
+}
+
+.cart-item-remove svg {
+  width: 16px; /* ✅ جديد */
+  height: 16px; /* ✅ جديد */
+}
+
+.cart-item-remove:hover {
+  background: rgba(255, 107, 107, 0.15);
+  transform: scale(1.1);
+}
+
+.cart-item-remove:active {
+  transform: scale(0.95);
+}
+
+/* ========================================
+   Cart Item Footer & Quantity
+======================================== */
+.cart-item-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem; /* ✅ جديد */
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* ✅ كان 0.65rem */
+  background: var(--bg-secondary);
+  border-radius: var(--radius-full);
+  padding: 0.3rem; /* ✅ كان 0.35rem */
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+}
+
+.quantity-btn {
+  width: 32px; /* ✅ كان 36px */
+  height: 32px; /* ✅ كان 36px */
+  border-radius: var(--radius-full);
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-base);
+}
+
+.quantity-btn svg {
+  width: 16px; /* ✅ جديد */
+  height: 16px; /* ✅ جديد */
+}
+
+.quantity-btn:hover {
+  background: rgba(255, 107, 157, 0.12);
+  color: var(--color-primary);
+  transform: scale(1.1);
+}
+
+.quantity-btn:active {
+  transform: scale(0.95);
+}
+
+.quantity-value {
+  font-weight: 700;
+  font-size: 0.95rem; /* ✅ كان 1.05rem */
+  min-width: 32px; /* ✅ كان 36px */
+  text-align: center;
+  color: var(--text-primary);
+}
+
+.cart-item-price {
+  font-size: 1.1rem; /* ✅ كان 1.25rem */
+  font-weight: 900;
+  color: var(--color-primary);
+  white-space: nowrap; /* ✅ جديد */
+}
+
+/* ========================================
+   Cart Footer (Checkout Area)
+======================================== */
+.cart-footer {
+  padding: 1.25rem 1.5rem; /* ✅ كان 1.5rem 1.75rem */
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+  flex-shrink: 0; /* ✅ جديد */
+}
+
+.cart-footer.hidden {
+  display: none;
+}
+
+.cart-total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem; /* ✅ كان 1.25rem */
+  padding: 0.85rem 1rem; /* ✅ جديد */
+  background: var(--bg-secondary); /* ✅ جديد */
+  border-radius: var(--radius-md); /* ✅ جديد */
+  border: 1px solid var(--border-color); /* ✅ جديد */
+}
+
+.cart-total-label {
+  font-size: 1.05rem; /* ✅ كان 1.2rem */
+  font-weight: 700; /* ✅ كان 600 */
+  color: var(--text-primary); /* ✅ كان text-secondary */
+}
+
+.cart-total-price {
+  font-size: 1.5rem; /* ✅ كان 2rem */
+  font-weight: 900;
+  color: var(--color-primary);
+  text-shadow: 0 2px 8px rgba(255, 107, 157, 0.2);
+}
+
+.checkout-btn {
+  width: 100%;
+  padding: 1rem; /* ✅ كان 1.15rem */
+  background: var(--gradient-primary); /* ✅ كان gradient-secondary */
+  color: white;
+  border: none;
+  border-radius: var(--radius-full);
+  font-family: 'Cairo', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem; /* ✅ كان 1.15rem */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem; /* ✅ كان 0.65rem */
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-base);
+}
+
+.checkout-btn svg {
+  width: 20px; /* ✅ جديد */
+  height: 20px; /* ✅ جديد */
+}
+
+.checkout-btn:hover {
+  transform: translateY(-2px); /* ✅ كان -3px */
+  box-shadow: var(--shadow-glow);
+}
+
+.checkout-btn:active {
+  transform: scale(0.98);
 }
  </style>
 </head>
@@ -5542,7 +5910,42 @@ body.dark-mode .cart-sidebar .cart-item:hover {
     
   </div>
 </div>
-
+<!-- ==================== CART MODAL (MOBILE) ==================== -->
+    <!-- Slides up from bottom on mobile devices -->
+    <div class="cart-modal-overlay" id="cartModal" onclick="closeCartModal(event)" role="dialog" aria-label="سلة المشتريات">
+      <div class="cart-modal" onclick="event.stopPropagation()">
+        <!-- Cart Header -->
+        <div class="cart-header">
+          <div class="cart-title">
+            <i data-lucide="shopping-cart"></i>
+            <span id="cart-title-mobile">سلة الطلبات</span>
+          </div>
+          <span class="cart-badge" id="cartBadgeMobile" aria-label="عدد المنتجات">0</span>
+          <button class="cart-close" onclick="closeCartModal()" aria-label="إغلاق السلة">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <div class="cart-items" id="cartItemsMobile">
+          <div class="cart-empty">
+            <div class="cart-empty-icon">
+              <i data-lucide="shopping-basket"></i>
+            </div>
+            <p style="font-size: 1.125rem; margin-bottom: 0.5rem;">سلتك فارغة حالياً</p>
+            <p style="font-size: 0.875rem;">أضف بعض الآيس كريم اللذيذ! 🍦</p>
+          </div>
+        </div>
+        <div class="cart-footer hidden" id="cartFooterMobile">
+          <div class="cart-total-row">
+            <span class="cart-total-label">الإجمالي:</span>
+            <span class="cart-total-price" id="cartTotalMobile">0 ج.م</span>
+          </div>
+          <button class="checkout-btn" onclick="initiateCheckout()">
+            <i data-lucide="check-circle-2"></i>
+            <span>إتمام الطلب</span>
+          </button>
+        </div>
+      </div>
+    </div>
 </div>
 <!-- ================================================================
          MODALS & OVERLAYS

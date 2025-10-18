@@ -1,13 +1,12 @@
 // ================================================================
-// CHECKOUT MAIN - نقطة الدخول الرئيسية (FIXED VERSION)
+// CHECKOUT MAIN - نقطة الدخول الرئيسية (FINAL VERSION - NO LOYALTY)
 // ================================================================
-
 console.log('🔄 Loading checkout.js - Main Entry Point');
 
 // ================================================================
 // Static Imports - الوحدات الأساسية المطلوبة فوراً
 // ================================================================
-import { getCart, isCartEmpty, getCartLength } from './cart.js';  // ✅
+import { getCart, isCartEmpty, getCartLength } from './cart.js';
 import { showToast } from './utils.js';
 import { setupModalCloseHandlers, closeTrackingModal, showTrackingModal } from './checkout/checkout-ui.js';
 
@@ -18,35 +17,35 @@ let checkoutModules = {
   core: null,
   ui: null,
   delivery: null,
-  loyalty: null,
+  // loyalty: null, // ⚠️ DISABLED - معطل مؤقتاً
   validation: null
 };
 
 let isInitialized = false;
 
 // ================================================================
-// ✅ FIX 1: Pre-load Critical Modules
+// ✅ Pre-load Critical Modules
 // ================================================================
 async function loadCheckoutModules() {
   console.log('🔄 Pre-loading checkout modules...');
   
   try {
-    // Load all modules in parallel
-    const [coreModule, uiModule, deliveryModule, loyaltyModule, validationModule] = await Promise.all([
+    // Load all modules in parallel (except loyalty)
+    const [coreModule, uiModule, deliveryModule, validationModule] = await Promise.all([
       import('./checkout/checkout-core.js'),
       import('./checkout/checkout-ui.js'),
       import('./checkout/checkout-delivery.js'),
-      import('./checkout/checkout-loyalty.js'),
+      // import('./checkout/checkout-loyalty.js'), // ⚠️ DISABLED
       import('./checkout/checkout-validation.js')
     ]);
 
     checkoutModules.core = coreModule;
     checkoutModules.ui = uiModule;
     checkoutModules.delivery = deliveryModule;
-    checkoutModules.loyalty = loyaltyModule;
+    // checkoutModules.loyalty = loyaltyModule; // ⚠️ DISABLED
     checkoutModules.validation = validationModule;
 
-    console.log('✅ All checkout modules loaded successfully');
+    console.log('✅ All checkout modules loaded successfully (Loyalty disabled)');
     return true;
   } catch (error) {
     console.error('❌ Failed to load checkout modules:', error);
@@ -55,15 +54,15 @@ async function loadCheckoutModules() {
 }
 
 // ================================================================
-// ✅ FIX 2: Enhanced initiateCheckout with Detailed Logging
+// ✅ Enhanced initiateCheckout with Detailed Logging
 // ================================================================
 async function initiateCheckout() {
   console.log('🔹 initiateCheckout called');
   const currentCart = getCart();
 
   console.log('🔹 Cart state:', { 
-    exists: !isCartEmpty(),                    // ✅
-    length: getCartLength(),                   // ✅
+    exists: !isCartEmpty(),
+    length: getCartLength(),
     items: getCart().map(item => ({ 
       id: item.productId, 
       quantity: item.quantity 
@@ -71,7 +70,7 @@ async function initiateCheckout() {
   });
 
   // Check cart first
-  if (isCartEmpty()) {  // ✅ FIX
+  if (isCartEmpty()) {
     console.log('⚠️ Cart is empty, showing error');
     const lang = window.currentLang || 'ar';
     showToast(
@@ -100,7 +99,7 @@ async function initiateCheckout() {
     checkoutModules.core.setDeliveryMethod(null);
     checkoutModules.core.setBranch(null);
     checkoutModules.core.setCalculatedPrices(null);
-    checkoutModules.core.setActivePromoCode(null);
+    checkoutModules.core.setActiveCouponCode(null);
     console.log('🔄 State reset completed');
 
     // Load branches first
@@ -120,7 +119,7 @@ async function initiateCheckout() {
       console.log('🔄 Modal element found, opening...');
       modal.classList.remove('hidden');
       modal.classList.add('show');
-      modal.style.display = 'flex'; // Ensure display is set
+      modal.style.display = 'flex';
       document.body.style.overflow = 'hidden';
       console.log('✅ Modal opened successfully');
     } else {
@@ -144,7 +143,7 @@ async function initiateCheckout() {
 }
 
 // ================================================================
-// ✅ FIX 3: Safe Function Wrappers with Error Handling
+// ✅ Safe Function Wrappers with Error Handling
 // ================================================================
 function createSafeWrapper(moduleName, functionName) {
   return async function(...args) {
@@ -172,7 +171,7 @@ function createSafeWrapper(moduleName, functionName) {
 }
 
 // ================================================================
-// ✅ FIX 4: Enhanced Global Window Object
+// ✅ Enhanced Global Window Object
 // ================================================================
 function setupGlobalCheckoutModule() {
   console.log('🔄 Setting up global checkout module...');
@@ -182,8 +181,8 @@ function setupGlobalCheckoutModule() {
     // Core functions
     initiateCheckout,
     confirmOrder: createSafeWrapper('core', 'confirmOrder'),
-    applyPromoCode: createSafeWrapper('core', 'applyPromoCode'),
-    removePromoCode: createSafeWrapper('core', 'removePromoCode'),
+    applyCoupon: createSafeWrapper('core', 'applyCoupon'), // ✅ Updated
+    removeCoupon: createSafeWrapper('core', 'removeCoupon'), // ✅ Updated
     recalculatePrices: createSafeWrapper('core', 'recalculatePrices'),
     
     // Delivery functions
@@ -205,9 +204,11 @@ function setupGlobalCheckoutModule() {
     copyOrderId: createSafeWrapper('ui', 'copyOrderId'),
     shareOnWhatsApp: createSafeWrapper('ui', 'shareOnWhatsApp'),
     
-    // Loyalty functions
+    // ⚠️ LOYALTY DISABLED - Functions removed
+    /*
     getCustomerPhone: createSafeWrapper('loyalty', 'getCustomerPhone'),
     loadGamificationPage: createSafeWrapper('loyalty', 'loadGamificationPage'),
+    */
     
     // Utility functions
     isReady: () => isInitialized,
@@ -222,7 +223,7 @@ function setupGlobalCheckoutModule() {
 }
 
 // ================================================================
-// ✅ FIX 5: Enhanced Initialization with Event Handlers
+// ✅ Enhanced Initialization with Event Handlers
 // ================================================================
 function setupCheckoutEventHandlers() {
   console.log('🔄 Setting up checkout event handlers...');
@@ -272,14 +273,14 @@ function setupCheckoutEventHandlers() {
     });
   }
 
-  // Promo code enter key
-  const promoInput = document.getElementById('promoCodeInput');
-  if (promoInput) {
-    promoInput.addEventListener('keypress', (e) => {
+  // ✅ Coupon code enter key (updated)
+  const couponInput = document.getElementById('couponCodeInput');
+  if (couponInput) {
+    couponInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
-        if (window.checkoutModule?.applyPromoCode) {
-          window.checkoutModule.applyPromoCode();
+        if (window.checkoutModule?.applyCoupon) {
+          window.checkoutModule.applyCoupon();
         }
       }
     });
@@ -315,7 +316,7 @@ function debounce(func, wait) {
 }
 
 // ================================================================
-// ✅ FIX 6: Enhanced DOMContentLoaded Initialization
+// ✅ Enhanced DOMContentLoaded Initialization
 // ================================================================
 async function initializeCheckout() {
   console.log('🔄 Initializing checkout system...');
@@ -361,7 +362,7 @@ async function initializeCheckout() {
 }
 
 // ================================================================
-// ✅ FIX 7: Enhanced Loading Strategy
+// ✅ Enhanced Loading Strategy
 // ================================================================
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initializeCheckout);
@@ -381,13 +382,14 @@ if (window.addEventListener) {
 }
 
 // ================================================================
-// ✅ FIX 8: Export for ES Module Usage
+// ✅ Export for ES Module Usage
 // ================================================================
 export { 
   initiateCheckout,
   loadCheckoutModules,
   setupGlobalCheckoutModule,
+  setupCheckoutEventHandlers,
   checkoutModules
 };
 
-console.log('✅ checkout.js loaded successfully');
+console.log('✅ checkout.js loaded successfully (FINAL - NO LOYALTY - COUPON SYSTEM)');

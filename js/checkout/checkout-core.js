@@ -49,10 +49,59 @@
 │  11. enrichCartItemsForDisplay() for local display   │
 │                                                      │
 */
+/*
+## 📊 **Data Flow المحدث:**
+```
+┌─────────────────────────────────────────────────────┐
+│              Frontend (Client)                       │
+├─────────────────────────────────────────────────────┤
+│                                                      │
+│  1. Cart: [{productId, quantity}]                   │
+│     ↓                                                │
+│  2. prepareCartItemsForSubmit()                      │
+│     ↓ IDs only!                                      │
+│  3. api.submitOrder({items: [{productId, qty}]})     │
+│     ↓                                                │
+└─────────────────────┬───────────────────────────────┘
+                      │
+                      │ HTTPS POST (IDs only)
+                      ↓
+┌─────────────────────────────────────────────────────┐
+│              Backend (Workers/GAS)                   │
+├─────────────────────────────────────────────────────┤
+│                                                      │
+│  4. Receives: [{productId, quantity}]                │
+│     ↓                                                │
+│  5. Looks up prices from database                    │
+│     ↓                                                │
+│  6. Calculates:                                      │
+│     - subtotal (from DB prices)                      │
+│     - delivery fee                                   │
+│     - discount (if coupon code)                      │
+│     - total                                          │
+│     ↓                                                │
+│  7. Saves order with calculated prices               │
+│     ↓                                                │
+│  8. Returns: {orderId, calculatedPrices, eta}        │
+│     ↓                                                │
+└─────────────────────┬───────────────────────────────┘
+                      │
+                      │ HTTPS Response
+                      ↓
+┌─────────────────────────────────────────────────────┐
+│              Frontend (Client)                       │
+├─────────────────────────────────────────────────────┤
+│                                                      │
+│  9. Receives calculatedPrices (read-only)            │
+│     ↓                                                │
+│  10. Shows success modal with prices                 │
+│     ↓                                                │
+│  11. enrichCartItemsForDisplay() for local display   │
+│                                                      │
+*/
 // ================================================================
-// CHECKOUT CORE - الوظائف الأساسية (COMPLETELY FIXED)
+// CHECKOUT CORE - الوظائف الأساسية (FINAL VERSION - NO LOYALTY)
 // ================================================================
-
 console.log('🔄 Loading checkout-core.js');
 
 // ================================================================
@@ -72,7 +121,7 @@ export let selectedBranch = null;
 export let userLocation = null;
 export let currentOrderData = null;
 export let calculatedPrices = null;
-export let activePromoCode = null;
+export let activeCouponCode = null; // ✅ تغيير الاسم
 
 // ================================================================
 // ✅ Enhanced Setters with Logging
@@ -97,9 +146,9 @@ export function setCalculatedPrices(prices) {
   calculatedPrices = prices;
 }
 
-export function setActivePromoCode(code) {
-  console.log('🔄 Setting active promo code:', code);
-  activePromoCode = code;
+export function setActiveCouponCode(code) { // ✅ تغيير الاسم
+  console.log('🔄 Setting active coupon code:', code);
+  activeCouponCode = code;
 }
 
 export function setCurrentOrderData(data) {
@@ -126,8 +175,8 @@ export function getCalculatedPrices() {
   return calculatedPrices;
 }
 
-export function getActivePromoCode() {
-  return activePromoCode;
+export function getActiveCouponCode() { // ✅ تغيير الاسم
+  return activeCouponCode;
 }
 
 export function getCurrentOrderData() {
@@ -192,9 +241,6 @@ async function prepareCartItemsForSubmit(cartItems) {
 }
 
 // ================================================================
-// ✅ FIXED: recalculatePrices with enriched items for display
-// ================================================================
-// ================================================================
 // ✅ FIXED: recalculatePrices - معالجة صحيحة للاستجابة
 // ================================================================
 export async function recalculatePrices() {
@@ -232,30 +278,34 @@ export async function recalculatePrices() {
     
     console.log('📦 Items for API (IDs only):', itemsForAPI);
     
-    // Get customer phone
+    // ⚠️ LOYALTY DISABLED - Get customer phone (معطل مؤقتاً)
     let customerPhone = null;
+    /*
     try {
       const { getCustomerPhone } = await import('./checkout-loyalty.js');
       customerPhone = getCustomerPhone();
     } catch (err) {
       console.warn('⚠️ Could not get customer phone:', err);
     }
+    */
     
-    const requestData = {
-      items: itemsForAPI,
+    // ✅ Get phone from form if available
+    const phoneInput = document.getElementById('customerPhone');
+    if (phoneInput && phoneInput.value) {
+      customerPhone = phoneInput.value;
+    }
+    
+    console.log('📤 Requesting price calculation:', {
+      items: itemsForAPI.length + ' items',
       deliveryMethod: selectedDeliveryMethod,
-      branch: selectedBranch,
-      promoCode: activePromoCode,
-      location: userLocation,
+      couponCode: activeCouponCode,
       customerPhone: customerPhone
-    };
+    });
 
-    console.log('📤 Requesting price calculation:', requestData);
-
-    // ✅ FIX: استخدام الدالة المُحدثة من api.js
+    // ✅ استخدام الدالة المُحدثة من api.js
     const pricesResult = await api.calculateOrderPrices(
       itemsForAPI,
-      activePromoCode,
+      activeCouponCode, // ✅ الكوبون
       selectedDeliveryMethod,
       customerPhone
     );
@@ -286,8 +336,8 @@ export async function recalculatePrices() {
       const currentCart = getCart();
       const enrichedItems = await enrichCartItemsForDisplay(currentCart);
       const subtotal = enrichedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      const deliveryFee = selectedDeliveryMethod === 'delivery' ? 15 : 0;
-      const discount = activePromoCode ? Math.round(subtotal * 0.1) : 0;
+      const deliveryFee = selectedDeliveryMethod === 'delivery' ? 20 : 0;
+      const discount = activeCouponCode ? Math.round(subtotal * 0.1) : 0;
       const total = subtotal + deliveryFee - discount;
       
       calculatedPrices = {
@@ -320,7 +370,6 @@ export async function recalculatePrices() {
     }
   }
 }
-
 
 // ================================================================
 // ✅ FIXED: confirmOrder - معالجة محسّنة للاستجابة
@@ -383,26 +432,27 @@ export async function confirmOrder() {
       deliveryMethod: selectedDeliveryMethod,
       branch: selectedBranch,
       location: userLocation,
-      promoCode: activePromoCode,
+      couponCode: activeCouponCode, // ✅ الكوبون
+      deviceId: storage.getDeviceId(), // ✅ Device ID
       idempotencyKey: generateUUID()
     };
-    
+      
     console.log('📤 Submitting order:', {
       ...orderData,
       items: orderData.items.length + ' items (IDs only)'
     });
     
-    // Submit order - api.submitOrder now returns the correct structure
+    // Submit order
     const result = await api.submitOrder(orderData);
     console.log('✅ Order submitted, received:', result);
     
-    // ✅ FIX: Extract data correctly (result is already the responseData)
+    // ✅ Extract data correctly
     const { 
       orderId, 
       eta, 
       etaEn, 
-      calculatedPrices: serverPrices, 
-      loyaltyReward 
+      calculatedPrices: serverPrices
+      // ⚠️ LOYALTY DISABLED: loyaltyReward removed
     } = result;
     
     if (!orderId) {
@@ -416,8 +466,8 @@ export async function confirmOrder() {
       deliveryMethod: selectedDeliveryMethod,
       branch: selectedBranch,
       items: serverPrices?.items || calculatedPrices?.items || [],
-      calculatedPrices: serverPrices || calculatedPrices,
-      loyaltyReward
+      calculatedPrices: serverPrices || calculatedPrices
+      // ⚠️ LOYALTY DISABLED: loyaltyReward removed
     };
     
     // Save user data
@@ -450,7 +500,8 @@ export async function confirmOrder() {
       currentOrderData
     );
     
-    // Handle loyalty upgrade
+    // ⚠️ LOYALTY DISABLED - Tier upgrade removed
+    /*
     if (loyaltyReward?.justUpgraded) {
       try {
         const { showTierUpgradeModal } = await import('./checkout-loyalty.js');
@@ -463,6 +514,7 @@ export async function confirmOrder() {
         console.warn('⚠️ Tier upgrade modal not available:', err);
       }
     }
+    */
     
     // Show success toast
     showToast(
@@ -494,7 +546,7 @@ export async function confirmOrder() {
       console.warn('⚠️ Could not hide processing modal:', err);
     }
     
-    // Get error message using the enhanced handler
+    // Get error message
     const errorMessage = api.getErrorMessage(error, lang);
     
     // Show error
@@ -526,26 +578,26 @@ export async function confirmOrder() {
 }
 
 // ================================================================
-// ✅ FIXED: applyPromoCode with enriched items for display
+// ✅ applyCoupon with enriched items for display
 // ================================================================
-export async function applyPromoCode() {
-  console.log('🔄 Applying promo code...');
+export async function applyCoupon() {
+  console.log('🔄 Applying coupon code...');
   
-  const promoInput = document.getElementById('promoCodeInput');
-  const promoStatus = document.getElementById('promoStatus');
+  const couponInput = document.getElementById('couponCodeInput');
+  const couponStatus = document.getElementById('couponStatus');
   
-  if (!promoInput || !promoStatus) {
-    console.warn('⚠️ Promo input elements not found');
+  if (!couponInput || !couponStatus) {
+    console.warn('⚠️ Coupon input elements not found');
     return;
   }
-  
+
   const lang = window.currentLang || 'ar';
-  const code = promoInput.value.trim().toUpperCase();
+  const code = couponInput.value.trim().toUpperCase();
   
   if (!code) {
     showToast(
       lang === 'ar' ? 'خطأ' : 'Error',
-      lang === 'ar' ? 'الرجاء إدخال كود الخصم' : 'Please enter promo code',
+      lang === 'ar' ? 'الرجاء إدخال كود الخصم' : 'Please enter coupon code',
       'error'
     );
     return;
@@ -559,7 +611,7 @@ export async function applyPromoCode() {
   }
   
   try {
-    // ✅ حساب الـ subtotal من العناصر المُثراة للعرض
+    // ✅ حساب الـ subtotal
     let subtotal = calculatedPrices?.subtotal || 0;
     
     if (!subtotal && !isCartEmpty()) {
@@ -568,56 +620,67 @@ export async function applyPromoCode() {
       subtotal = enrichedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     }
     
-    console.log('📤 Validating promo code:', { code, subtotal });
+    console.log('📤 Validating coupon code:', { code, subtotal });
     
-    // Validate with API
-    const result = await api.validatePromoCode(code, subtotal);
+    // ⚠️ LOYALTY DISABLED - Get customer phone from form
+    let customerPhone = null;
+    const phoneInput = document.getElementById('customerPhone');
+    if (phoneInput && phoneInput.value) {
+      customerPhone = phoneInput.value;
+    }
+    
+    // ✅ Validate with API
+    const result = await api.validateCoupon(
+      code, 
+      customerPhone || '0000000000', 
+      subtotal
+    );
     
     if (result.valid) {
-      console.log('✅ Promo code validated:', result);
+      console.log('✅ Coupon code validated:', result);
       
-      activePromoCode = code;
+      activeCouponCode = code;
       
       // Show success status
-      promoStatus.innerHTML = `
-        <div class="promo-success" style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #e8f5e8; border-radius: 6px; color: #2e7d32;">
+      couponStatus.innerHTML = `
+        <div class="coupon-success" style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #e8f5e8; border-radius: 6px; color: #2e7d32;">
           <i data-lucide="check-circle" style="width: 16px; height: 16px;"></i>
-          <span style="flex: 1;">${result.message}</span>
-          <button onclick="checkoutModule.removePromoCode()" class="remove-promo" style="background: none; border: none; color: #d32f2f; cursor: pointer; padding: 4px;">
+          <span style="flex: 1;">${result.coupon?.messageAr || result.message || 'تم تطبيق الكوبون'}</span>
+          <button onclick="checkoutModule.removeCoupon()" class="remove-coupon" style="background: none; border: none; color: #d32f2f; cursor: pointer; padding: 4px;">
             <i data-lucide="x" style="width: 14px; height: 14px;"></i>
           </button>
         </div>
       `;
-      promoStatus.style.display = 'block';
-      promoInput.disabled = true;
+      couponStatus.style.display = 'block';
+      couponInput.disabled = true;
       
       // Recalculate prices
       await recalculatePrices();
       
       showToast(
         lang === 'ar' ? 'تم بنجاح!' : 'Success!',
-        result.message,
+        result.coupon?.messageAr || result.message || 'تم تطبيق الكوبون',
         'success'
       );
     } else {
-      throw new Error(result.message || 'كود الخصم غير صحيح');
+      throw new Error(result.error || result.message || 'كود الخصم غير صحيح');
     }
     
   } catch (error) {
-    console.error('❌ Promo code validation failed:', error);
+    console.error('❌ Coupon code validation failed:', error);
     
     let errorMessage = error.message || 'كود الخصم غير صحيح';
     if (typeof api.getErrorMessage === 'function') {
       errorMessage = api.getErrorMessage(error, lang);
     }
     
-    promoStatus.innerHTML = `
-      <div class="promo-error" style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #ffeaea; border-radius: 6px; color: #d32f2f;">
+    couponStatus.innerHTML = `
+      <div class="coupon-error" style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #ffeaea; border-radius: 6px; color: #d32f2f;">
         <i data-lucide="alert-circle" style="width: 16px; height: 16px;"></i>
         <span>${errorMessage}</span>
       </div>
     `;
-    promoStatus.style.display = 'block';
+    couponStatus.style.display = 'block';
     
     showToast(lang === 'ar' ? 'خطأ' : 'Error', errorMessage, 'error');
     
@@ -634,24 +697,24 @@ export async function applyPromoCode() {
 }
 
 // ================================================================
-// ✅ removePromoCode
+// ✅ removeCoupon
 // ================================================================
-export async function removePromoCode() {
-  console.log('🔄 Removing promo code...');
+export async function removeCoupon() {
+  console.log('🔄 Removing coupon code...');
   
-  activePromoCode = null;
+  activeCouponCode = null;
   
-  const promoInput = document.getElementById('promoCodeInput');
-  const promoStatus = document.getElementById('promoStatus');
+  const couponInput = document.getElementById('couponCodeInput');
+  const couponStatus = document.getElementById('couponStatus');
   
-  if (promoInput) {
-    promoInput.value = '';
-    promoInput.disabled = false;
+  if (couponInput) {
+    couponInput.value = '';
+    couponInput.disabled = false;
   }
   
-  if (promoStatus) {
-    promoStatus.style.display = 'none';
-    promoStatus.innerHTML = '';
+  if (couponStatus) {
+    couponStatus.style.display = 'none';
+    couponStatus.innerHTML = '';
   }
   
   await recalculatePrices();
@@ -659,7 +722,7 @@ export async function removePromoCode() {
   const lang = window.currentLang || 'ar';
   showToast(
     lang === 'ar' ? 'تم' : 'Done',
-    lang === 'ar' ? 'تم إزالة كود الخصم' : 'Promo code removed',
+    lang === 'ar' ? 'تم إزالة كود الخصم' : 'Coupon code removed',
     'info'
   );
 }
@@ -675,7 +738,7 @@ export function resetCheckoutState() {
   userLocation = null;
   currentOrderData = null;
   calculatedPrices = null;
-  activePromoCode = null;
+  activeCouponCode = null;
   
   console.log('✅ Checkout state reset');
 }
@@ -690,11 +753,11 @@ export function getCheckoutDebugInfo() {
     userLocation,
     currentOrderData,
     calculatedPrices,
-    activePromoCode,
+    activeCouponCode,
     cartItems: getCartLength(),
     cartContent: getCart(),
     timestamp: new Date().toISOString()
   };
 }
 
-console.log('✅ checkout-core.js loaded successfully (COMPLETELY FIXED - SECURITY COMPLIANT)');
+console.log('✅ checkout-core.js loaded successfully (FINAL - NO LOYALTY - COUPON SYSTEM)');
