@@ -138,7 +138,8 @@ export function switchTab(tab) {
   
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }*/
-function switchTab(tabName) {
+
+export function switchTab(tabName) {
   console.log('📑 Switching to tab:', tabName);
   
   // Hide all tabs
@@ -154,13 +155,16 @@ function switchTab(tabName) {
   }
   
   // Update sidebar active state
-  updateSidebarActiveNav(tabName);
+  if (typeof updateSidebarActiveNav === 'function') {
+    updateSidebarActiveNav(tabName);
+  }
   
   // Scroll to top
   window.scrollTo({ top: 0, behavior: 'smooth' });
   
   console.log('✅ Tab switched to:', tabName);
 }
+
 
 // ================================================================
 // ===== Update Sidebar Active Navigation =====
@@ -189,19 +193,23 @@ function updateSidebarActiveNav(tabName) {
 // ================================================================
 // ===== Update Header Cart Badge =====
 // ================================================================
-function updateHeaderCartBadge() {
+export function updateHeaderCartBadge() {
   const badge = document.getElementById('headerCartBadge');
   if (!badge) return;
   
-  const cart = typeof getCart === 'function' ? getCart() : [];
+  // Get cart from cartModule
+  const cart = typeof window.cartModule?.getCart === 'function' 
+    ? window.cartModule.getCart() 
+    : [];
+  
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
   
   badge.textContent = totalItems;
   badge.style.display = totalItems > 0 ? 'inline-flex' : 'none';
   
   // Update sidebar badge too
-  if (typeof updateSidebarBadges === 'function') {
-    updateSidebarBadges();
+  if (typeof window.updateSidebarBadges === 'function') {
+    window.updateSidebarBadges();
   }
 }
 

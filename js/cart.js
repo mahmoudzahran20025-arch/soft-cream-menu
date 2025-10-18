@@ -1,5 +1,5 @@
 // ================================================================
-// SOLUTION 1: Enhanced cart.js with Better State Management
+// cart.js - FIXED VERSION with proper exports
 // ================================================================
 
 import { productsManager } from './products.js';
@@ -7,20 +7,19 @@ import { showToast } from './utils.js';
 import { storage } from './storage.js';
 
 // ================================================================
-// Cart State - Using Simple Array (No Proxy)
+// Cart State
 // ================================================================
 let cartItems = [];
 let cartLoaded = false;
 
 // ================================================================
-// CRITICAL FIX: Synchronous Cart Access
+// Get Cart (Synchronous)
 // ================================================================
 export function getCart() {
-  // Ensure cart is loaded before returning
   if (!cartLoaded) {
     loadCart();
   }
-  return [...cartItems]; // Return copy to prevent external mutation
+  return [...cartItems];
 }
 
 export function getCartLength() {
@@ -38,19 +37,17 @@ export function isCartEmpty() {
 }
 
 // ================================================================
-// Add to Cart (Enhanced)
+// Add to Cart
 // ================================================================
 export async function addToCart(event, productId, quantity = 1) {
   if (event) {
     event.stopPropagation();
   }
   
-  // Ensure cart is loaded
   if (!cartLoaded) {
     loadCart();
   }
   
-  // Get product for validation
   let product;
   try {
     product = await productsManager.getProduct(productId);
@@ -70,7 +67,6 @@ export async function addToCart(event, productId, quantity = 1) {
     return;
   }
   
-  // Check max quantity
   const MAX_QUANTITY = 50;
   
   const existing = cartItems.find(item => item.productId === productId);
@@ -95,7 +91,6 @@ export async function addToCart(event, productId, quantity = 1) {
   saveCart();
   await updateCartUI();
   
-  // Show toast
   try {
     const currentLang = window.currentLang || 'ar';
     const name = currentLang === 'ar' ? product.name : product.nameEn;
@@ -184,7 +179,7 @@ export async function calculateCartTotals() {
 }
 
 // ================================================================
-// Update Cart UI
+// Update Cart UI - ENHANCED with Desktop Cart
 // ================================================================
 export async function updateCartUI() {
   if (!cartLoaded) {
@@ -196,20 +191,129 @@ export async function updateCartUI() {
   const translations = window.i18n.t || {};
   const t = translations[currentLang] || {};
   
-  // Update badges
-  const badges = ['navCartBadge', 'cartBadgeDesktop', 'cartBadgeMobile'];
+  // ✅ Update ALL badges (including header and sidebar)
+  const badges = [
+    'navCartBadge',          // Bottom Nav (if exists)
+    'cartBadgeDesktop',      // Desktop Cart Sidebar
+    'cartBadgeMobile',       // Mobile Cart Modal
+    'headerCartBadge',       // ✅ Header Badge (NEW)
+    'sidebarCartBadge'       // ✅ Sidebar Badge (NEW)
+  ];
+  
   badges.forEach(badgeId => {
     const badge = document.getElementById(badgeId);
-    if (badge) badge.textContent = totalItems;
+    if (badge) {
+      badge.textContent = totalItems;
+      // Show/hide based on count
+      if (totalItems > 0) {
+        badge.style.display = 'inline-flex';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
   });
   
   // Update cart displays
   await updateSingleCartUI('cartItemsDesktop', 'cartTotalDesktop', 'cartFooterDesktop', total, t);
   await updateSingleCartUI('cartItemsMobile', 'cartTotalMobile', 'cartFooterMobile', total, t);
+  
+  // ✅ Update Desktop Cart Sidebar (if exists)
+  await updateDesktopCartSidebar(total, t);
 }
 
 // ================================================================
-// Update Single Cart UI
+// Update Desktop Cart Sidebar (NEW)
+// ================================================================
+async function updateDesktopCartSidebar(total, translations) {
+  const desktopCartItems = document.querySelector('.cart-sidebar-desktop .cart-items');
+  const desktopCartTotal = document.querySelector('.cart-sidebar-desktop .cart-total-price');
+  const desktopCartFooter = document.querySelector('.cart-sidebar-desktop .cart-footer');
+  
+  if (!desktopCartItems) return; // Desktop cart doesn't exist
+  
+  const currentLang = window.currentLang || 'ar';
+  const currency = translations.currency || 'ج.م';
+  
+  if (desktopCartTotal) {
+    desktopCartTotal.textContent = `${total.toFixed(2)} ${currency}`;
+  }
+  
+  if (cartItems.length === 0) {
+    const emptyText = currentLang === 'ar' ? 'سلتك فارغة حالياً' : 'Your cart is empty';
+    const emptySubtext = currentLang === 'ar' ? 'أضف بعض الآيس كريم اللذيذ! 🍦' : 'Add some delicious ice cream! 🍦';
+    
+    desktopCartItems.innerHTML = `
+      <div class="cart-empty">
+        <div class="cart-empty-icon">
+          <i data-lucide="shopping-basket"></i>
+        </div>
+        <p class="cart-empty-title">${emptyText}</p>
+        <p class="cart-empty-subtitle">${emptySubtext}</p>
+      </div>
+    `;
+    
+    if (desktopCartFooter) {
+      desktopCartFooter.classList.add('hidden');
+    }
+    
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+    return;
+  }
+  
+  if (desktopCartFooter) {
+    desktopCartFooter.classList.remove('hidden');
+  }
+  
+  let html = '';
+  
+  for (const item of cartItems) {
+    try {
+      const product = await productsManager.getProduct(item.productId);
+      
+      if (!product) {
+        console.warn('Product not found in cart:', item.productId);
+        continue;
+      }
+      
+      const name = currentLang === 'ar' ? product.name : (product.nameEn || product.name);
+      const price = product.price || 0;
+      const itemTotal = price * item.quantity;
+      const imageUrl = product.image || 'path/to/default-image.png';
+      
+      html += `
+        <div class="cart-item">
+          <img src="${imageUrl}" alt="${name}" class="cart-item-image">
+          <div class="cart-item-details">
+            <div class="cart-item-name">${name}</div>
+            <div class="cart-item-price">${price.toFixed(2)} ${currency}</div>
+            <div class="cart-item-quantity">
+              <button onclick="window.cartModule.updateQuantity('${item.productId}', -1)">
+                <i data-lucide="minus"></i>
+              </button>
+              <span>${item.quantity}</span>
+              <button onclick="window.cartModule.updateQuantity('${item.productId}', 1)">
+                <i data-lucide="plus"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    } catch (error) {
+      console.error('Error rendering cart item:', error);
+    }
+  }
+  
+  desktopCartItems.innerHTML = html;
+  
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
+}
+
+// ================================================================
+// Update Single Cart UI (Mobile/Desktop Modal)
 // ================================================================
 async function updateSingleCartUI(itemsId, totalId, footerId, total, translations) {
   const cartItemsEl = document.getElementById(itemsId);
@@ -303,16 +407,13 @@ async function updateSingleCartUI(itemsId, totalId, footerId, total, translation
 }
 
 // ================================================================
-// Save Cart
+// Save/Load Cart
 // ================================================================
 export function saveCart() {
   storage.setCart(cartItems);
   console.log('💾 Cart saved:', cartItems.length, 'items');
 }
 
-// ================================================================
-// Load Cart (SYNCHRONOUS)
-// ================================================================
 export function loadCart() {
   const savedCart = storage.getCart();
   if (savedCart && Array.isArray(savedCart)) {
@@ -337,9 +438,11 @@ export async function clearCart() {
 }
 
 // ================================================================
-// Modal Functions
+// Modal Functions - FIXED
 // ================================================================
 export function openCartModal() {
+  console.log('🛒 Opening cart modal...');
+  
   if (!cartLoaded) {
     loadCart();
   }
@@ -348,16 +451,22 @@ export function openCartModal() {
   if (modal) {
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
+    console.log('✅ Cart modal opened');
+  } else {
+    console.warn('⚠️ Cart modal not found');
   }
 }
 
 export function closeCartModal(event) {
   if (event && !event.target.classList.contains('cart-modal-overlay')) return;
   
+  console.log('🛒 Closing cart modal...');
+  
   const modal = document.getElementById('cartModal');
   if (modal) {
     modal.classList.remove('show');
     document.body.style.overflow = '';
+    console.log('✅ Cart modal closed');
   }
 }
 
@@ -367,7 +476,7 @@ export function closeCartModal(event) {
 loadCart();
 
 // ================================================================
-// Window Exports
+// Window Exports - CRITICAL FIX
 // ================================================================
 if (typeof window !== 'undefined') {
   window.cartModule = {
@@ -384,6 +493,14 @@ if (typeof window !== 'undefined') {
     closeCartModal
   };
   
-  console.log('✅ Cart module initialized');
+  // ✅ CRITICAL: Make functions globally accessible
+  window.openCartModal = openCartModal;
+  window.closeCartModal = closeCartModal;
+  window.addToCart = addToCart;
+  window.updateQuantity = updateQuantity;
+  window.removeFromCart = removeFromCart;
+  
+  console.log('✅ Cart module initialized with global functions');
 }
 
+console.log('✅ Cart module loaded');

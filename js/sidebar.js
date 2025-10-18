@@ -1,7 +1,6 @@
 // ================================================================
-// SIDEBAR FUNCTIONALITY - أضف هذا في ملف JS منفصل أو في <script>
+// SIDEBAR FUNCTIONALITY - Fixed Version
 // ================================================================
-import { getCart } from './cart.js';
 
 console.log('🔧 Loading sidebar.js...');
 
@@ -101,15 +100,19 @@ function toggleSidebar() {
 function updateSidebarBadges() {
   // Update cart badge
   if (sidebarElements.cartBadge) {
-    const cart = getCart ? getCart() : [];
+    // ✅ استخدام window.cartModule بدلاً من import
+    const cart = typeof window.cartModule?.getCart === 'function' 
+      ? window.cartModule.getCart() 
+      : [];
+    
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
     sidebarElements.cartBadge.textContent = totalItems;
     sidebarElements.cartBadge.style.display = totalItems > 0 ? 'inline-flex' : 'none';
   }
   
   // Update orders badge (if storage available)
-  if (sidebarElements.ordersBadge && typeof storage !== 'undefined') {
-    const orders = storage.getOrdersHistory ? storage.getOrdersHistory() : [];
+  if (sidebarElements.ordersBadge && typeof window.storage !== 'undefined') {
+    const orders = window.storage.getOrdersHistory ? window.storage.getOrdersHistory() : [];
     const activeOrders = orders.filter(order => 
       order.status !== 'delivered' && order.status !== 'cancelled'
     );
@@ -127,9 +130,9 @@ function updateSidebarBadges() {
 // ===== Update Profile Section =====
 // ================================================================
 function updateSidebarProfile() {
-  if (typeof storage === 'undefined') return;
+  if (typeof window.storage === 'undefined') return;
   
-  const userData = storage.getUserData ? storage.getUserData() : null;
+  const userData = window.storage.getUserData ? window.storage.getUserData() : null;
   
   if (userData && userData.name) {
     if (sidebarElements.profileName) {
@@ -154,7 +157,8 @@ function updateSidebarProfile() {
 function syncSidebarTheme() {
   if (!sidebarElements.themeToggle) return;
   
-  const isDark = document.body.classList.contains('dark-mode');
+  const isDark = document.body.classList.contains('dark-mode') || 
+                 document.body.classList.contains('dark');
   sidebarElements.themeToggle.checked = isDark;
 }
 
@@ -248,10 +252,10 @@ function openOrdersPage() {
   const trackingModal = document.getElementById('trackingModal');
   if (trackingModal) {
     // If tracking modal exists, show it
-    if (typeof openTrackingModal === 'function') {
-      openTrackingModal();
-    } else if (typeof showTrackingModal === 'function') {
-      showTrackingModal('');
+    if (typeof window.openTrackingModal === 'function') {
+      window.openTrackingModal();
+    } else if (typeof window.showTrackingModal === 'function') {
+      window.showTrackingModal('');
     }
   } else {
     // Show orders history (to be implemented)
@@ -263,8 +267,17 @@ function openOrdersPage() {
 function showOrdersHistory() {
   const lang = window.currentLang || 'ar';
   
-  if (typeof storage === 'undefined' || !storage.getOrdersHistory) {
-    showToast(
+  // ✅ استخدام window.showToast بدلاً من import
+  const showToastFunc = window.showToast || window.utilsModule?.showToast;
+  
+  if (!showToastFunc) {
+    console.warn('⚠️ showToast function not available');
+    alert(lang === 'ar' ? 'قريباً' : 'Coming Soon');
+    return;
+  }
+  
+  if (typeof window.storage === 'undefined' || !window.storage.getOrdersHistory) {
+    showToastFunc(
       lang === 'ar' ? 'قريباً' : 'Coming Soon',
       lang === 'ar' ? 'سيتم إضافة صفحة الطلبات قريباً' : 'Orders page coming soon',
       'info'
@@ -272,10 +285,10 @@ function showOrdersHistory() {
     return;
   }
   
-  const orders = storage.getOrdersHistory();
+  const orders = window.storage.getOrdersHistory();
   
   if (orders.length === 0) {
-    showToast(
+    showToastFunc(
       lang === 'ar' ? 'لا توجد طلبات' : 'No Orders',
       lang === 'ar' ? 'لم تقم بأي طلبات بعد' : 'You have not placed any orders yet',
       'info'
@@ -288,7 +301,7 @@ function showOrdersHistory() {
   
   // For now, show a simple alert with last order
   const lastOrder = orders[0];
-  showToast(
+  showToastFunc(
     lang === 'ar' ? 'آخر طلب' : 'Last Order',
     `${lang === 'ar' ? 'رقم الطلب:' : 'Order ID:'} ${lastOrder.orderId}`,
     'success'
@@ -299,7 +312,16 @@ function showOrdersHistory() {
 function openSettings() {
   const lang = window.currentLang || 'ar';
   
-  showToast(
+  // ✅ استخدام window.showToast
+  const showToastFunc = window.showToast || window.utilsModule?.showToast;
+  
+  if (!showToastFunc) {
+    console.warn('⚠️ showToast function not available');
+    alert(lang === 'ar' ? 'الإعدادات' : 'Settings');
+    return;
+  }
+  
+  showToastFunc(
     lang === 'ar' ? 'الإعدادات' : 'Settings',
     lang === 'ar' ? 'يمكنك تغيير اللغة والثيم من القائمة' : 'You can change language and theme from menu',
     'info'
@@ -338,33 +360,59 @@ function initSidebar() {
 // ===== Auto-update on cart/theme/language changes =====
 // ================================================================
 
-// Listen for cart updates
+// ✅ Listen for cart updates (better approach)
 if (typeof window !== 'undefined') {
-  const originalUpdateCart = window.updateCart;
-  window.updateCart = function(...args) {
-    if (originalUpdateCart) {
-      originalUpdateCart.apply(this, args);
+  // Override cartModule.updateCartUI to also update sidebar
+  const waitForCartModule = setInterval(() => {
+    if (window.cartModule && window.cartModule.updateCartUI) {
+      const originalUpdateCartUI = window.cartModule.updateCartUI;
+      
+      window.cartModule.updateCartUI = async function(...args) {
+        await originalUpdateCartUI.apply(this, args);
+        updateSidebarBadges();
+      };
+      
+      clearInterval(waitForCartModule);
+      console.log('✅ Sidebar hooked into cartModule.updateCartUI');
     }
-    updateSidebarBadges();
-  };
+  }, 100);
   
-  // Listen for theme changes
-  const originalToggleTheme = window.toggleTheme;
-  window.toggleTheme = function(...args) {
-    if (originalToggleTheme) {
-      originalToggleTheme.apply(this, args);
-    }
-    syncSidebarTheme();
-  };
+  // Timeout after 5 seconds
+  setTimeout(() => clearInterval(waitForCartModule), 5000);
   
-  // Listen for language changes
-  const originalToggleLanguage = window.toggleLanguage;
-  window.toggleLanguage = function(...args) {
-    if (originalToggleLanguage) {
-      originalToggleLanguage.apply(this, args);
+  // ✅ Listen for theme changes (better approach)
+  const waitForToggleTheme = setInterval(() => {
+    if (window.toggleTheme) {
+      const originalToggleTheme = window.toggleTheme;
+      
+      window.toggleTheme = function(...args) {
+        originalToggleTheme.apply(this, args);
+        syncSidebarTheme();
+      };
+      
+      clearInterval(waitForToggleTheme);
+      console.log('✅ Sidebar hooked into toggleTheme');
     }
-    syncSidebarLanguage();
-  };
+  }, 100);
+  
+  setTimeout(() => clearInterval(waitForToggleTheme), 5000);
+  
+  // ✅ Listen for language changes (better approach)
+  const waitForToggleLanguage = setInterval(() => {
+    if (window.toggleLanguage) {
+      const originalToggleLanguage = window.toggleLanguage;
+      
+      window.toggleLanguage = function(...args) {
+        originalToggleLanguage.apply(this, args);
+        syncSidebarLanguage();
+      };
+      
+      clearInterval(waitForToggleLanguage);
+      console.log('✅ Sidebar hooked into toggleLanguage');
+    }
+  }, 100);
+  
+  setTimeout(() => clearInterval(waitForToggleLanguage), 5000);
 }
 
 // ================================================================
@@ -378,6 +426,8 @@ if (typeof window !== 'undefined') {
   window.updateSidebarProfile = updateSidebarProfile;
   window.openOrdersPage = openOrdersPage;
   window.openSettings = openSettings;
+  
+  console.log('✅ Sidebar functions exposed globally');
 }
 
 // ================================================================
@@ -386,16 +436,3 @@ if (typeof window !== 'undefined') {
 initSidebar();
 
 console.log('✅ sidebar.js loaded successfully');
-
-// ================================================================
-// ===== Export for Modules (if needed) =====
-// ================================================================
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = {
-    openSidebar,
-    closeSidebar,
-    toggleSidebar,
-    updateSidebarBadges,
-    updateSidebarProfile
-  };
-}
