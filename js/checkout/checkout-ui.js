@@ -447,6 +447,23 @@ export function showConfirmedModal(orderId, eta, customerPhone, itemsText, order
 // ================================================================
 // ✅ Enhanced Form Management
 // ================================================================
+// ================================================================
+// CHECKOUT UI - واجهة المستخدم (FIXED VERSION)
+// ================================================================
+
+console.log('🔄 Loading checkout-ui.js');
+
+// ================================================================
+// Static Imports
+// ================================================================
+import { getCart, isCartEmpty } from '../cart.js';
+import { showToast } from '../utils.js';
+
+// ... (keep all existing functions until resetFormFields)
+
+// ================================================================
+// ✅ FIXED: Enhanced Form Management
+// ================================================================
 export function resetFormFields() {
   console.log('🔄 Resetting form fields...');
   
@@ -455,7 +472,7 @@ export function resetFormFields() {
     'customerPhone', 
     'customerAddress',
     'orderNotes',
-    'promoCodeInput'
+    'couponCodeInput' // ✅ FIXED: تغيير من promoCodeInput
   ];
   
   fields.forEach(fieldId => {
@@ -466,10 +483,11 @@ export function resetFormFields() {
     }
   });
   
-  const promoStatus = document.getElementById('promoStatus');
-  if (promoStatus) {
-    promoStatus.style.display = 'none';
-    promoStatus.innerHTML = '';
+  // ✅ FIXED: تغيير من promoStatus إلى couponStatus
+  const couponStatus = document.getElementById('couponStatus');
+  if (couponStatus) {
+    couponStatus.style.display = 'none';
+    couponStatus.innerHTML = '';
   }
   
   const locationBtn = document.getElementById('locationBtn');
@@ -531,6 +549,7 @@ export function restoreFormData() {
   saveFormData();
 }
 
+console.log('✅ checkout-ui.js loaded successfully (FIXED VERSION)');
 // ================================================================
 // ✅ Enhanced UI Reset Function
 // ================================================================
