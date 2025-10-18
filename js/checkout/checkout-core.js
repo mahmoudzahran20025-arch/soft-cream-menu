@@ -759,5 +759,9 @@ export function getCheckoutDebugInfo() {
     timestamp: new Date().toISOString()
   };
 }
-
+if (typeof window !== 'undefined') {
+  window.applyCoupon = applyCoupon;
+  window.removeCoupon = removeCoupon;
+  console.log('✅ Global coupon functions registered');
+}
 console.log('✅ checkout-core.js loaded successfully (FINAL - NO LOYALTY - COUPON SYSTEM)');

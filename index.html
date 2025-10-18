@@ -6108,14 +6108,15 @@ body.dark-mode .cart-sidebar .cart-item:hover {
             dir="ltr"
             style="flex: 1;"
           >
-          <button type="button" class="apply-promo-btn" id="applyPromoBtn" onclick="checkoutModule.applyCoupon()" style="padding: 8px 16px; background: #2196F3; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+          <!-- ✅ استخدم window مباشرة -->
+          <button type="button" class="apply-promo-btn" id="applyPromoBtn" 
+                  onclick="window.applyCoupon?.() || alert('Loading...')">
             <span id="apply-promo-text">تطبيق</span>
           </button>
-          <button onclick="window.applyCoupon?.() || alert('Loading...')">
-            تطبيق
-          </button>
+                    <button onclick="window.applyCoupon?.()">
+
                   </div>
-        <div id="promoStatus" style="display: none; margin-top: 8px;"></div>
+<div id="couponStatus" style="display: none;"></div>
       </div>
     </div>
 
