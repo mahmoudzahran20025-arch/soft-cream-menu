@@ -5024,6 +5024,14 @@ body.dark-mode .cart-sidebar .cart-item:hover {
 .cart-modal-overlay.show {
   display: flex;
 }
+.cart-item-image {
+  width: 70px;
+  height: 70px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  border: 2px solid var(--border-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
 
 /* ========================================
    Cart Modal (Mobile) - Container
@@ -5870,45 +5878,6 @@ body.dark-mode .cart-sidebar .cart-item:hover {
 
 </aside>
 
-<!-- Desktop Cart Sidebar (Fixed Position - Right Side) -->
-<div class="cart-sidebar-desktop">
-  <div class="cart-sidebar">
-    
-    <!-- Cart Header -->
-    <div class="cart-header">
-      <div class="cart-title">
-        <i data-lucide="shopping-cart"></i>
-        <span id="cart-title-desktop">سلة الطلبات</span>
-      </div>
-      <span class="cart-badge" id="cartBadgeDesktop">0</span>
-    </div>
-    
-    <!-- Cart Items Container -->
-    <div class="cart-items" id="cartItemsDesktop">
-      <!-- Empty State -->
-      <div class="cart-empty">
-        <div class="cart-empty-icon">
-          <i data-lucide="shopping-basket"></i>
-        </div>
-        <p class="cart-empty-title" id="cart-empty-title-desktop">سلتك فارغة حالياً</p>
-        <p class="cart-empty-subtitle" id="cart-empty-subtitle-desktop">أضف بعض الآيس كريم اللذيذ! 🍦</p>
-      </div>
-      <!-- Cart items will be populated by JavaScript -->
-    </div>
-    
-    <!-- Cart Footer -->
-    <div class="cart-footer hidden" id="cartFooterDesktop">
-      <div class="cart-total-row">
-        <span class="cart-total-label" id="cart-total-label-desktop">الإجمالي:</span>
-        <span class="cart-total-price" id="cartTotalDesktop">0 ج.م</span>
-      </div>
-      <button class="checkout-btn" onclick="initiateCheckout()">
-        <i data-lucide="check-circle-2"></i>
-        <span id="checkout-btn-text-desktop">إتمام الطلب</span>
-      </button>
-    </div>
-    
-  </div>
 </div>
 <!-- ==================== CART MODAL (MOBILE) ==================== -->
     <!-- Slides up from bottom on mobile devices -->
@@ -6139,7 +6108,7 @@ body.dark-mode .cart-sidebar .cart-item:hover {
             dir="ltr"
             style="flex: 1;"
           >
-          <button type="button" class="apply-promo-btn" id="applyPromoBtn" onclick="checkoutModule.applyPromoCode()" style="padding: 8px 16px; background: #2196F3; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+          <button type="button" class="apply-promo-btn" id="applyPromoBtn" onclick="checkoutModule.applyCoupon()" style="padding: 8px 16px; background: #2196F3; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
             <span id="apply-promo-text">تطبيق</span>
           </button>
         </div>
