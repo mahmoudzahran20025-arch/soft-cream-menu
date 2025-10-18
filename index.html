@@ -6095,29 +6095,25 @@ body.dark-mode .cart-sidebar .cart-item:hover {
 
       <!-- ⬅️ جديد: كود الخصم -->
       <div class="form-group">
-        <label class="form-label">
-          <i data-lucide="tag"></i>
-          <span id="promo-label">كود الخصم (اختياري)</span>
-        </label>
-        <div class="promo-input-group" style="display: flex; gap: 8px;">
-          <input 
-            type="text" 
-            class="form-input" 
-            id="promoCodeInput" 
-            placeholder="أدخل كود الخصم"
-            dir="ltr"
-            style="flex: 1;"
-          >
-          <!-- ✅ استخدم window مباشرة -->
-          <button type="button" class="apply-promo-btn" id="applyPromoBtn" 
-                  onclick="window.applyCoupon?.() || alert('Loading...')">
-            <span id="apply-promo-text">تطبيق</span>
-          </button>
-                    <button onclick="window.applyCoupon?.()">
-
-                  </div>
-<div id="couponStatus" style="display: none;"></div>
-      </div>
+  <label class="form-label">
+    <i data-lucide="tag"></i>
+    <span id="coupon-label">كود الخصم (اختياري)</span> <!-- ✅ غيّر promo إلى coupon -->
+  </label>
+  <div class="coupon-input-group" style="display: flex; gap: 8px;"> <!-- ✅ غيّر promo إلى coupon -->
+    <input 
+      type="text" 
+      class="form-input" 
+      id="couponCodeInput" 
+      placeholder="أدخل كود الخصم"
+      dir="ltr"
+      style="flex: 1;"
+    >
+    <button type="button" class="apply-coupon-btn" id="applyPromoBtn" 
+            onclick="window.applyCoupon?.() || alert('Loading...')">
+      <span id="apply-coupon-text">تطبيق</span> <!-- ✅ غيّر promo إلى coupon -->
+    </button>
+  </div>
+  <div id="couponStatus" style="display: none;"></div> <!-- ✅ هذا صحيح بالفعل -->
     </div>
 
     <div class="checkout-actions">
