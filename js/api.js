@@ -61,6 +61,10 @@
 // ✅ Request Cancellation + Rate Limiting + Dynamic URLs
 // CRITICAL: Never send prices from frontend - backend calculates all prices
 // ================================================================
+// ================================================================
+// api.js - Enhanced API Service (FINAL - COUPON SYSTEM)
+// CRITICAL: Never send prices from frontend - backend calculates all prices
+// ================================================================
 
 import { generateUUID } from './utils.js';
 import { storage } from './storage.js';
@@ -108,66 +112,37 @@ class APIService {
         console.log('🔗 Base URL:', this.baseURL);
     }
 
-    // ================================================================
-    // ===== Environment Detection =====
-    // ================================================================
     detectBaseURL() {
         const hostname = window.location.hostname;
-
-        if (hostname.includes('netlify.app')) {
-            return API_CONFIG.urls.netlify;
-        }
-
-        if (hostname === 'localhost' || hostname === '127.0.0.1') {
-            return API_CONFIG.urls.local;
-        }
-
+        if (hostname.includes('netlify.app')) return API_CONFIG.urls.netlify;
+        if (hostname === 'localhost' || hostname === '127.0.0.1') return API_CONFIG.urls.local;
         return API_CONFIG.urls.production;
     }
 
-    // ================================================================
-    // ===== Configuration =====
-    // ================================================================
     configure(options) {
         if (options.baseURL) this.baseURL = options.baseURL;
         if (options.timeout) this.timeout = options.timeout;
         if (options.retries) this.retries = options.retries;
         if (options.authToken) this.authToken = options.authToken;
-        if (options.rateLimitEnabled !== undefined) {
-            this.rateLimitEnabled = options.rateLimitEnabled;
-        }
-
+        if (options.rateLimitEnabled !== undefined) this.rateLimitEnabled = options.rateLimitEnabled;
         console.log('✅ API Service configured');
     }
 
-    // ================================================================
-    // ===== Rate Limiting Check =====
-    // ================================================================
     checkRateLimit() {
         if (!this.rateLimitEnabled) return true;
-
         const now = Date.now();
         const { maxRequests, window: timeWindow } = API_CONFIG.rateLimit;
-
-        this.requestTimestamps = this.requestTimestamps.filter(
-            timestamp => now - timestamp < timeWindow
-        );
-
+        this.requestTimestamps = this.requestTimestamps.filter(ts => now - ts < timeWindow);
         if (this.requestTimestamps.length >= maxRequests) {
             const oldestRequest = this.requestTimestamps[0];
             const timeUntilReset = timeWindow - (now - oldestRequest);
-
             console.warn(`⚠️ Rate limit exceeded. Try again in ${Math.ceil(timeUntilReset / 1000)}s`);
             return false;
         }
-
         this.requestTimestamps.push(now);
         return true;
     }
 
-    // ================================================================
-    // ===== Request Cancellation =====
-    // ================================================================
     cancelRequest(requestId) {
         const controller = this.activeRequests.get(requestId);
         if (controller) {
@@ -185,9 +160,6 @@ class APIService {
         this.activeRequests.clear();
     }
 
-    // ================================================================
-    // ===== Main Request Method =====
-    // ================================================================
     async request(method, endpoint, data = null, options = {}) {
         if (!this.checkRateLimit()) {
             throw new Error('Rate limit exceeded. Please try again later.');
@@ -206,28 +178,17 @@ class APIService {
         for (let attempt = 1; attempt <= retries; attempt++) {
             try {
                 console.log(`📡 API Request [Attempt ${attempt}/${retries}]:`, method, endpoint);
-
                 return await this.httpRequest(method, endpoint, data, {
-                    timeout,
-                    idempotencyKey,
-                    authToken,
-                    cancelable
+                    timeout, idempotencyKey, authToken, cancelable
                 });
-
             } catch (error) {
                 lastError = error;
-
                 if (error.name === 'AbortError') {
                     console.log('🚫 Request was cancelled');
                     throw error;
                 }
-
                 console.warn(`⚠️ Attempt ${attempt} failed:`, error.message);
-
-                if (error.status >= 400 && error.status < 500) {
-                    throw error;
-                }
-
+                if (error.status >= 400 && error.status < 500) throw error;
                 if (attempt < retries) {
                     const backoff = Math.min(Math.pow(2, attempt) * 1000, 10000);
                     console.log(`⏳ Retrying in ${backoff}ms...`);
@@ -235,48 +196,28 @@ class APIService {
                 }
             }
         }
-
         console.error('❌ All attempts failed:', lastError);
         throw lastError;
     }
 
-    // ================================================================
-    // ===== HTTP Request =====
-    // ================================================================
     async httpRequest(method, endpoint, data, options) {
-        if (!this.baseURL) {
-            throw new Error('API baseURL not configured');
-        }
-
+        if (!this.baseURL) throw new Error('API baseURL not configured');
         const requestId = generateUUID();
         const controller = new AbortController();
-
-        if (options.cancelable) {
-            this.activeRequests.set(requestId, controller);
-        }
-
+        if (options.cancelable) this.activeRequests.set(requestId, controller);
         const timeoutId = setTimeout(() => {
-            if(this.activeRequests.has(requestId)) {
-                controller.abort();
-            }
+            if(this.activeRequests.has(requestId)) controller.abort();
         }, options.timeout);
 
         try {
             const headers = {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'Origin': window.location.origin
             };
-
-            if (options.idempotencyKey) {
-                headers['Idempotency-Key'] = options.idempotencyKey;
-            }
-
+            if (options.idempotencyKey) headers['Idempotency-Key'] = options.idempotencyKey;
             const token = options.authToken || this.getAuthToken();
-            if (token) {
-                headers['Authorization'] = `Bearer ${token}`;
-            }
-
-            headers['Origin'] = window.location.origin;
+            if (token) headers['Authorization'] = `Bearer ${token}`;
 
             const config = {
                 method,
@@ -287,36 +228,24 @@ class APIService {
             };
 
             let url = this.baseURL;
-
             if (method === 'GET' && data && Object.keys(data).length > 0) {
-                const params = new URLSearchParams({
-                    path: endpoint,
-                    ...data
-                });
+                const params = new URLSearchParams({ path: endpoint, ...data });
                 url += '?' + params.toString();
             } else {
                 url += '?path=' + encodeURIComponent(endpoint);
-                if (data && method !== 'GET') {
-                    config.body = JSON.stringify(data);
-                }
+                if (data && method !== 'GET') config.body = JSON.stringify(data);
             }
 
             console.log(`📤 ${method}:`, url);
-            if (data && method !== 'GET') {
-                console.log('📦 Body:', data);
-            }
+            if (data && method !== 'GET') console.log('📦 Body:', data);
 
             const response = await fetch(url, config);
-
             console.log(`📥 Response Status: ${response.status}`);
 
-            if (response.status === 204) {
-                return { success: true, data: null };
-            }
+            if (response.status === 204) return { success: true, data: null };
 
             let result;
             const contentType = response.headers.get('content-type');
-
             if (contentType && contentType.includes('application/json')) {
                 try {
                     result = await response.json();
@@ -338,7 +267,6 @@ class APIService {
             }
 
             console.log('✅ Response:', result);
-
             return result;
 
         } catch (error) {
@@ -351,109 +279,49 @@ class APIService {
             throw error;
         } finally {
             clearTimeout(timeoutId);
-            if (options.cancelable) {
-                this.activeRequests.delete(requestId);
-            }
+            if (options.cancelable) this.activeRequests.delete(requestId);
         }
     }
 
-    // ================================================================
-    // ===== Error Message Handler =====
-    // ================================================================
     getErrorMessage(error, lang = 'ar') {
-        if (error.name === 'AbortError') {
-            return lang === 'ar' ? 'تم إلغاء الطلب' : 'Request cancelled';
-        }
-
+        if (error.name === 'AbortError') return lang === 'ar' ? 'تم إلغاء الطلب' : 'Request cancelled';
         if (error.message?.includes('Rate limit') || error.message?.includes('Too many')) {
-            return lang === 'ar' 
-                ? 'عدد كبير من المحاولات. يرجى الانتظار قليلاً'
-                : 'Too many attempts. Please wait a moment';
+            return lang === 'ar' ? 'عدد كبير من المحاولات. يرجى الانتظار قليلاً' : 'Too many attempts. Please wait a moment';
         }
-        
-        if (error.message?.includes('timeout')) {
-            return lang === 'ar'
-                ? 'انتهت مهلة الاتصال. تحقق من الإنترنت'
-                : 'Connection timeout. Check your internet';
-        }
-
+        if (error.message?.includes('timeout')) return lang === 'ar' ? 'انتهت مهلة الاتصال. تحقق من الإنترنت' : 'Connection timeout. Check your internet';
         if (error.message?.includes('Network') || error.message?.includes('Failed to fetch')) {
-            return lang === 'ar'
-                ? 'مشكلة في الاتصال. تحقق من الإنترنت'
-                : 'Connection problem. Check your internet';
+            return lang === 'ar' ? 'مشكلة في الاتصال. تحقق من الإنترنت' : 'Connection problem. Check your internet';
         }
-        
-        if (error.data?.error) {
-            return error.data.error;
-        }
-        
+        if (error.data?.error) return error.data.error;
         if (error.status >= 400 && error.status < 500) {
-            if (error.status === 404) {
-                return lang === 'ar' ? 'المورد غير موجود' : 'Resource not found';
-            }
-            if (error.status === 400) {
-                return lang === 'ar' ? 'بيانات غير صحيحة' : 'Invalid data';
-            }
+            if (error.status === 404) return lang === 'ar' ? 'المورد غير موجود' : 'Resource not found';
+            if (error.status === 400) return lang === 'ar' ? 'بيانات غير صحيحة' : 'Invalid data';
             return error.message;
         }
-
-        if (error.status >= 500) {
-            return lang === 'ar'
-                ? 'خطأ في الخادم. حاول مرة أخرى'
-                : 'Server error. Try again';
-        }
-
+        if (error.status >= 500) return lang === 'ar' ? 'خطأ في الخادم. حاول مرة أخرى' : 'Server error. Try again';
         return error.message || (lang === 'ar' ? 'حدث خطأ. حاول مرة أخرى' : 'An error occurred. Try again');
-    }  
-
-    // ================================================================
-    // ===== Authentication =====
-    // ================================================================
-    getAuthToken() {
-        return storage.getAuthToken();
     }
 
-    setAuthToken(token) {
-        if (token) {
-            storage.setAuthToken(token);
-        } else {
-            storage.clearAuthToken();
-        }
-    }
-
-    getSessionId() {
-        return storage.getSessionId();
-    }
+    getAuthToken() { return storage.getAuthToken(); }
+    setAuthToken(token) { token ? storage.setAuthToken(token) : storage.clearAuthToken(); }
+    getSessionId() { return storage.getSessionId(); }
+    delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+    generateIdempotencyKey() { return generateUUID(); }
 
     // ================================================================
-    // ===== Helper Methods =====
-    // ================================================================
-    delay(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-    generateIdempotencyKey() {
-        return generateUUID();
-    }
-
-    // ================================================================
-    // ===== ORDER ENDPOINTS =====
+    // ✅ ORDER ENDPOINTS (COUPON SYSTEM)
     // ================================================================
     async submitOrder(orderData) {
-        // Security validation
         if (orderData.items.some(item => item.price || item.subtotal)) {
             console.error('❌ SECURITY WARNING: Frontend should not send prices!');
             throw new Error('Invalid order data: prices should not be sent from frontend');
         }
-
         if (orderData.subtotal || orderData.total || orderData.discount) {
             console.error('❌ SECURITY WARNING: Frontend should not send totals!');
             throw new Error('Invalid order data: totals should not be sent from frontend');
         }
 
         const idempotencyKey = orderData.idempotencyKey || this.generateIdempotencyKey();
-
-        // 🆕 تعديل: دعم الكوبونات بدلاً من promoCode
         const cleanOrderData = {
             items: orderData.items.map(item => ({
                 productId: item.productId,
@@ -464,8 +332,8 @@ class APIService {
             branch: orderData.branch || null,
             location: orderData.location || null,
             customerPhone: orderData.customerPhone || orderData.customer?.phone,
-            deviceId: orderData.deviceId || storage.getDeviceId(), // 🆕 Device ID للكوبونات
-            couponCode: orderData.couponCode || null, // 🆕 استخدام couponCode بدلاً من promoCode
+            deviceId: orderData.deviceId || storage.getDeviceId(),
+            couponCode: orderData.couponCode || null, // ✅ FIXED
             idempotencyKey: idempotencyKey
         };
 
@@ -476,30 +344,17 @@ class APIService {
                 idempotencyKey: idempotencyKey,
                 retries: 3
             });
-
             console.log('📥 Raw submit response:', result);
 
-            let responseData = null;
-            
-            if (result.data) {
-                responseData = result.data;
-            } else if (result) {
-                responseData = result;
-            } else {
-                throw new Error('Empty response from order submission');
-            }
-            
+            let responseData = result.data || result;
+            if (!responseData) throw new Error('Empty response from order submission');
             console.log('✅ Extracted response data:', responseData);
-            
             if (!responseData.orderId) {
                 console.error('❌ Missing orderId in response:', responseData);
                 throw new Error('Invalid response: missing orderId');
             }
-            
             console.log('💰 Received calculated prices from backend:', responseData.calculatedPrices);
-            
             return responseData;
-            
         } catch (error) {
             console.error('❌ Order submission failed:', error);
             throw error;
@@ -514,51 +369,29 @@ class APIService {
         return this.request('POST', '/orders/cancel', { orderId });
     }
 
-    // ================================================================
-    // ===== Calculate Order Prices =====
-    // ================================================================
     async calculateOrderPrices(items, couponCode = null, deliveryMethod = 'delivery', customerPhone = null) {
         try {
-            console.log('📤 Requesting price calculation:', { 
-                items, 
-                couponCode, // 🆕 استخدام couponCode
-                deliveryMethod, 
-                customerPhone 
-            });
-            
-            // 🆕 تعديل: إرسال deviceId مع الطلب
+            console.log('📤 Requesting price calculation:', { items, couponCode, deliveryMethod, customerPhone });
             const result = await this.request('POST', '/orders/prices', {
                 items,
-                couponCode, // 🆕 بدلاً من promoCode
+                couponCode, // ✅ FIXED
                 deliveryMethod,
                 customerPhone,
-                deviceId: storage.getDeviceId() // 🆕 للتحقق من الكوبون
+                deviceId: storage.getDeviceId()
             });
-            
             console.log('📥 Raw API response:', result);
-            
-            let calculatedPrices = null;
-            
-            if (result.data?.calculatedPrices) {
-                calculatedPrices = result.data.calculatedPrices;
-            } else if (result.data) {
-                calculatedPrices = result.data;
-            } else if (result.calculatedPrices) {
-                calculatedPrices = result.calculatedPrices;
-            } else {
+
+            let calculatedPrices = result.data?.calculatedPrices || result.data || result.calculatedPrices;
+            if (!calculatedPrices) {
                 console.error('❌ Unexpected response structure:', result);
                 throw new Error('Invalid response structure from price calculation');
             }
-            
             console.log('✅ Extracted calculatedPrices:', calculatedPrices);
-            
             if (!calculatedPrices.items || calculatedPrices.subtotal === undefined) {
                 console.error('❌ Missing required fields in calculatedPrices:', calculatedPrices);
                 throw new Error('Incomplete price data received');
             }
-            
             return calculatedPrices;
-            
         } catch (error) {
             console.error('❌ Price calculation failed:', error);
             throw error;
@@ -566,7 +399,7 @@ class APIService {
     }
 
     // ================================================================
-    // ===== PRODUCT ENDPOINTS =====
+    // ✅ PRODUCT ENDPOINTS
     // ================================================================
     async getProducts(filters = {}) {
         const result = await this.request('GET', '/products', filters);
@@ -585,7 +418,7 @@ class APIService {
     }
 
     // ================================================================
-    // ===== BRANCH ENDPOINTS =====
+    // ✅ BRANCH ENDPOINTS
     // ================================================================
     async getBranches() {
         const result = await this.request('GET', '/branches');
@@ -603,30 +436,19 @@ class APIService {
     }
 
     // ================================================================
-    // 🆕 COUPON ENDPOINTS (النظام الجديد)
+    // ✅ COUPON ENDPOINTS (NEW SYSTEM)
     // ================================================================
-    
-    /**
-     * التحقق من صلاحية كوبون
-     * @param {string} code - كود الكوبون
-     * @param {string} phone - رقم هاتف العميل
-     * @param {number} subtotal - المجموع الفرعي
-     * @returns {Promise<Object>} بيانات التحقق من الكوبون
-     */
     async validateCoupon(code, phone, subtotal) {
         try {
             console.log('🎟️ Validating coupon:', { code, phone, subtotal });
-            
             const result = await this.request('POST', '/coupons/validate', {
                 code,
                 phone,
                 deviceId: storage.getDeviceId(),
                 subtotal
             });
-            
             console.log('✅ Coupon validation result:', result.data);
             return result.data;
-            
         } catch (error) {
             console.error('❌ Coupon validation failed:', error);
             throw error;
@@ -634,39 +456,11 @@ class APIService {
     }
 
     // ================================================================
-    // ⚠️ DISABLED: PROMOTION ENDPOINTS (نظام قديم - تم استبداله)
-    // ================================================================
-    /*
-    // ❌ تم استبداله بنظام الكوبونات الجديد
-    async getActivePromotions() {
-        console.warn('⚠️ getActivePromotions is deprecated. Use coupon system instead.');
-        throw new Error('Promotion system has been replaced with coupon system');
-    }
-
-    async validatePromoCode(code, subtotal) {
-        console.warn('⚠️ validatePromoCode is deprecated. Use validateCoupon() instead.');
-        throw new Error('Use validateCoupon() instead of validatePromoCode()');
-    }
-    */
-
-    // ================================================================
-    // ⚠️ DISABLED: GAMIFICATION ENDPOINTS (قيد التطوير)
-    // ================================================================
-    /*
-    // ⚠️ قيد التطوير - معطل مؤقتاً
-    async getCustomerGamification(phone) {
-        console.warn('⚠️ Gamification system is currently under development');
-        throw new Error('Gamification system is disabled (under development)');
-    }
-    */
-
-    // ================================================================
-    // ===== Analytics =====
+    // ✅ ANALYTICS
     // ================================================================
     async trackEvent(event) {
         try {
             console.log('📊 Tracking event:', event);
-            
             const enrichedEvent = {
                 eventName: event.name || event.eventName,
                 eventData: {
@@ -677,29 +471,21 @@ class APIService {
                     url: window.location.href
                 }
             };
-            
             const url = `${this.baseURL}?path=${encodeURIComponent('/analytics/event')}`;
-            
             const response = await fetch(url, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Origin': window.location.origin
-                },
+                headers: { 'Content-Type': 'application/json', 'Origin': window.location.origin },
                 body: JSON.stringify(enrichedEvent),
                 keepalive: true,
                 mode: 'cors',
                 credentials: 'omit'
             });
-            
             if (!response.ok) {
                 console.warn(`⚠️ Analytics returned ${response.status} (non-critical)`);
                 return { success: false };
             }
-            
             console.log('✅ Event tracked successfully');
             return { success: true };
-            
         } catch (error) {
             console.warn('⚠️ Analytics tracking failed (non-critical):', error.message);
             return { success: false, error: error.message };
@@ -707,16 +493,9 @@ class APIService {
     }
 }
 
-// ================================================================
-// ===== Export Singleton Instance =====
-// ================================================================
 export const api = new APIService();
-
-// For debugging
-if (typeof window !== 'undefined') {
-    window.apiService = api;
-}
-
+if (typeof window !== 'undefined') window.apiService = api;
+console.log('✅ API Service loaded (FINAL - COUPON SYSTEM)');
 // ================================================================
 // INITIALIZATION EXAMPLE
 // ================================================================
