@@ -447,19 +447,7 @@ export function showConfirmedModal(orderId, eta, customerPhone, itemsText, order
 // ================================================================
 // ✅ Enhanced Form Management
 // ================================================================
-// ================================================================
-// CHECKOUT UI - واجهة المستخدم (FIXED VERSION)
-// ================================================================
 
-console.log('🔄 Loading checkout-ui.js');
-
-// ================================================================
-// Static Imports
-// ================================================================
-import { getCart, isCartEmpty } from '../cart.js';
-import { showToast } from '../utils.js';
-
-// ... (keep all existing functions until resetFormFields)
 
 // ================================================================
 // ✅ FIXED: Enhanced Form Management
