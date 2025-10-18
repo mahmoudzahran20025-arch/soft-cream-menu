@@ -121,6 +121,7 @@ function updateCheckoutModal(t) {
 // ================================================================
 // ===== تبديل التابات =====
 // ================================================================
+/*
 export function switchTab(tab) {
   currentTab = tab;
   
@@ -136,6 +137,72 @@ export function switchTab(tab) {
   }
   
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}*/
+function switchTab(tabName) {
+  console.log('📑 Switching to tab:', tabName);
+  
+  // Hide all tabs
+  const tabs = document.querySelectorAll('.tab-content');
+  tabs.forEach(tab => {
+    tab.classList.remove('active');
+  });
+  
+  // Show selected tab
+  const selectedTab = document.getElementById(`${tabName}-tab`);
+  if (selectedTab) {
+    selectedTab.classList.add('active');
+  }
+  
+  // Update sidebar active state
+  updateSidebarActiveNav(tabName);
+  
+  // Scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  console.log('✅ Tab switched to:', tabName);
+}
+
+// ================================================================
+// ===== Update Sidebar Active Navigation =====
+// ================================================================
+function updateSidebarActiveNav(tabName) {
+  // Remove active from all nav items
+  const navItems = document.querySelectorAll('.sidebar-nav-item');
+  navItems.forEach(item => {
+    item.classList.remove('active');
+  });
+  
+  // Add active to current tab
+  // Map tab names to sidebar items
+  const tabMap = {
+    'menu': 0,    // الرئيسية/المنيو
+    'about': 3,   // من نحن
+    'contact': 4  // تواصل
+  };
+  
+  const index = tabMap[tabName];
+  if (index !== undefined && navItems[index]) {
+    navItems[index].classList.add('active');
+  }
+}
+
+// ================================================================
+// ===== Update Header Cart Badge =====
+// ================================================================
+function updateHeaderCartBadge() {
+  const badge = document.getElementById('headerCartBadge');
+  if (!badge) return;
+  
+  const cart = typeof getCart === 'function' ? getCart() : [];
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+  
+  badge.textContent = totalItems;
+  badge.style.display = totalItems > 0 ? 'inline-flex' : 'none';
+  
+  // Update sidebar badge too
+  if (typeof updateSidebarBadges === 'function') {
+    updateSidebarBadges();
+  }
 }
 
 // ================================================================
