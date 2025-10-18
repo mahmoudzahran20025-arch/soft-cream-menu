@@ -3487,7 +3487,7 @@ button:focus-visible {
 }
 
 /* ================================================================
-   Toast Progress Bar
+   Toast Progress Bar 
 ================================================================ */
 .toast-progress {
   position: absolute;
@@ -6111,7 +6111,10 @@ body.dark-mode .cart-sidebar .cart-item:hover {
           <button type="button" class="apply-promo-btn" id="applyPromoBtn" onclick="checkoutModule.applyCoupon()" style="padding: 8px 16px; background: #2196F3; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
             <span id="apply-promo-text">تطبيق</span>
           </button>
-        </div>
+          <button onclick="window.applyCoupon?.() || alert('Loading...')">
+            تطبيق
+          </button>
+                  </div>
         <div id="promoStatus" style="display: none; margin-top: 8px;"></div>
       </div>
     </div>
