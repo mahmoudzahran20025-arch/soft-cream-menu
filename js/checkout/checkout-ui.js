@@ -1,5 +1,5 @@
 // ================================================================
-// CHECKOUT UI - واجهة المستخدم (ENHANCED VERSION)
+// CHECKOUT UI - واجهة المستخدم (FINAL WORKING VERSION)
 // ================================================================
 
 console.log('🔄 Loading checkout-ui.js');
@@ -9,9 +9,10 @@ console.log('🔄 Loading checkout-ui.js');
 // ================================================================
 import { getCart, isCartEmpty } from '../cart.js';
 import { showToast } from '../utils.js';
+import { storage } from '../storage.js';
 
 // ================================================================
-// ✅ Enhanced updateOrderSummary - Moved Below Promo Code
+// ✅ updateOrderSummary
 // ================================================================
 export async function updateOrderSummary() {
   console.log('🔄 Updating order summary...');
@@ -28,7 +29,6 @@ export async function updateOrderSummary() {
   const currentCart = getCart();
   
   try {
-    // Get current state
     const { 
       getCalculatedPrices, 
       getSelectedDeliveryMethod, 
@@ -46,14 +46,11 @@ export async function updateOrderSummary() {
       cartItems: currentCart?.length || 0
     });
 
-    // إخفاء ملخص الطلب في البداية
     orderSummary.style.display = 'none';
     
-    // عرض ملخص الأسعار فقط بعد اختيار طريقة التوصيل
     if (deliveryMethod && calculatedPrices) {
       orderSummary.style.display = 'block';
       
-      // Build enhanced items HTML with better styling
       let itemsHtml = `
         <div class="order-summary-header" style="padding: 12px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px 8px 0 0; color: white; font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 8px;">
           <i data-lucide="receipt" style="width: 18px; height: 18px;"></i>
@@ -62,7 +59,6 @@ export async function updateOrderSummary() {
         <div class="order-items-list" style="padding: 16px; background: white; border: 1px solid #e0e0e0; border-top: none;">
       `;
       
-      // عرض عناصر الطلب
       if (calculatedPrices.items && calculatedPrices.items.length > 0) {
         calculatedPrices.items.forEach((item, index) => {
           const itemTotal = item.total || (item.price * item.quantity);
@@ -85,13 +81,10 @@ export async function updateOrderSummary() {
       
       itemsHtml += `</div>`;
       
-      // Build enhanced totals HTML
       const { subtotal, deliveryFee, discount, total } = calculatedPrices;
       
       let totalsHtml = `
         <div class="order-totals" style="padding: 16px; background: #fafafa; border: 1px solid #e0e0e0; border-top: none; border-radius: 0 0 8px 8px;">
-          
-          <!-- Subtotal -->
           <div class="total-row" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 14px;">
             <span style="color: #666; display: flex; align-items: center; gap: 6px;">
               <i data-lucide="shopping-bag" style="width: 16px; height: 16px;"></i>
@@ -100,7 +93,6 @@ export async function updateOrderSummary() {
             <span style="font-weight: 600; color: #333;">${subtotal.toFixed(2)} EGP</span>
           </div>
           
-          <!-- Delivery Fee -->
           ${deliveryFee > 0 ? `
             <div class="total-row" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 14px;">
               <span style="color: #666; display: flex; align-items: center; gap: 6px;">
@@ -119,7 +111,6 @@ export async function updateOrderSummary() {
             </div>
           `}
           
-          <!-- Discount -->
           ${discount > 0 ? `
             <div class="total-row discount" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 14px; background: #fff3e0; margin: 8px -16px; padding-left: 16px; padding-right: 16px;">
               <span style="color: #f57c00; display: flex; align-items: center; gap: 6px; font-weight: 600;">
@@ -130,10 +121,8 @@ export async function updateOrderSummary() {
             </div>
           ` : ''}
           
-          <!-- Divider -->
           <div style="border-top: 2px dashed #e0e0e0; margin: 12px 0;"></div>
           
-          <!-- Total -->
           <div class="total-row final-total" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; margin: 0 -16px -16px -16px;">
             <span style="color: white; font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 8px;">
               <i data-lucide="wallet" style="width: 20px; height: 20px;"></i>
@@ -144,7 +133,6 @@ export async function updateOrderSummary() {
         </div>
       `;
       
-      // Show offline indicator if applicable
       if (calculatedPrices.isOffline) {
         totalsHtml += `
           <div class="offline-indicator" style="margin-top: 12px; padding: 12px; background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); border-radius: 8px; border-left: 4px solid #f39c12; display: flex; align-items: center; gap: 10px;">
@@ -157,7 +145,6 @@ export async function updateOrderSummary() {
         `;
       }
       
-      // Add branch info for pickup
       if (deliveryMethod === 'pickup' && selectedBranch) {
         try {
           const { branches } = await import('./checkout-delivery.js');
@@ -183,11 +170,9 @@ export async function updateOrderSummary() {
         }
       }
       
-      // Combine HTML
       orderItems.innerHTML = itemsHtml + totalsHtml;
       
     } else if (deliveryMethod && !calculatedPrices) {
-      // Show calculation in progress
       orderSummary.style.display = 'block';
       orderItems.innerHTML = `
         <div class="calculating-prices" style="padding: 32px; text-align: center; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 8px;">
@@ -207,11 +192,9 @@ export async function updateOrderSummary() {
         </style>
       `;
     } else {
-      // إخفاء الملخص إذا لم يتم اختيار طريقة التوصيل
       orderSummary.style.display = 'none';
     }
     
-    // Refresh icons
     if (typeof lucide !== 'undefined') {
       lucide.createIcons();
     }
@@ -221,7 +204,6 @@ export async function updateOrderSummary() {
   } catch (error) {
     console.error('❌ Failed to update order summary:', error);
     
-    // Fallback display
     orderItems.innerHTML = `
       <div class="error-message" style="padding: 24px; text-align: center; background: #ffebee; border-radius: 8px; border-left: 4px solid #f44336;">
         <i data-lucide="alert-circle" style="width: 48px; height: 48px; color: #f44336; margin-bottom: 12px;"></i>
@@ -241,75 +223,52 @@ export async function updateOrderSummary() {
 }
 
 // ================================================================
-// ✅ Enhanced Modal Management Functions
+// ✅ Modal Management
 // ================================================================
 export function closeCheckoutModal(event) {
-  if (event && event.target !== event.currentTarget) {
-    return;
-  }
+  if (event && event.target !== event.currentTarget) return;
   
   console.log('🔄 Closing checkout modal...');
   
-  const modals = [
-    'checkoutModal',
-    'permissionModal', 
-    'processingModal',
-    'orderConfirmedModal',
-    'trackingModal'
-  ];
+  const checkoutModal = document.getElementById('checkoutModal');
+  if (checkoutModal) {
+    checkoutModal.classList.remove('show');
+    checkoutModal.classList.add('hidden');
+    checkoutModal.style.display = 'none';
+  }
   
-  modals.forEach(modalId => {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-      modal.classList.remove('show');
-      modal.classList.add('hidden');
-      modal.style.display = 'none';
-    }
-  });
+  const otherModalsOpen = document.querySelector(
+    '#processingModal.show, #orderConfirmedModal.show, #trackingModal.show, #permissionModal.show'
+  );
   
-  document.body.style.overflow = '';
+  if (!otherModalsOpen) {
+    document.body.style.overflow = '';
+  }
+  
   console.log('✅ Checkout modal closed');
 }
 
-// ================================================================
-// ✅ Close Confirmed Modal Only
-// ================================================================
 export function closeConfirmedModal() {
   console.log('🔄 Closing confirmed modal...');
   
-  const modals = [
-    document.getElementById('orderConfirmedModal'),
-    document.querySelector('.confirmed-modal'),
-    document.querySelector('.modal-overlay.show')
-  ];
+  const modal = document.getElementById('orderConfirmedModal');
+  if (modal) {
+    modal.classList.remove('show');
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+  }
   
-  modals.forEach(modal => {
-    if (modal && modal.id === 'orderConfirmedModal') {
-      modal.classList.remove('show');
-      modal.classList.add('hidden');
-      modal.style.display = 'none';
-    }
-  });
-  
-  // Don't reset body overflow - keep checkout modal open
   console.log('✅ Confirmed modal closed');
 }
 
-// ================================================================
-// ✅ Setup Modal Close Handlers
-// ================================================================
 export function setupModalCloseHandlers() {
   console.log('🔧 Setting up modal close handlers...');
   
-  // Close confirmed modal button
   const closeConfirmedBtn = document.getElementById('closeConfirmedBtn');
   if (closeConfirmedBtn) {
-    closeConfirmedBtn.onclick = function() {
-      closeConfirmedModal();
-    };
+    closeConfirmedBtn.onclick = closeConfirmedModal;
   }
   
-  // Click outside to close
   document.addEventListener('click', function(e) {
     const confirmedModal = document.getElementById('orderConfirmedModal');
     if (confirmedModal && confirmedModal.classList.contains('show')) {
@@ -320,7 +279,6 @@ export function setupModalCloseHandlers() {
     }
   });
   
-  // ESC key to close
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
       const confirmedModal = document.getElementById('orderConfirmedModal');
@@ -338,7 +296,7 @@ export function showProcessingModal(show = true, showError = false, errorMessage
   
   const modal = document.getElementById('processingModal');
   if (!modal) {
-    console.warn('⚠️ Processing modal not found');
+    console.error('❌ Processing modal not found');
     return;
   }
   
@@ -353,30 +311,40 @@ export function showProcessingModal(show = true, showError = false, errorMessage
     const title = modal.querySelector('#processing-title');
     const subtitle = modal.querySelector('#processing-subtitle');
     const actions = modal.querySelector('#processingActions');
+    const spinner = modal.querySelector('.spinner-container, .spinner');
     
     if (showError) {
+      if (spinner) spinner.style.display = 'none';
       if (title) title.textContent = lang === 'ar' ? 'فشل في إرسال الطلب' : 'Order Failed';
-      if (subtitle) subtitle.textContent = errorMessage || (lang === 'ar' ? 'حدث خطأ أثناء معالجة طلبك' : 'An error occurred while processing your order');
+      if (subtitle) subtitle.textContent = errorMessage || (lang === 'ar' ? 'حدث خطأ أثناء معالجة طلبك' : 'An error occurred');
       if (actions) actions.style.display = 'block';
     } else {
+      if (spinner) spinner.style.display = 'flex';
       if (title) title.textContent = lang === 'ar' ? 'جاري إرسال طلبك...' : 'Sending your order...';
-      if (subtitle) subtitle.textContent = lang === 'ar' ? 'الرجاء الانتظار، لا تغلق الصفحة' : 'Please wait, do not close the page';
+      if (subtitle) subtitle.textContent = lang === 'ar' ? 'الرجاء الانتظار، لا تغلق الصفحة' : 'Please wait';
       if (actions) actions.style.display = 'none';
     }
   } else {
     modal.classList.remove('show');
     modal.classList.add('hidden');
     modal.style.display = 'none';
-    document.body.style.overflow = '';
+    
+    const otherModalsOpen = document.querySelector(
+      '#checkoutModal.show, #orderConfirmedModal.show, #trackingModal.show, #permissionModal.show'
+    );
+    
+    if (!otherModalsOpen) {
+      document.body.style.overflow = '';
+    }
   }
 }
-/*
+
 export function showConfirmedModal(orderId, eta, customerPhone, itemsText, orderData) {
-  console.log('🔄 Showing confirmed modal:', { orderId, eta, customerPhone });
+  console.log('🔄 Showing confirmed modal:', { orderId, eta });
   
   const modal = document.getElementById('orderConfirmedModal');
   if (!modal) {
-    console.warn('⚠️ Confirmed modal not found');
+    console.error('❌ Confirmed modal not found');
     return;
   }
   
@@ -399,9 +367,7 @@ export function showConfirmedModal(orderId, eta, customerPhone, itemsText, order
         branchAddressEl.textContent = branch.address[lang];
         branchInfoEl.style.display = 'block';
       }
-    }).catch(err => {
-      console.warn('⚠️ Could not load branch info for confirmed modal:', err);
-    });
+    }).catch(err => console.warn('⚠️ Branch info load failed:', err));
   } else if (branchInfoEl) {
     branchInfoEl.style.display = 'none';
   }
@@ -412,155 +378,35 @@ export function showConfirmedModal(orderId, eta, customerPhone, itemsText, order
   const continueBtn = modal.querySelector('#continueShoppingBtn');
   const closeBtn = modal.querySelector('#closeConfirmedBtn');
   
-  if (copyBtn) copyBtn.onclick = () => copyOrderId(orderId);
-  if (whatsappBtn) whatsappBtn.onclick = () => shareOnWhatsApp(orderId, itemsText, customerPhone);
-  if (trackBtn) trackBtn.onclick = () => showTrackingModal(orderId);
-  if (continueBtn) continueBtn.onclick = closeCheckoutModal;
-  if (closeBtn) closeBtn.onclick = closeConfirmedModal;
+  if (copyBtn) copyBtn.onclick = (e) => { e.preventDefault(); copyOrderId(orderId); };
+  if (whatsappBtn) whatsappBtn.onclick = (e) => { e.preventDefault(); shareOnWhatsApp(orderId, itemsText, customerPhone); };
+  if (trackBtn) trackBtn.onclick = (e) => { 
+    e.preventDefault(); 
+    closeConfirmedModal(); 
+    setTimeout(() => showTrackingModal(orderId), 300); 
+  };
+  if (continueBtn) continueBtn.onclick = (e) => { 
+    e.preventDefault(); 
+    closeConfirmedModal(); 
+    setTimeout(() => { document.body.style.overflow = ''; }, 100); 
+  };
+  if (closeBtn) closeBtn.onclick = (e) => { e.preventDefault(); closeConfirmedModal(); };
   
   modal.classList.remove('hidden');
   modal.classList.add('show');
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
   
-  // ✅ Setup close handlers after modal is shown
   setTimeout(() => {
     setupModalCloseHandlers();
-    
-    // Add track button handler
-    const trackBtnRefresh = document.getElementById('trackOrderBtn');
-    if (trackBtnRefresh) {
-      trackBtnRefresh.onclick = () => {
-        closeConfirmedModal();
-        showTrackingModal(orderId);
-      };
-    }
+    if (typeof lucide !== 'undefined') lucide.createIcons();
   }, 100);
-  
-  if (typeof lucide !== 'undefined') {
-    lucide.createIcons();
-  }
   
   console.log('✅ Confirmed modal shown');
-}*/
-export function showConfirmedModal(orderId, eta, customerPhone, itemsText, orderData) {
-  console.log('🔄 Showing confirmed modal:', { orderId, eta, customerPhone });
-  
-  const modal = document.getElementById('orderConfirmedModal');
-  if (!modal) {
-    console.error('❌ Confirmed modal not found in DOM!');
-    return;
-  }
-  
-  const lang = window.currentLang || 'ar';
-  
-  // Update order details
-  const orderIdEl = modal.querySelector('#confirmedOrderId');
-  const etaEl = modal.querySelector('#confirmedEta');
-  const branchInfoEl = modal.querySelector('#selectedBranchInfo');
-  const branchNameEl = modal.querySelector('#selectedBranchName');
-  const branchAddressEl = modal.querySelector('#selectedBranchAddress');
-  
-  if (orderIdEl) orderIdEl.textContent = orderId;
-  if (etaEl) etaEl.textContent = lang === 'ar' ? `الوقت المتوقع: ≈ ${eta}` : `Estimated time: ≈ ${eta}`;
-  
-  // Show branch info if pickup
-  if (orderData?.deliveryMethod === 'pickup' && orderData?.branch && branchInfoEl) {
-    import('./checkout-delivery.js').then(({ branches }) => {
-      const branch = branches[orderData.branch];
-      if (branch && branchNameEl && branchAddressEl) {
-        branchNameEl.textContent = branch.name[lang];
-        branchAddressEl.textContent = branch.address[lang];
-        branchInfoEl.style.display = 'block';
-      }
-    }).catch(err => {
-      console.warn('⚠️ Could not load branch info:', err);
-    });
-  } else if (branchInfoEl) {
-    branchInfoEl.style.display = 'none';
-  }
-  
-  // ✅ Setup button handlers - WITH DEBUGGING
-  const copyBtn = modal.querySelector('#copyOrderIdBtn');
-  const whatsappBtn = modal.querySelector('#shareWhatsAppBtn');
-  const trackBtn = modal.querySelector('#trackOrderBtn');
-  const continueBtn = modal.querySelector('#continueShoppingBtn');
-  const closeBtn = modal.querySelector('#closeConfirmedBtn');
-  
-  console.log('🔍 Button check:', {
-    copyBtn: !!copyBtn,
-    whatsappBtn: !!whatsappBtn,
-    trackBtn: !!trackBtn,
-    continueBtn: !!continueBtn,
-    closeBtn: !!closeBtn
-  });
-  
-  if (copyBtn) {
-    copyBtn.onclick = () => {
-      console.log('📋 Copy button clicked');
-      copyOrderId(orderId);
-    };
-  }
-  
-  if (whatsappBtn) {
-    whatsappBtn.onclick = () => {
-      console.log('💬 WhatsApp button clicked');
-      shareOnWhatsApp(orderId, itemsText, customerPhone);
-    };
-  }
-  
-  if (trackBtn) {
-    trackBtn.onclick = () => {
-      console.log('🔍 Track button clicked');
-      // ✅ Close confirmed modal first, then open tracking
-      closeConfirmedModal();
-      setTimeout(() => {
-        showTrackingModal(orderId);
-      }, 300); // Wait for animation
-    };
-  }
-  
-  if (continueBtn) {
-    continueBtn.onclick = () => {
-      console.log('🛒 Continue shopping clicked');
-      closeCheckoutModal();
-    };
-  }
-  
-  if (closeBtn) {
-    closeBtn.onclick = () => {
-      console.log('❌ Close button clicked');
-      closeConfirmedModal();
-    };
-  }
-  
-  // Show modal
-  modal.classList.remove('hidden');
-  modal.classList.add('show');
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-  
-  // ✅ Setup close handlers + refresh icons
-  setTimeout(() => {
-    setupModalCloseHandlers();
-    
-    if (typeof lucide !== 'undefined') {
-      lucide.createIcons();
-      console.log('✅ Lucide icons refreshed');
-    } else {
-      console.warn('⚠️ Lucide not loaded');
-    }
-  }, 100);
-  
-  console.log('✅ Confirmed modal shown successfully');
 }
-// ================================================================
-// ✅ Enhanced Form Management
-// ================================================================
-
 
 // ================================================================
-// ✅ FIXED: Enhanced Form Management
+// ✅ Form Management
 // ================================================================
 export function resetFormFields() {
   console.log('🔄 Resetting form fields...');
@@ -610,20 +456,13 @@ export function fillSavedUserData() {
   console.log('🔄 Filling saved user data...');
   
   const userData = storage.getUserData();
-  if (!userData) {
-    console.log('⚠️ No saved user data found');
-    return;
-  }
+  if (!userData) return;
   
   const nameField = document.getElementById('customerName');
-  if (nameField && userData.name) {
-    nameField.value = userData.name;
-  }
+  if (nameField && userData.name) nameField.value = userData.name;
   
   const phoneField = document.getElementById('customerPhone');
-  if (phoneField && userData.phone) {
-    phoneField.value = userData.phone;
-  }
+  if (phoneField && userData.phone) phoneField.value = userData.phone;
   
   console.log('✅ Saved user data filled');
 }
@@ -634,12 +473,9 @@ export function saveFormData() {
   
   if (nameField?.value || phoneField?.value) {
     const userData = storage.getUserData() || {};
-    
     if (nameField?.value) userData.name = nameField.value;
     if (phoneField?.value) userData.phone = phoneField.value;
-    
     storage.setUserData(userData);
-    console.log('💾 Form data saved');
   }
 }
 
@@ -647,55 +483,33 @@ export function restoreFormData() {
   saveFormData();
 }
 
-console.log('✅ checkout-ui.js loaded successfully (FIXED VERSION)');
-// ================================================================
-// ✅ Enhanced UI Reset Function
-// ================================================================
 export function resetCheckoutUI() {
   console.log('🔄 Resetting checkout UI...');
   
-  document.querySelectorAll('.delivery-option').forEach(option => {
-    option.classList.remove('selected');
-  });
-  
-  document.querySelectorAll('.branch-card').forEach(card => {
-    card.classList.remove('selected');
-  });
+  document.querySelectorAll('.delivery-option').forEach(option => option.classList.remove('selected'));
+  document.querySelectorAll('.branch-card').forEach(card => card.classList.remove('selected'));
   
   const branchSelection = document.getElementById('branchSelection');
-  if (branchSelection) {
-    branchSelection.style.display = 'none';
-  }
+  if (branchSelection) branchSelection.style.display = 'none';
   
   const addressGroup = document.getElementById('addressGroup');
-  if (addressGroup) {
-    addressGroup.style.display = 'none';
-  }
+  if (addressGroup) addressGroup.style.display = 'none';
   
   const checkoutForm = document.getElementById('checkoutForm');
-  if (checkoutForm) {
-    checkoutForm.classList.remove('show');
-  }
+  if (checkoutForm) checkoutForm.classList.remove('show');
   
   console.log('✅ Checkout UI reset');
 }
 
 // ================================================================
-// ✅ Enhanced Sharing Functions
+// ✅ Sharing Functions
 // ================================================================
 export function copyOrderId(orderId) {
   if (navigator.clipboard) {
     navigator.clipboard.writeText(orderId).then(() => {
       const lang = window.currentLang || 'ar';
-      showToast(
-        lang === 'ar' ? 'تم النسخ!' : 'Copied!',
-        lang === 'ar' ? 'تم نسخ رقم الطلب' : 'Order ID copied',
-        'success'
-      );
-    }).catch(err => {
-      console.warn('⚠️ Could not copy to clipboard:', err);
-      fallbackCopyTextToClipboard(orderId);
-    });
+      showToast(lang === 'ar' ? 'تم النسخ!' : 'Copied!', lang === 'ar' ? 'تم نسخ رقم الطلب' : 'Order ID copied', 'success');
+    }).catch(() => fallbackCopyTextToClipboard(orderId));
   } else {
     fallbackCopyTextToClipboard(orderId);
   }
@@ -704,16 +518,7 @@ export function copyOrderId(orderId) {
 function fallbackCopyTextToClipboard(text) {
   const textArea = document.createElement('textarea');
   textArea.value = text;
-  textArea.style.position = 'fixed';
-  textArea.style.top = '0';
-  textArea.style.left = '0';
-  textArea.style.width = '2em';
-  textArea.style.height = '2em';
-  textArea.style.padding = '0';
-  textArea.style.border = 'none';
-  textArea.style.outline = 'none';
-  textArea.style.boxShadow = 'none';
-  textArea.style.background = 'transparent';
+  textArea.style.cssText = 'position:fixed;top:0;left:0;width:2em;height:2em;padding:0;border:none;outline:none;box-shadow:none;background:transparent';
   document.body.appendChild(textArea);
   textArea.focus();
   textArea.select();
@@ -721,19 +526,9 @@ function fallbackCopyTextToClipboard(text) {
   try {
     document.execCommand('copy');
     const lang = window.currentLang || 'ar';
-    showToast(
-      lang === 'ar' ? 'تم النسخ!' : 'Copied!',
-      lang === 'ar' ? 'تم نسخ رقم الطلب' : 'Order ID copied',
-      'success'
-    );
+    showToast(lang === 'ar' ? 'تم النسخ!' : 'Copied!', lang === 'ar' ? 'تم نسخ رقم الطلب' : 'Order ID copied', 'success');
   } catch (err) {
-    console.error('❌ Fallback copy failed:', err);
-    const lang = window.currentLang || 'ar';
-    showToast(
-      lang === 'ar' ? 'خطأ' : 'Error',
-      lang === 'ar' ? 'فشل النسخ' : 'Copy failed',
-      'error'
-    );
+    console.error('❌ Copy failed:', err);
   }
   
   document.body.removeChild(textArea);
@@ -745,126 +540,49 @@ export function shareOnWhatsApp(orderId, itemsText, customerPhone) {
     ? `طلبي من المطعم 🍕\nرقم الطلب: ${orderId}\nالطلبات: ${itemsText}\nللاستفسار: ${customerPhone}`
     : `My restaurant order 🍕\nOrder ID: ${orderId}\nItems: ${itemsText}\nPhone: ${customerPhone}`;
   
-  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-  window.open(whatsappUrl, '_blank');
+  window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
 }
 
 // ================================================================
-// ✅ Enhanced Tracking Functions  
+// ✅ Tracking Functions
 // ================================================================
-/*
 export function showTrackingModal(orderId) {
   console.log('🔍 Opening tracking modal for:', orderId);
   
   const lang = window.currentLang || 'ar';
-  
-  // Check if modal exists
   let modal = document.getElementById('trackingModal');
   
   if (!modal) {
-    // Create modal
     modal = document.createElement('div');
     modal.id = 'trackingModal';
     modal.className = 'modal-overlay tracking-modal';
     modal.innerHTML = `
       <div class="modal-content" style="max-width: 500px; background: white; padding: 30px; border-radius: 12px; position: relative;">
-        <button class="close-modal" onclick="window.closeTrackingModal?.()" style="position: absolute; top: 15px; ${lang === 'ar' ? 'left' : 'right'}: 15px; background: none; border: none; cursor: pointer; padding: 5px; opacity: 0.6;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+        <button class="close-modal" onclick="window.closeTrackingModal?.()" style="position: absolute; top: 15px; ${lang === 'ar' ? 'left' : 'right'}: 15px; background: none; border: none; cursor: pointer; padding: 5px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
         </button>
         <div id="trackingContent"></div>
       </div>
     `;
     document.body.appendChild(modal);
-    
-    // Add click outside listener
-    modal.addEventListener('click', function(e) {
-      if (e.target === modal) {
-        closeTrackingModal();
-      }
-    });
-  }
-  
-  // Show loading
-  const content = document.getElementById('trackingContent');
-  content.innerHTML = `
-    <div style="text-align: center; padding: 40px 20px;">
-      <div class="loading-spinner" style="width: 48px; height: 48px; border: 4px solid #f3f3f3; border-top: 4px solid #2196F3; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
-      <p>${lang === 'ar' ? 'جاري البحث عن الطلب...' : 'Searching for order...'}</p>
-    </div>
-    <style>
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-    </style>
-  `;
-  
-  // Show modal
-  modal.classList.add('show');
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-  
-  // Fetch order data
-  fetchOrderStatus(orderId);
-}*/
-export function showTrackingModal(orderId) {
-  console.log('🔍 Opening tracking modal for:', orderId);
-  
-  const lang = window.currentLang || 'ar';
-  
-  // First create and append modal
-  let modal = document.getElementById('trackingModal');
-  
-  if (!modal) {
-    // Create modal with content div included
-    modal = document.createElement('div');
-    modal.id = 'trackingModal';
-    modal.className = 'modal-overlay tracking-modal';
-    modal.innerHTML = `
-      <div class="modal-content" style="max-width: 500px; background: white; padding: 30px; border-radius: 12px; position: relative;">
-        <button class="close-modal" onclick="window.closeTrackingModal?.()" style="position: absolute; top: 15px; ${lang === 'ar' ? 'left' : 'right'}: 15px; background: none; border: none; cursor: pointer; padding: 5px; opacity: 0.6;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
-        </button>
-        <div id="trackingContent"></div>
-      </div>
-    `;
-    document.body.appendChild(modal);
-    
-    // Add click outside listener
-    modal.addEventListener('click', function(e) {
-      if (e.target === modal) {
-        closeTrackingModal();
-      }
-    });
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeTrackingModal(); });
   }
 
-  // Now it's safe to get trackingContent since modal is in DOM
   const content = document.getElementById('trackingContent');
-  if (!content) {
-    console.error('❌ Tracking content div not found');
-    return;
-  }
+  if (!content) return;
   
-  // Show loading state
   content.innerHTML = `
     <div style="text-align: center; padding: 40px 20px;">
       <div class="loading-spinner" style="width: 48px; height: 48px; border: 4px solid #f3f3f3; border-top: 4px solid #2196F3; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
       <p>${lang === 'ar' ? 'جاري البحث عن الطلب...' : 'Searching for order...'}</p>
     </div>
-    <style>
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-    </style>
+    <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
   `;
   
-  // Show modal
   modal.classList.add('show');
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
   
-  // Fetch order data
   fetchOrderStatus(orderId);
 }
 
@@ -873,50 +591,38 @@ async function fetchOrderStatus(orderId) {
   const content = document.getElementById('trackingContent');
   
   try {
-    // Import API
     const { api } = await import('../api.js');
-    
-    // Track order
     const result = await api.trackOrder(orderId);
     
-    // Show result
     content.innerHTML = `
       <div style="text-align: center; padding: 20px;">
         <div style="font-size: 64px; margin-bottom: 20px;">📦</div>
         <h2 style="margin-bottom: 20px; color: #333;">${lang === 'ar' ? 'حالة الطلب' : 'Order Status'}</h2>
-        
         <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0; text-align: ${lang === 'ar' ? 'right' : 'left'};">
           <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e0e0e0;">
             <span style="color: #666;">${lang === 'ar' ? 'رقم الطلب:' : 'Order ID:'}</span>
             <strong style="color: #333;">${result.data.orderId}</strong>
           </div>
-          
           <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e0e0e0;">
             <span style="color: #666;">${lang === 'ar' ? 'الحالة:' : 'Status:'}</span>
             <strong style="color: #2196F3; font-size: 16px;">${result.data.status}</strong>
           </div>
-          
           <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e0e0e0;">
             <span style="color: #666;">${lang === 'ar' ? 'التاريخ:' : 'Date:'}</span>
             <strong style="color: #333;">${result.data.date}</strong>
           </div>
-          
           <div style="display: flex; justify-content: space-between;">
             <span style="color: #666;">${lang === 'ar' ? 'المبلغ الإجمالي:' : 'Total Amount:'}</span>
             <strong style="color: #4CAF50; font-size: 18px;">${result.data.total} ${lang === 'ar' ? 'ج.م' : 'EGP'}</strong>
           </div>
         </div>
-        
-        <button onclick="window.closeTrackingModal?.()" style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600; transition: transform 0.2s;">
+        <button onclick="window.closeTrackingModal?.()" style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600;">
           ${lang === 'ar' ? 'إغلاق' : 'Close'}
         </button>
       </div>
     `;
-    
   } catch (error) {
     console.error('❌ Tracking failed:', error);
-    
-    // Import utils
     const { api } = await import('../api.js');
     const errorMessage = api.getErrorMessage ? api.getErrorMessage(error, lang) : error.message;
     
@@ -935,7 +641,6 @@ async function fetchOrderStatus(orderId) {
 
 export function closeTrackingModal() {
   console.log('🔄 Closing tracking modal...');
-  
   const modal = document.getElementById('trackingModal');
   if (modal) {
     modal.classList.remove('show');
@@ -945,7 +650,6 @@ export function closeTrackingModal() {
 }
 
 export function openTrackingModal(orderId = '') {
-  // Redirect to new enhanced function
   showTrackingModal(orderId);
 }
 
@@ -956,20 +660,13 @@ export async function checkOrderStatus() {
   const trackingResult = document.getElementById('trackingResult');
   const checkBtn = document.getElementById('checkStatusBtn');
   
-  if (!trackingInput || !trackingResult) {
-    console.warn('⚠️ Tracking elements not found');
-    return;
-  }
+  if (!trackingInput || !trackingResult) return;
   
   const orderId = trackingInput.value.trim();
   const lang = window.currentLang || 'ar';
   
   if (!orderId) {
-    showToast(
-      lang === 'ar' ? 'خطأ' : 'Error',
-      lang === 'ar' ? 'الرجاء إدخال رقم الطلب' : 'Please enter order ID',
-      'error'
-    );
+    showToast(lang === 'ar' ? 'خطأ' : 'Error', lang === 'ar' ? 'الرجاء إدخال رقم الطلب' : 'Please enter order ID', 'error');
     return;
   }
   
@@ -983,7 +680,7 @@ export async function checkOrderStatus() {
     const result = await api.getOrderStatus(orderId);
     
     if (result && result.found) {
-      const { status, eta, items, total, deliveryMethod, branch } = result;
+      const { status, eta, items, total, deliveryMethod } = result;
       
       let statusText = status;
       let statusColor = '#2196F3';
@@ -1003,7 +700,7 @@ export async function checkOrderStatus() {
         statusColor = statusMap[status].color;
       }
       
-      let resultHtml = `
+      trackingResult.innerHTML = `
         <div class="tracking-order-info" style="text-align: center; padding: 20px;">
           <div class="tracking-status" style="margin-bottom: 16px;">
             <div class="status-badge" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: ${statusColor}; color: white; border-radius: 20px; font-weight: 600;">
@@ -1011,91 +708,55 @@ export async function checkOrderStatus() {
               <span>${statusText}</span>
             </div>
           </div>
-          
           <div class="tracking-details" style="background: #f8f9fa; border-radius: 8px; padding: 16px; text-align: left;">
-            <div class="detail-row" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
               <span style="color: #666;">${lang === 'ar' ? 'رقم الطلب:' : 'Order ID:'}</span>
               <span style="font-weight: 600;">${orderId}</span>
             </div>
-            
-            ${eta ? `
-              <div class="detail-row" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                <span style="color: #666;">${lang === 'ar' ? 'الوقت المتوقع:' : 'ETA:'}</span>
-                <span style="font-weight: 600;">${eta}</span>
-              </div>
-            ` : ''}
-            
-            ${total ? `
-              <div class="detail-row" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                <span style="color: #666;">${lang === 'ar' ? 'الإجمالي:' : 'Total:'}</span>
-                <span style="font-weight: 600;">${total.toFixed(2)} EGP</span>
-              </div>
-            ` : ''}
-            
-            <div class="detail-row" style="display: flex; justify-content: space-between;">
+            ${eta ? `<div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <span style="color: #666;">${lang === 'ar' ? 'الوقت المتوقع:' : 'ETA:'}</span>
+              <span style="font-weight: 600;">${eta}</span>
+            </div>` : ''}
+            ${total ? `<div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <span style="color: #666;">${lang === 'ar' ? 'الإجمالي:' : 'Total:'}</span>
+              <span style="font-weight: 600;">${total.toFixed(2)} EGP</span>
+            </div>` : ''}
+            <div style="display: flex; justify-content: space-between;">
               <span style="color: #666;">${lang === 'ar' ? 'طريقة الاستلام:' : 'Method:'}</span>
               <span style="font-weight: 600;">${deliveryMethod === 'pickup' ? (lang === 'ar' ? 'استلام من الفرع' : 'Pickup') : (lang === 'ar' ? 'توصيل' : 'Delivery')}</span>
             </div>
           </div>
-          
-          ${items && items.length > 0 ? `
-            <div class="tracking-items" style="margin-top: 16px; background: #f8f9fa; border-radius: 8px; padding: 16px;">
-              <div style="font-weight: 600; margin-bottom: 12px; color: #333;">${lang === 'ar' ? 'عناصر الطلب:' : 'Order Items:'}</div>
-              ${items.map(item => `
-                <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #eee;">
-                  <span>${item.name} × ${item.quantity}</span>
-                  <span>${item.total.toFixed(2)} EGP</span>
-                </div>
-              `).join('')}
-            </div>
-          ` : ''}
         </div>
       `;
-      
-      trackingResult.innerHTML = resultHtml;
       trackingResult.style.display = 'block';
-      
     } else {
       trackingResult.innerHTML = `
-        <div class="tracking-not-found" style="text-align: center; padding: 20px; color: #d32f2f;">
+        <div style="text-align: center; padding: 20px; color: #d32f2f;">
           <i data-lucide="search-x" style="width: 48px; height: 48px; margin-bottom: 16px;"></i>
           <h4>${lang === 'ar' ? 'الطلب غير موجود' : 'Order Not Found'}</h4>
-          <p>${lang === 'ar' ? 'تحقق من رقم الطلب وحاول مرة أخرى' : 'Check the order ID and try again'}</p>
         </div>
       `;
       trackingResult.style.display = 'block';
     }
-    
   } catch (error) {
     console.error('❌ Failed to check order status:', error);
-    
     trackingResult.innerHTML = `
-      <div class="tracking-error" style="text-align: center; padding: 20px; color: #d32f2f;">
+      <div style="text-align: center; padding: 20px; color: #d32f2f;">
         <i data-lucide="alert-circle" style="width: 48px; height: 48px; margin-bottom: 16px;"></i>
         <h4>${lang === 'ar' ? 'خطأ في التحقق' : 'Check Failed'}</h4>
-        <p>${error.message || (lang === 'ar' ? 'حدث خطأ أثناء التحقق من الطلب' : 'An error occurred while checking the order')}</p>
       </div>
     `;
     trackingResult.style.display = 'block';
-    
   } finally {
     if (checkBtn) {
       checkBtn.disabled = false;
       checkBtn.innerHTML = '<i data-lucide="search"></i><span>تحقق</span>';
     }
-    
-    if (typeof lucide !== 'undefined') {
-      lucide.createIcons();
-    }
+    if (typeof lucide !== 'undefined') lucide.createIcons();
   }
 }
 
-// ================================================================
-// ✅ Permission Modal Functions
-// ================================================================
 export function closePermissionModal() {
-  console.log('🔄 Closing permission modal...');
-  
   const modal = document.getElementById('permissionModal');
   if (modal) {
     modal.classList.remove('show');
@@ -1104,17 +765,13 @@ export function closePermissionModal() {
   }
 }
 
-// ================================================================
-// ✅ Initialize Modal Handlers on Load
-// ================================================================
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', setupModalCloseHandlers);
 } else {
   setupModalCloseHandlers();
 }
 
-// Make functions globally accessible
 window.closeTrackingModal = closeTrackingModal;
 window.closeConfirmedModal = closeConfirmedModal;
 
-console.log('✅ checkout-ui.js loaded successfully (Enhanced Version)');
+console.log('✅ checkout-ui.js loaded successfully (FINAL WORKING VERSION)');
