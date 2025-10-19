@@ -448,12 +448,13 @@ export function showConfirmedModal(orderId, eta, customerPhone, itemsText, order
   
   const modal = document.getElementById('orderConfirmedModal');
   if (!modal) {
-    console.warn('⚠️ Confirmed modal not found');
+    console.error('❌ Confirmed modal not found in DOM!');
     return;
   }
   
   const lang = window.currentLang || 'ar';
   
+  // Update order details
   const orderIdEl = modal.querySelector('#confirmedOrderId');
   const etaEl = modal.querySelector('#confirmedEta');
   const branchInfoEl = modal.querySelector('#selectedBranchInfo');
@@ -463,6 +464,7 @@ export function showConfirmedModal(orderId, eta, customerPhone, itemsText, order
   if (orderIdEl) orderIdEl.textContent = orderId;
   if (etaEl) etaEl.textContent = lang === 'ar' ? `الوقت المتوقع: ≈ ${eta}` : `Estimated time: ≈ ${eta}`;
   
+  // Show branch info if pickup
   if (orderData?.deliveryMethod === 'pickup' && orderData?.branch && branchInfoEl) {
     import('./checkout-delivery.js').then(({ branches }) => {
       const branch = branches[orderData.branch];
@@ -472,45 +474,86 @@ export function showConfirmedModal(orderId, eta, customerPhone, itemsText, order
         branchInfoEl.style.display = 'block';
       }
     }).catch(err => {
-      console.warn('⚠️ Could not load branch info for confirmed modal:', err);
+      console.warn('⚠️ Could not load branch info:', err);
     });
   } else if (branchInfoEl) {
     branchInfoEl.style.display = 'none';
   }
   
+  // ✅ Setup button handlers - WITH DEBUGGING
   const copyBtn = modal.querySelector('#copyOrderIdBtn');
   const whatsappBtn = modal.querySelector('#shareWhatsAppBtn');
   const trackBtn = modal.querySelector('#trackOrderBtn');
   const continueBtn = modal.querySelector('#continueShoppingBtn');
   const closeBtn = modal.querySelector('#closeConfirmedBtn');
   
-  // ✅ FIXED: جميع الأزرار تستخدم closeConfirmedModal فقط
-  if (copyBtn) copyBtn.onclick = () => copyOrderId(orderId);
-  if (whatsappBtn) whatsappBtn.onclick = () => shareOnWhatsApp(orderId, itemsText, customerPhone);
-  if (trackBtn) trackBtn.onclick = () => {
-    closeConfirmedModal();
-    showTrackingModal(orderId);
-  };
-  if (continueBtn) continueBtn.onclick = closeConfirmedModal; // ✅ تغيير من closeCheckoutModal
-  if (closeBtn) closeBtn.onclick = closeConfirmedModal;
+  console.log('🔍 Button check:', {
+    copyBtn: !!copyBtn,
+    whatsappBtn: !!whatsappBtn,
+    trackBtn: !!trackBtn,
+    continueBtn: !!continueBtn,
+    closeBtn: !!closeBtn
+  });
   
+  if (copyBtn) {
+    copyBtn.onclick = () => {
+      console.log('📋 Copy button clicked');
+      copyOrderId(orderId);
+    };
+  }
+  
+  if (whatsappBtn) {
+    whatsappBtn.onclick = () => {
+      console.log('💬 WhatsApp button clicked');
+      shareOnWhatsApp(orderId, itemsText, customerPhone);
+    };
+  }
+  
+  if (trackBtn) {
+    trackBtn.onclick = () => {
+      console.log('🔍 Track button clicked');
+      // ✅ Close confirmed modal first, then open tracking
+      closeConfirmedModal();
+      setTimeout(() => {
+        showTrackingModal(orderId);
+      }, 300); // Wait for animation
+    };
+  }
+  
+  if (continueBtn) {
+    continueBtn.onclick = () => {
+      console.log('🛒 Continue shopping clicked');
+      closeCheckoutModal();
+    };
+  }
+  
+  if (closeBtn) {
+    closeBtn.onclick = () => {
+      console.log('❌ Close button clicked');
+      closeConfirmedModal();
+    };
+  }
+  
+  // Show modal
   modal.classList.remove('hidden');
   modal.classList.add('show');
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
   
-  // ✅ Setup close handlers after modal is shown
+  // ✅ Setup close handlers + refresh icons
   setTimeout(() => {
     setupModalCloseHandlers();
+    
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+      console.log('✅ Lucide icons refreshed');
+    } else {
+      console.warn('⚠️ Lucide not loaded');
+    }
   }, 100);
   
-  if (typeof lucide !== 'undefined') {
-    lucide.createIcons();
-  }
-  
-  console.log('✅ Confirmed modal shown');
+  console.log('✅ Confirmed modal shown successfully');
 }
-
 // ================================================================
 // ✅ Enhanced Form Management
 // ================================================================
