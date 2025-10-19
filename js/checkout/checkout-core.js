@@ -478,6 +478,9 @@ export async function confirmOrder() {
     };
     storage.setUserData(userData);
     
+    
+    const enrichedItemsForDisplay = await enrichCartItemsForDisplay(currentCart);
+
     // Clear cart
     clearCart();
     
@@ -487,7 +490,6 @@ export async function confirmOrder() {
     // Show success modal
     const { showConfirmedModal } = await import('./checkout-ui.js');
     
-    const enrichedItemsForDisplay = await enrichCartItemsForDisplay(currentCart);
     const itemsText = (serverPrices?.items || enrichedItemsForDisplay)
       .map(i => `${i.name} × ${i.quantity}`)
       .join(', ');
