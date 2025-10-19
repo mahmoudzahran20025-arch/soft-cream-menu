@@ -370,7 +370,7 @@ export function showProcessingModal(show = true, showError = false, errorMessage
     document.body.style.overflow = '';
   }
 }
-
+/*
 export function showConfirmedModal(orderId, eta, customerPhone, itemsText, orderData) {
   console.log('🔄 Showing confirmed modal:', { orderId, eta, customerPhone });
   
@@ -435,6 +435,73 @@ export function showConfirmedModal(orderId, eta, customerPhone, itemsText, order
         showTrackingModal(orderId);
       };
     }
+  }, 100);
+  
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
+  
+  console.log('✅ Confirmed modal shown');
+}*/
+export function showConfirmedModal(orderId, eta, customerPhone, itemsText, orderData) {
+  console.log('🔄 Showing confirmed modal:', { orderId, eta, customerPhone });
+  
+  const modal = document.getElementById('orderConfirmedModal');
+  if (!modal) {
+    console.warn('⚠️ Confirmed modal not found');
+    return;
+  }
+  
+  const lang = window.currentLang || 'ar';
+  
+  const orderIdEl = modal.querySelector('#confirmedOrderId');
+  const etaEl = modal.querySelector('#confirmedEta');
+  const branchInfoEl = modal.querySelector('#selectedBranchInfo');
+  const branchNameEl = modal.querySelector('#selectedBranchName');
+  const branchAddressEl = modal.querySelector('#selectedBranchAddress');
+  
+  if (orderIdEl) orderIdEl.textContent = orderId;
+  if (etaEl) etaEl.textContent = lang === 'ar' ? `الوقت المتوقع: ≈ ${eta}` : `Estimated time: ≈ ${eta}`;
+  
+  if (orderData?.deliveryMethod === 'pickup' && orderData?.branch && branchInfoEl) {
+    import('./checkout-delivery.js').then(({ branches }) => {
+      const branch = branches[orderData.branch];
+      if (branch && branchNameEl && branchAddressEl) {
+        branchNameEl.textContent = branch.name[lang];
+        branchAddressEl.textContent = branch.address[lang];
+        branchInfoEl.style.display = 'block';
+      }
+    }).catch(err => {
+      console.warn('⚠️ Could not load branch info for confirmed modal:', err);
+    });
+  } else if (branchInfoEl) {
+    branchInfoEl.style.display = 'none';
+  }
+  
+  const copyBtn = modal.querySelector('#copyOrderIdBtn');
+  const whatsappBtn = modal.querySelector('#shareWhatsAppBtn');
+  const trackBtn = modal.querySelector('#trackOrderBtn');
+  const continueBtn = modal.querySelector('#continueShoppingBtn');
+  const closeBtn = modal.querySelector('#closeConfirmedBtn');
+  
+  // ✅ FIXED: جميع الأزرار تستخدم closeConfirmedModal فقط
+  if (copyBtn) copyBtn.onclick = () => copyOrderId(orderId);
+  if (whatsappBtn) whatsappBtn.onclick = () => shareOnWhatsApp(orderId, itemsText, customerPhone);
+  if (trackBtn) trackBtn.onclick = () => {
+    closeConfirmedModal();
+    showTrackingModal(orderId);
+  };
+  if (continueBtn) continueBtn.onclick = closeConfirmedModal; // ✅ تغيير من closeCheckoutModal
+  if (closeBtn) closeBtn.onclick = closeConfirmedModal;
+  
+  modal.classList.remove('hidden');
+  modal.classList.add('show');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  
+  // ✅ Setup close handlers after modal is shown
+  setTimeout(() => {
+    setupModalCloseHandlers();
   }, 100);
   
   if (typeof lucide !== 'undefined') {
