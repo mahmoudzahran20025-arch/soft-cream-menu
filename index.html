@@ -261,6 +261,135 @@
       will-change: transform, opacity;
       min-height: 200px;
     }
+    <style>
+    @keyframes tipInPlace {
+      0% { width: 0; left: 2px; top: 20px; opacity: 1; }
+      100% { width: 28px; left: 16px; top: 48px; opacity: 1; }
+    }
+    
+    @keyframes longInPlace {
+      0% { width: 0; right: 50px; top: 60px; opacity: 1; }
+      100% { width: 52px; right: 10px; top: 43px; opacity: 1; }
+    }
+    
+    .sidebar-toggle input:checked + .sidebar-toggle-slider {
+      background: #FF6B9D;
+    }
+    
+    .sidebar-toggle input:checked + .sidebar-toggle-slider:before {
+      transform: translateX(16px);
+    }
+    
+    .delivery-option.selected {
+      border-color: #4CAF50;
+      background: linear-gradient(135deg, #f1f8f4, #e8f5e9);
+      box-shadow: 0 4px 20px rgba(76, 175, 80, 0.25);
+    }
+    
+    .delivery-option.selected .selection-indicator {
+      background: #4CAF50;
+      border-color: #4CAF50;
+      color: white;
+    }
+    
+    .branch-card.selected {
+      border-color: #4CAF50;
+      background: linear-gradient(135deg, #f1f8f4, #e8f5e9);
+      box-shadow: 0 4px 16px rgba(76, 175, 80, 0.2);
+    }
+    
+    .branch-card.selected .branch-check {
+      background: #4CAF50;
+      border-color: #4CAF50;
+      color: white;
+    }
+    
+    .sidebar-nav-item.active {
+      background: linear-gradient(135deg, #FF6B9D 0%, #C9A0DC 100%);
+      color: white;
+      box-shadow: 0 4px 20px rgba(255, 107, 157, 0.24);
+    }
+    
+    .sidebar-nav-item.active .sidebar-nav-icon i {
+      color: white;
+    }
+    
+    .sidebar:hover .sidebar-badge-dot {
+      opacity: 0;
+    }
+    
+    .sidebar.expanded .sidebar-badge-dot {
+      opacity: 0;
+    }
+    
+    .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .categories-section.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .category-tab.active {
+      background: linear-gradient(135deg, #FF6B9D, #C9A0DC);
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 4px 20px rgba(255, 107, 157, 0.24);
+      transform: scale(1.05);
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+      animation: fadeInUp 0.4s ease;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .cart-footer.hidden,
+    .hidden {
+      display: none !important;
+    }
+    
+    .clear-search.show {
+      display: flex;
+    }
+    
+    .header-cart-badge:not(:empty) {
+      display: inline-flex;
+    }
+    
+    @media (hover: hover) and (min-width: 1024px) {
+      .sidebar-trigger.active .hamburger-icon span:nth-child(1) {
+        transform: translateY(6.75px) rotate(45deg);
+      }
+      
+      .sidebar-trigger.active .hamburger-icon span:nth-child(2) {
+        opacity: 0;
+      }
+      
+      .sidebar-trigger.active .hamburger-icon span:nth-child(3) {
+        transform: translateY(-6.75px) rotate(-45deg);
+      }
+    }
   </style>
 </head>
 
@@ -1005,9 +1134,8 @@
         </div>
       </div>
     </div>
-
-    <!-- Processing Modal -->
-    <div class="processing-modal fixed inset-0 bg-gray-900/85 backdrop-blur-md flex items-center justify-center z-[10002] animate-fade-in" id="processingModal">
+      <!-- Processing Modal -->
+    <div class="processing-modal fixed inset-0 bg-gray-900/85 backdrop-blur-md hidden items-center justify-center z-[10002] animate-fade-in" id="processingModal" style="display: none;">
       <div class="processing-content bg-white dark:bg-gray-800 rounded-3xl p-12 max-w-[450px] w-[90%] text-center shadow-2xl animate-scale-in">
         <div class="spinner-container mb-7">
           <div class="spinner w-[70px] h-[70px] mx-auto border-[5px] border-gray-200 dark:border-gray-700 border-t-green-500 rounded-full animate-spin"></div>
@@ -1034,6 +1162,7 @@
         </div>
       </div>
     </div>
+    
 
     <!-- Order Confirmed Modal -->
     <div class="confirmed-modal fixed inset-0 bg-gray-900/85 backdrop-blur-md flex items-center justify-center z-[10002] animate-fade-in overflow-y-auto p-5 hidden" id="orderConfirmedModal">
