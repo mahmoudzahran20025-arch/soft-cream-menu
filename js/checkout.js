@@ -9,6 +9,7 @@ console.log('🔄 Loading checkout.js - Main Entry Point');
 import { getCart, isCartEmpty, getCartLength } from './cart.js';
 import { showToast } from './utils.js';
 import { setupModalCloseHandlers, closeTrackingModal, showTrackingModal } from './checkout/checkout-ui.js';
+import { initOrdersBadge, updateOrdersBadge } from './orders-badge.js'; // ✅ NEW
 
 // ================================================================
 // Global State & Module Cache
@@ -334,7 +335,9 @@ async function initializeCheckout() {
     
     // Setup event handlers
     setupCheckoutEventHandlers();
-    
+    // ✅ NEW: Initialize orders badge
+    initOrdersBadge();
+    console.log('✅ Orders badge initialized');
     // Load branches in background
     if (checkoutModules.delivery?.loadBranches) {
       checkoutModules.delivery.loadBranches().catch(err => {
