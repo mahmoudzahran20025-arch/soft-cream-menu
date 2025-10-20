@@ -2,7 +2,7 @@
 // orders-badge.js - Orders Badge Manager
 // ================================================================
 
-import { storage } from './storage.js';
+import { storage } from '../storage.js';
 
 // ================================================================
 // Update Orders Badge
@@ -223,7 +223,7 @@ window.trackOrderFromModal = async function(orderId) {
   
   // Import and call tracking function
   try {
-    const { showTrackingModal } = await import('./modules/checkout/checkout-ui.js');
+    const { showTrackingModal } = await import('./checkout-ui.js');
     showTrackingModal(orderId);
   } catch (err) {
     console.error('❌ Failed to open tracking:', err);
@@ -284,7 +284,7 @@ function getStatusInfo(status, lang) {
 // Import showToast for notifications
 // ================================================================
 let showToast;
-import('./utils.js').then(module => {
+import('../utils.js').then(module => {
   showToast = module.showToast;
 }).catch(err => {
   console.warn('⚠️ Could not import showToast:', err);
