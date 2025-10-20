@@ -218,12 +218,13 @@ export async function updateCartUI() {
   await updateSingleCartUI('cartItemsMobile', 'cartTotalMobile', 'cartFooterMobile', total, t);
   
   // ✅ Update Desktop Cart Sidebar (if exists)
-  await updateDesktopCartSidebar(total, t);
+ // await updateDesktopCartSidebar(total, t);
 }
 
 // ================================================================
 // Update Desktop Cart Sidebar (NEW)
 // ================================================================
+/*
 async function updateDesktopCartSidebar(total, translations) {
   const desktopCartItems = document.querySelector('.cart-sidebar-desktop .cart-items');
   const desktopCartTotal = document.querySelector('.cart-sidebar-desktop .cart-total-price');
@@ -310,7 +311,7 @@ async function updateDesktopCartSidebar(total, translations) {
   if (typeof lucide !== 'undefined') {
     lucide.createIcons();
   }
-}
+}*/
 
 // ================================================================
 // Update Single Cart UI (Mobile/Desktop Modal)
