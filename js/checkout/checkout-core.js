@@ -378,7 +378,7 @@ export async function confirmOrder() {
   console.log('🔄 Starting order confirmation...');
   console.log('🔄 Current cart:', getCartLength(), 'items');
   
-  const lang = window.currentLang || 'ar';
+  const lang = window.currentLang || 'ar'; // ✅ تعريف lang في البداية
   
   if (isCartEmpty()) {
     console.error('❌ Cart is empty!');
@@ -424,6 +424,40 @@ export async function confirmOrder() {
     
     console.log('📦 Items to submit (IDs only):', itemsToSubmit);
     
+    // Prepare order data
+    const orderData = {
+      items: itemsToSubmit,
+      customer: validation.customer,
+      customerPhone: validation.customer.phone,
+      deliveryMethod: selectedDeliveryMethod,
+      branch: selectedBranch,
+      location: userLocation,
+      couponCode: activeCouponCode,
+      deviceId: storage.getDeviceId(),
+      idempotencyKey: generateUUID()
+    };
+      
+    console.log('📤 Submitting order:', {
+      ...orderData,
+      items: orderData.items.length + ' items (IDs only)'
+    });
+    
+    // Submit order
+    const result = await api.submitOrder(orderData);
+    console.log('✅ Order submitted, received:', result);
+    
+    // ✅ Extract data correctly
+    const { 
+      orderId, 
+      eta, 
+      etaEn, 
+      calculatedPrices: serverPrices
+    } = result;
+    
+    if (!orderId) {
+      throw new Error('No order ID received from server');
+    }
+    
     // Update current order data
     currentOrderData = {
       id: orderId,
@@ -432,7 +466,6 @@ export async function confirmOrder() {
       branch: selectedBranch,
       items: serverPrices?.items || calculatedPrices?.items || [],
       calculatedPrices: serverPrices || calculatedPrices
-      // ⚠️ LOYALTY DISABLED: loyaltyReward removed
     };
     
     // Save user data
@@ -482,7 +515,6 @@ export async function confirmOrder() {
     const enrichedItemsForDisplay = await enrichCartItemsForDisplay(currentCart);
 
     // Clear cart
-    // Clear cart
     clearCart();
     
     // Hide processing modal
@@ -502,22 +534,6 @@ export async function confirmOrder() {
       itemsText, 
       currentOrderData
     );
-    
-    // ⚠️ LOYALTY DISABLED - Tier upgrade removed
-    /*
-    if (loyaltyReward?.justUpgraded) {
-      try {
-        const { showTierUpgradeModal } = await import('./checkout-loyalty.js');
-        if (typeof showTierUpgradeModal === 'function') {
-          setTimeout(() => {
-            showTierUpgradeModal(loyaltyReward.tier, lang);
-          }, 1000);
-        }
-      } catch (err) {
-        console.warn('⚠️ Tier upgrade modal not available:', err);
-      }
-    }
-    */
     
     // Show success toast
     showToast(
