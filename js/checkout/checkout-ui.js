@@ -427,6 +427,7 @@ export function showConfirmedModal(orderId, eta, customerPhone, itemsText, order
   console.log('✅ Confirmed modal shown');
 }
 */
+/*
 export function showConfirmedModal(orderId, eta, customerPhone, itemsText, orderData) {
   console.log('🔄 Showing confirmed modal:', { orderId, eta });
   
@@ -506,6 +507,72 @@ export function showConfirmedModal(orderId, eta, customerPhone, itemsText, order
   }
   
   console.log('✅ Confirmed modal shown');
+}*/
+export function showConfirmedModal(orderId, eta, customerPhone, itemsText, orderData) {
+  console.log('🔄 Showing confirmed modal:', { orderId, eta });
+  
+  const modal = document.getElementById('orderConfirmedModal');
+  if (!modal) {
+    console.error('❌ Confirmed modal not found in DOM');
+    return;
+  }
+  
+  const lang = window.currentLang || 'ar';
+  
+  // ✅ Update content
+  const orderIdEl = modal.querySelector('#confirmedOrderId');
+  const etaEl = modal.querySelector('#confirmedEta');
+  const branchInfoEl = modal.querySelector('#selectedBranchInfo');
+  const branchNameEl = modal.querySelector('#selectedBranchName');
+  const branchAddressEl = modal.querySelector('#selectedBranchAddress');
+  
+  if (orderIdEl) orderIdEl.textContent = orderId;
+  if (etaEl) etaEl.textContent = lang === 'ar' ? `الوقت المتوقع: ≈ ${eta}` : `Estimated time: ≈ ${eta}`;
+  
+  // Branch info
+  if (orderData?.deliveryMethod === 'pickup' && orderData?.branch && branchInfoEl) {
+    import('./checkout-delivery.js').then(({ branches }) => {
+      const branch = branches[orderData.branch];
+      if (branch && branchNameEl && branchAddressEl) {
+        branchNameEl.textContent = branch.name[lang];
+        branchAddressEl.textContent = branch.address[lang];
+        branchInfoEl.style.display = 'block';
+      }
+    }).catch(err => console.warn('⚠️ Branch info load failed:', err));
+  } else if (branchInfoEl) {
+    branchInfoEl.style.display = 'none';
+  }
+  
+  // ✅ Setup buttons
+  const copyBtn = modal.querySelector('#copyOrderIdBtn');
+  const whatsappBtn = modal.querySelector('#shareWhatsAppBtn');
+  const trackBtn = modal.querySelector('#trackOrderBtn');
+  const continueBtn = modal.querySelector('#continueShoppingBtn');
+  const closeBtn = modal.querySelector('#closeConfirmedBtn');
+  
+  if (copyBtn) copyBtn.onclick = () => copyOrderId(orderId);
+  if (whatsappBtn) whatsappBtn.onclick = () => shareOnWhatsApp(orderId, itemsText, customerPhone);
+  if (trackBtn) trackBtn.onclick = () => { closeConfirmedModal(); setTimeout(() => showTrackingModal(orderId), 300); };
+  if (continueBtn) continueBtn.onclick = () => closeConfirmedModal();
+  if (closeBtn) closeBtn.onclick = () => closeConfirmedModal();
+  
+  // ✅ CRITICAL: Show modal with all methods
+  modal.style.display = 'flex';
+  modal.style.opacity = '1';
+  modal.style.visibility = 'visible';
+  modal.classList.remove('hidden');
+  modal.classList.add('show');
+  document.body.style.overflow = 'hidden';
+  
+  // ✅ Force reflow
+  void modal.offsetHeight;
+  
+  // ✅ Refresh icons
+  if (typeof lucide !== 'undefined') {
+    setTimeout(() => lucide.createIcons(), 100);
+  }
+  
+  console.log('✅ Confirmed modal shown - display:', modal.style.display);
 }
 // ================================================================
 // ✅ Form Management
