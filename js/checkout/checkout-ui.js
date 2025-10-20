@@ -342,6 +342,7 @@ export function showProcessingModal(show = true, showError = false, errorMessage
 // ================================================================
 // ✅ FIXED: showConfirmedModal - العودة للطريقة القديمة الشغالة
 // ================================================================
+/*
 export function showConfirmedModal(orderId, eta, customerPhone, itemsText, orderData) {
   console.log('🔄 Showing confirmed modal:', { orderId, eta });
   
@@ -425,7 +426,87 @@ export function showConfirmedModal(orderId, eta, customerPhone, itemsText, order
   
   console.log('✅ Confirmed modal shown');
 }
-
+*/
+export function showConfirmedModal(orderId, eta, customerPhone, itemsText, orderData) {
+  console.log('🔄 Showing confirmed modal:', { orderId, eta });
+  
+  const modal = document.getElementById('orderConfirmedModal');
+  if (!modal) {
+    console.error('❌ Confirmed modal not found');
+    return;
+  }
+  
+  const lang = window.currentLang || 'ar';
+  
+  // ✅ تحديث محتوى المودال
+  const orderIdEl = modal.querySelector('#confirmedOrderId');
+  const etaEl = modal.querySelector('#confirmedEta');
+  const branchInfoEl = modal.querySelector('#selectedBranchInfo');
+  const branchNameEl = modal.querySelector('#selectedBranchName');
+  const branchAddressEl = modal.querySelector('#selectedBranchAddress');
+  
+  if (orderIdEl) orderIdEl.textContent = orderId;
+  if (etaEl) etaEl.textContent = lang === 'ar' ? `الوقت المتوقع: ≈ ${eta}` : `Estimated time: ≈ ${eta}`;
+  
+  // ✅ معلومات الفرع
+  if (orderData?.deliveryMethod === 'pickup' && orderData?.branch && branchInfoEl) {
+    import('./checkout-delivery.js').then(({ branches }) => {
+      const branch = branches[orderData.branch];
+      if (branch && branchNameEl && branchAddressEl) {
+        branchNameEl.textContent = branch.name[lang];
+        branchAddressEl.textContent = branch.address[lang];
+        branchInfoEl.style.display = 'block';
+      }
+    }).catch(err => console.warn('⚠️ Branch info load failed:', err));
+  } else if (branchInfoEl) {
+    branchInfoEl.style.display = 'none';
+  }
+  
+  // ✅ Setup الأزرار
+  const copyBtn = modal.querySelector('#copyOrderIdBtn');
+  const whatsappBtn = modal.querySelector('#shareWhatsAppBtn');
+  const trackBtn = modal.querySelector('#trackOrderBtn');
+  const continueBtn = modal.querySelector('#continueShoppingBtn');
+  const closeBtn = modal.querySelector('#closeConfirmedBtn');
+  
+  if (copyBtn) {
+    copyBtn.onclick = () => copyOrderId(orderId);
+  }
+  
+  if (whatsappBtn) {
+    whatsappBtn.onclick = () => shareOnWhatsApp(orderId, itemsText, customerPhone);
+  }
+  
+  if (trackBtn) {
+    trackBtn.onclick = () => {
+      closeConfirmedModal();
+      setTimeout(() => showTrackingModal(orderId), 300);
+    };
+  }
+  
+  if (continueBtn) {
+    continueBtn.onclick = () => {
+      closeConfirmedModal();
+    };
+  }
+  
+  if (closeBtn) {
+    closeBtn.onclick = () => closeConfirmedModal();
+  }
+  
+  // ✅ إظهار المودال
+  modal.style.display = 'flex';
+  modal.classList.add('show');
+  modal.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+  
+  // ✅ Refresh icons
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
+  
+  console.log('✅ Confirmed modal shown');
+}
 // ================================================================
 // ✅ Form Management
 // ================================================================
