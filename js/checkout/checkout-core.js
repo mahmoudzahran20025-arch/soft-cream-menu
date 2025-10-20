@@ -423,7 +423,27 @@ export async function confirmOrder() {
     }
     
     console.log('📦 Items to submit (IDs only):', itemsToSubmit);
-    // ✅ NEW: حفظ الطلب في localStorage
+    
+    // Update current order data
+    currentOrderData = {
+      id: orderId,
+      customer: orderData.customer,
+      deliveryMethod: selectedDeliveryMethod,
+      branch: selectedBranch,
+      items: serverPrices?.items || calculatedPrices?.items || [],
+      calculatedPrices: serverPrices || calculatedPrices
+      // ⚠️ LOYALTY DISABLED: loyaltyReward removed
+    };
+    
+    // Save user data
+    const userData = {
+      name: validation.customer.name,
+      phone: validation.customer.phone,
+      visitCount: (storage.getUserData()?.visitCount || 0) + 1
+    };
+    storage.setUserData(userData);
+    
+    // ✅ حفظ الطلب في localStorage (بعد استلام orderId من السيرفر)
     const orderToSave = {
       id: orderId,
       status: 'confirmed',
@@ -458,63 +478,10 @@ export async function confirmOrder() {
     } else {
       console.warn('⚠️ Failed to save order locally (non-critical)');
     }
-    // Prepare order data
-    const orderData = {
-      items: itemsToSubmit,
-      customer: validation.customer,
-      customerPhone: validation.customer.phone,
-      deliveryMethod: selectedDeliveryMethod,
-      branch: selectedBranch,
-      location: userLocation,
-      couponCode: activeCouponCode, // ✅ الكوبون
-      deviceId: storage.getDeviceId(), // ✅ Device ID
-      idempotencyKey: generateUUID()
-    };
-      
-    console.log('📤 Submitting order:', {
-      ...orderData,
-      items: orderData.items.length + ' items (IDs only)'
-    });
-    
-    // Submit order
-    const result = await api.submitOrder(orderData);
-    console.log('✅ Order submitted, received:', result);
-    
-    // ✅ Extract data correctly
-    const { 
-      orderId, 
-      eta, 
-      etaEn, 
-      calculatedPrices: serverPrices
-      // ⚠️ LOYALTY DISABLED: loyaltyReward removed
-    } = result;
-    
-    if (!orderId) {
-      throw new Error('No order ID received from server');
-    }
-    
-    // Update current order data
-    currentOrderData = {
-      id: orderId,
-      customer: orderData.customer,
-      deliveryMethod: selectedDeliveryMethod,
-      branch: selectedBranch,
-      items: serverPrices?.items || calculatedPrices?.items || [],
-      calculatedPrices: serverPrices || calculatedPrices
-      // ⚠️ LOYALTY DISABLED: loyaltyReward removed
-    };
-    
-    // Save user data
-    const userData = {
-      name: validation.customer.name,
-      phone: validation.customer.phone,
-      visitCount: (storage.getUserData()?.visitCount || 0) + 1
-    };
-    storage.setUserData(userData);
-    
     
     const enrichedItemsForDisplay = await enrichCartItemsForDisplay(currentCart);
 
+    // Clear cart
     // Clear cart
     clearCart();
     
