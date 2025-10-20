@@ -423,7 +423,41 @@ export async function confirmOrder() {
     }
     
     console.log('📦 Items to submit (IDs only):', itemsToSubmit);
+    // ✅ NEW: حفظ الطلب في localStorage
+    const orderToSave = {
+      id: orderId,
+      status: 'confirmed',
+      createdAt: new Date().toISOString(),
+      items: (serverPrices?.items || calculatedPrices?.items || []).map(item => ({
+        productId: item.productId || item.id,
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+        total: item.total || (item.price * item.quantity)
+      })),
+      totals: {
+        subtotal: (serverPrices || calculatedPrices)?.subtotal || 0,
+        deliveryFee: (serverPrices || calculatedPrices)?.deliveryFee || 0,
+        discount: (serverPrices || calculatedPrices)?.discount || 0,
+        total: (serverPrices || calculatedPrices)?.total || 0
+      },
+      deliveryMethod: selectedDeliveryMethod,
+      branch: selectedBranch,
+      customer: {
+        name: validation.customer.name,
+        phone: validation.customer.phone,
+        address: validation.customer.address || null
+      },
+      eta: eta || etaEn || (lang === 'ar' ? '30 دقيقة' : '30 minutes'),
+      couponCode: activeCouponCode || null
+    };
     
+    const saveSuccess = storage.addOrder(orderToSave);
+    if (saveSuccess) {
+      console.log('✅ Order saved locally:', orderId);
+    } else {
+      console.warn('⚠️ Failed to save order locally (non-critical)');
+    }
     // Prepare order data
     const orderData = {
       items: itemsToSubmit,

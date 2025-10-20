@@ -1,5 +1,5 @@
 // ================================================================
-// CHECKOUT UI - واجهة المستخدم (FINAL WORKING VERSION)
+// CHECKOUT UI - واجهة المستخدم (FIXED VERSION)
 // ================================================================
 
 console.log('🔄 Loading checkout-ui.js');
@@ -339,6 +339,9 @@ export function showProcessingModal(show = true, showError = false, errorMessage
   }
 }
 
+// ================================================================
+// ✅ FIXED: showConfirmedModal - العودة للطريقة القديمة الشغالة
+// ================================================================
 export function showConfirmedModal(orderId, eta, customerPhone, itemsText, orderData) {
   console.log('🔄 Showing confirmed modal:', { orderId, eta });
   
@@ -350,6 +353,7 @@ export function showConfirmedModal(orderId, eta, customerPhone, itemsText, order
   
   const lang = window.currentLang || 'ar';
   
+  // ✅ تحديث محتوى المودال
   const orderIdEl = modal.querySelector('#confirmedOrderId');
   const etaEl = modal.querySelector('#confirmedEta');
   const branchInfoEl = modal.querySelector('#selectedBranchInfo');
@@ -359,6 +363,7 @@ export function showConfirmedModal(orderId, eta, customerPhone, itemsText, order
   if (orderIdEl) orderIdEl.textContent = orderId;
   if (etaEl) etaEl.textContent = lang === 'ar' ? `الوقت المتوقع: ≈ ${eta}` : `Estimated time: ≈ ${eta}`;
   
+  // ✅ معلومات الفرع
   if (orderData?.deliveryMethod === 'pickup' && orderData?.branch && branchInfoEl) {
     import('./checkout-delivery.js').then(({ branches }) => {
       const branch = branches[orderData.branch];
@@ -372,31 +377,47 @@ export function showConfirmedModal(orderId, eta, customerPhone, itemsText, order
     branchInfoEl.style.display = 'none';
   }
   
+  // ✅ FIXED: setup الأزرار زي القديم بالظبط
   const copyBtn = modal.querySelector('#copyOrderIdBtn');
   const whatsappBtn = modal.querySelector('#shareWhatsAppBtn');
   const trackBtn = modal.querySelector('#trackOrderBtn');
   const continueBtn = modal.querySelector('#continueShoppingBtn');
   const closeBtn = modal.querySelector('#closeConfirmedBtn');
   
-  if (copyBtn) copyBtn.onclick = (e) => { e.preventDefault(); copyOrderId(orderId); };
-  if (whatsappBtn) whatsappBtn.onclick = (e) => { e.preventDefault(); shareOnWhatsApp(orderId, itemsText, customerPhone); };
-  if (trackBtn) trackBtn.onclick = (e) => { 
-    e.preventDefault(); 
-    closeConfirmedModal(); 
-    setTimeout(() => showTrackingModal(orderId), 300); 
-  };
-  if (continueBtn) continueBtn.onclick = (e) => { 
-    e.preventDefault(); 
-    closeConfirmedModal(); 
-    setTimeout(() => { document.body.style.overflow = ''; }, 100); 
-  };
-  if (closeBtn) closeBtn.onclick = (e) => { e.preventDefault(); closeConfirmedModal(); };
+  // ✅ بدون preventDefault - زي القديم
+  if (copyBtn) {
+    copyBtn.onclick = () => copyOrderId(orderId);
+  }
   
+  if (whatsappBtn) {
+    whatsappBtn.onclick = () => shareOnWhatsApp(orderId, itemsText, customerPhone);
+  }
+  
+  if (trackBtn) {
+    trackBtn.onclick = () => {
+      closeConfirmedModal();
+      setTimeout(() => showTrackingModal(orderId), 300);
+    };
+  }
+  
+  if (continueBtn) {
+    continueBtn.onclick = () => {
+      closeConfirmedModal();
+      setTimeout(() => { document.body.style.overflow = ''; }, 100);
+    };
+  }
+  
+  if (closeBtn) {
+    closeBtn.onclick = () => closeConfirmedModal();
+  }
+  
+  // ✅ إظهار المودال
   modal.classList.remove('hidden');
   modal.classList.add('show');
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
   
+  // ✅ Setup handlers بعد الإظهار
   setTimeout(() => {
     setupModalCloseHandlers();
     if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -416,7 +437,7 @@ export function resetFormFields() {
     'customerPhone', 
     'customerAddress',
     'orderNotes',
-    'couponCodeInput' // ✅ FIXED: تغيير من promoCodeInput
+    'couponCodeInput'
   ];
   
   fields.forEach(fieldId => {
@@ -427,7 +448,6 @@ export function resetFormFields() {
     }
   });
   
-  // ✅ FIXED: تغيير من promoStatus إلى couponStatus
   const couponStatus = document.getElementById('couponStatus');
   if (couponStatus) {
     couponStatus.style.display = 'none';
@@ -765,6 +785,9 @@ export function closePermissionModal() {
   }
 }
 
+// ================================================================
+// ✅ Initialize on Load
+// ================================================================
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', setupModalCloseHandlers);
 } else {
@@ -774,4 +797,4 @@ if (document.readyState === 'loading') {
 window.closeTrackingModal = closeTrackingModal;
 window.closeConfirmedModal = closeConfirmedModal;
 
-console.log('✅ checkout-ui.js loaded successfully (FINAL WORKING VERSION)');
+console.log('✅ checkout-ui.js loaded successfully (FIXED VERSION)');
