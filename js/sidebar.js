@@ -1,5 +1,5 @@
 // ================================================================
-// SIDEBAR FUNCTIONALITY - Fixed Version
+// SIDEBAR FUNCTIONALITY - UPDATED VERSION
 // ================================================================
 
 console.log('🔧 Loading sidebar.js...');
@@ -22,7 +22,6 @@ function initSidebarElements() {
     trigger: document.getElementById('sidebarTrigger'),
     sidebar: document.getElementById('mainSidebar'),
     overlay: document.getElementById('sidebarOverlay'),
-    closeBtn: document.getElementById('sidebarClose'),
     cartBadge: document.getElementById('sidebarCartBadge'),
     ordersBadge: document.getElementById('sidebarOrdersBadge'),
     themeToggle: document.getElementById('sidebarThemeToggle'),
@@ -47,8 +46,9 @@ function openSidebar() {
   
   sidebarState.isOpen = true;
   
-  sidebarElements.sidebar.classList.add('active');
-  sidebarElements.overlay.classList.add('active');
+  // ✅ تغيير من 'active' إلى 'show'
+  sidebarElements.sidebar.classList.add('show');
+  sidebarElements.overlay.classList.add('show');
   sidebarElements.trigger?.classList.add('active');
   
   // Prevent body scroll
@@ -56,6 +56,11 @@ function openSidebar() {
   
   // Update badges
   updateSidebarBadges();
+  
+  // Re-create Lucide icons
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
   
   console.log('✅ Sidebar opened');
 }
@@ -73,8 +78,9 @@ function closeSidebar() {
   
   sidebarState.isOpen = false;
   
-  sidebarElements.sidebar.classList.remove('active');
-  sidebarElements.overlay.classList.remove('active');
+  // ✅ تغيير من 'active' إلى 'show'
+  sidebarElements.sidebar.classList.remove('show');
+  sidebarElements.overlay.classList.remove('show');
   sidebarElements.trigger?.classList.remove('active');
   
   // Restore body scroll
@@ -100,17 +106,22 @@ function toggleSidebar() {
 function updateSidebarBadges() {
   // Update cart badge
   if (sidebarElements.cartBadge) {
-    // ✅ استخدام window.cartModule بدلاً من import
     const cart = typeof window.cartModule?.getCart === 'function' 
       ? window.cartModule.getCart() 
       : [];
     
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
     sidebarElements.cartBadge.textContent = totalItems;
-    sidebarElements.cartBadge.style.display = totalItems > 0 ? 'inline-flex' : 'none';
+    sidebarElements.cartBadge.style.display = totalItems > 0 ? 'flex' : 'none';
+    
+    // ✅ تحديث النقطة الحمراء
+    const badgeDot = document.querySelector('.sidebar-nav-item .sidebar-badge-dot');
+    if (badgeDot) {
+      badgeDot.style.display = totalItems > 0 ? 'block' : 'none';
+    }
   }
   
-  // Update orders badge (if storage available)
+  // Update orders badge
   if (sidebarElements.ordersBadge && typeof window.storage !== 'undefined') {
     const orders = window.storage.getOrdersHistory ? window.storage.getOrdersHistory() : [];
     const activeOrders = orders.filter(order => 
@@ -119,9 +130,11 @@ function updateSidebarBadges() {
     
     if (activeOrders.length > 0) {
       sidebarElements.ordersBadge.textContent = activeOrders.length;
-      sidebarElements.ordersBadge.style.display = 'inline-flex';
+      sidebarElements.ordersBadge.style.display = 'flex';
+      sidebarElements.ordersBadge.classList.remove('hidden');
     } else {
       sidebarElements.ordersBadge.style.display = 'none';
+      sidebarElements.ordersBadge.classList.add('hidden');
     }
   }
 }
@@ -133,20 +146,23 @@ function updateSidebarProfile() {
   if (typeof window.storage === 'undefined') return;
   
   const userData = window.storage.getUserData ? window.storage.getUserData() : null;
+  const lang = window.currentLang || 'ar';
   
   if (userData && userData.name) {
     if (sidebarElements.profileName) {
-      sidebarElements.profileName.textContent = `مرحباً ${userData.name}! 👋`;
+      sidebarElements.profileName.textContent = lang === 'ar' 
+        ? `مرحباً ${userData.name}! 👋`
+        : `Hello ${userData.name}! 👋`;
     }
     if (sidebarElements.profileStatus) {
-      sidebarElements.profileStatus.textContent = 'عميل مميز';
+      sidebarElements.profileStatus.textContent = lang === 'ar' ? 'عميل مميز' : 'VIP Customer';
     }
   } else {
     if (sidebarElements.profileName) {
-      sidebarElements.profileName.textContent = 'مرحباً بك! 👋';
+      sidebarElements.profileName.textContent = lang === 'ar' ? 'مرحباً بك! 👋' : 'Welcome! 👋';
     }
     if (sidebarElements.profileStatus) {
-      sidebarElements.profileStatus.textContent = 'زائر';
+      sidebarElements.profileStatus.textContent = lang === 'ar' ? 'زائر' : 'Guest';
     }
   }
 }
@@ -157,9 +173,11 @@ function updateSidebarProfile() {
 function syncSidebarTheme() {
   if (!sidebarElements.themeToggle) return;
   
-  const isDark = document.body.classList.contains('dark-mode') || 
-                 document.body.classList.contains('dark');
+  const isDark = document.documentElement.classList.contains('dark') || 
+                 document.body.classList.contains('dark-mode');
   sidebarElements.themeToggle.checked = isDark;
+  
+  console.log('🌙 Theme synced:', isDark ? 'Dark' : 'Light');
 }
 
 // ================================================================
@@ -173,8 +191,16 @@ function syncSidebarLanguage() {
   
   langOptions.forEach(option => {
     const lang = option.getAttribute('data-lang');
-    option.style.display = lang === currentLang ? 'inline-flex' : 'none';
+    if (lang === currentLang) {
+      option.classList.remove('hidden');
+      option.style.display = 'inline-flex';
+    } else {
+      option.classList.add('hidden');
+      option.style.display = 'none';
+    }
   });
+  
+  console.log('🌐 Language synced:', currentLang);
 }
 
 // ================================================================
@@ -185,16 +211,13 @@ function setupSidebarEventListeners() {
   
   // Trigger button
   if (sidebarElements.trigger) {
+    sidebarElements.trigger.removeEventListener('click', toggleSidebar); // Remove old
     sidebarElements.trigger.addEventListener('click', toggleSidebar);
-  }
-  
-  // Close button
-  if (sidebarElements.closeBtn) {
-    sidebarElements.closeBtn.addEventListener('click', closeSidebar);
   }
   
   // Overlay click
   if (sidebarElements.overlay) {
+    sidebarElements.overlay.removeEventListener('click', closeSidebar); // Remove old
     sidebarElements.overlay.addEventListener('click', closeSidebar);
   }
   
@@ -212,12 +235,12 @@ function setupSidebarEventListeners() {
   if (sidebarElements.sidebar) {
     sidebarElements.sidebar.addEventListener('touchstart', (e) => {
       touchStartX = e.changedTouches[0].screenX;
-    });
+    }, { passive: true });
     
     sidebarElements.sidebar.addEventListener('touchend', (e) => {
       touchEndX = e.changedTouches[0].screenX;
       handleSwipe();
-    });
+    }, { passive: true });
   }
   
   function handleSwipe() {
@@ -239,6 +262,53 @@ function setupSidebarEventListeners() {
   
   console.log('✅ Sidebar event listeners ready');
 }
+//===============================================================
+// ===== Sidebar Actions =====
+// ================================================================
+// Show About Info
+function showAboutInfo() {
+  const lang = window.currentLang || 'ar';
+  const showToastFunc = window.showToast || window.utilsModule?.showToast;
+  
+  if (!showToastFunc) {
+    alert(lang === 'ar' 
+      ? 'نحن متخصصون في تقديم أفخر أنواع السوفت آيس كريم والديسرت المميز.' 
+      : 'We specialize in premium soft ice cream and desserts.'
+    );
+    return;
+  }
+  
+  showToastFunc(
+    lang === 'ar' ? 'من نحن' : 'About Us',
+    lang === 'ar' 
+      ? 'نحن متخصصون في تقديم أفخر أنواع السوفت آيس كريم والديسرت المميز. منذ تأسيسنا ونحن نسعى لتقديم تجربة استثنائية لعملائنا.' 
+      : 'We specialize in premium soft ice cream and desserts with natural ingredients.',
+    'info'
+  );
+}
+
+// Show Contact Info
+function showContactInfo() {
+  const lang = window.currentLang || 'ar';
+  const showToastFunc = window.showToast || window.utilsModule?.showToast;
+  
+  if (!showToastFunc) {
+    alert(lang === 'ar' 
+      ? 'للتواصل: 01234567890' 
+      : 'Contact: 01234567890'
+    );
+    return;
+  }
+  
+  showToastFunc(
+    lang === 'ar' ? 'تواصل معنا' : 'Contact Us',
+    lang === 'ar' 
+      ? '📞 الهاتف: 01234567890\n📧 البريد: info@softcream.com\n📍 العنوان: شارع الجيزة، الجيزة، مصر' 
+      : '📞 Phone: 01234567890\n📧 Email: info@softcream.com\n📍 Address: Giza Street, Giza, Egypt',
+    'info'
+  );
+}
+
 
 // ================================================================
 // ===== Helper Functions =====
@@ -248,26 +318,23 @@ function setupSidebarEventListeners() {
 function openOrdersPage() {
   console.log('📦 Opening orders page...');
   
-  // Check if tracking modal exists
   const trackingModal = document.getElementById('trackingModal');
   if (trackingModal) {
-    // If tracking modal exists, show it
     if (typeof window.openTrackingModal === 'function') {
       window.openTrackingModal();
     } else if (typeof window.showTrackingModal === 'function') {
       window.showTrackingModal('');
     }
   } else {
-    // Show orders history (to be implemented)
     showOrdersHistory();
   }
+  
+  closeSidebar(); // ✅ Close sidebar after opening orders
 }
 
-// Show Orders History (placeholder)
+// Show Orders History
 function showOrdersHistory() {
   const lang = window.currentLang || 'ar';
-  
-  // ✅ استخدام window.showToast بدلاً من import
   const showToastFunc = window.showToast || window.utilsModule?.showToast;
   
   if (!showToastFunc) {
@@ -296,10 +363,6 @@ function showOrdersHistory() {
     return;
   }
   
-  // Display orders (to be implemented with full UI)
-  console.log('📦 Orders:', orders);
-  
-  // For now, show a simple alert with last order
   const lastOrder = orders[0];
   showToastFunc(
     lang === 'ar' ? 'آخر طلب' : 'Last Order',
@@ -308,11 +371,9 @@ function showOrdersHistory() {
   );
 }
 
-// Open Settings (placeholder)
+// Open Settings
 function openSettings() {
   const lang = window.currentLang || 'ar';
-  
-  // ✅ استخدام window.showToast
   const showToastFunc = window.showToast || window.utilsModule?.showToast;
   
   if (!showToastFunc) {
@@ -326,6 +387,8 @@ function openSettings() {
     lang === 'ar' ? 'يمكنك تغيير اللغة والثيم من القائمة' : 'You can change language and theme from menu',
     'info'
   );
+  
+  closeSidebar(); // ✅ Close sidebar after action
 }
 
 // ================================================================
@@ -334,23 +397,26 @@ function openSettings() {
 function initSidebar() {
   console.log('🚀 Initializing sidebar...');
   
-  // Wait for DOM to be ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        initSidebarElements();
+        setupSidebarEventListeners();
+        updateSidebarBadges();
+        updateSidebarProfile();
+        syncSidebarTheme();
+        syncSidebarLanguage();
+      }, 100);
+    });
+  } else {
+    setTimeout(() => {
       initSidebarElements();
       setupSidebarEventListeners();
       updateSidebarBadges();
       updateSidebarProfile();
       syncSidebarTheme();
       syncSidebarLanguage();
-    });
-  } else {
-    initSidebarElements();
-    setupSidebarEventListeners();
-    updateSidebarBadges();
-    updateSidebarProfile();
-    syncSidebarTheme();
-    syncSidebarLanguage();
+    }, 100);
   }
   
   console.log('✅ Sidebar initialized successfully');
@@ -360,9 +426,8 @@ function initSidebar() {
 // ===== Auto-update on cart/theme/language changes =====
 // ================================================================
 
-// ✅ Listen for cart updates (better approach)
 if (typeof window !== 'undefined') {
-  // Override cartModule.updateCartUI to also update sidebar
+  // Hook into cartModule
   const waitForCartModule = setInterval(() => {
     if (window.cartModule && window.cartModule.updateCartUI) {
       const originalUpdateCartUI = window.cartModule.updateCartUI;
@@ -377,17 +442,16 @@ if (typeof window !== 'undefined') {
     }
   }, 100);
   
-  // Timeout after 5 seconds
   setTimeout(() => clearInterval(waitForCartModule), 5000);
   
-  // ✅ Listen for theme changes (better approach)
+  // Hook into toggleTheme
   const waitForToggleTheme = setInterval(() => {
     if (window.toggleTheme) {
       const originalToggleTheme = window.toggleTheme;
       
       window.toggleTheme = function(...args) {
         originalToggleTheme.apply(this, args);
-        syncSidebarTheme();
+        setTimeout(syncSidebarTheme, 50);
       };
       
       clearInterval(waitForToggleTheme);
@@ -397,14 +461,17 @@ if (typeof window !== 'undefined') {
   
   setTimeout(() => clearInterval(waitForToggleTheme), 5000);
   
-  // ✅ Listen for language changes (better approach)
+  // Hook into toggleLanguage
   const waitForToggleLanguage = setInterval(() => {
     if (window.toggleLanguage) {
       const originalToggleLanguage = window.toggleLanguage;
       
       window.toggleLanguage = function(...args) {
         originalToggleLanguage.apply(this, args);
-        syncSidebarLanguage();
+        setTimeout(() => {
+          syncSidebarLanguage();
+          updateSidebarProfile();
+        }, 50);
       };
       
       clearInterval(waitForToggleLanguage);
@@ -424,9 +491,12 @@ if (typeof window !== 'undefined') {
   window.toggleSidebar = toggleSidebar;
   window.updateSidebarBadges = updateSidebarBadges;
   window.updateSidebarProfile = updateSidebarProfile;
+  window.syncSidebarTheme = syncSidebarTheme;
+  window.syncSidebarLanguage = syncSidebarLanguage;
   window.openOrdersPage = openOrdersPage;
   window.openSettings = openSettings;
-  
+  window.showAboutInfo = showAboutInfo;
+  window.showContactInfo = showContactInfo;
   console.log('✅ Sidebar functions exposed globally');
 }
 
