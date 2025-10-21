@@ -57,6 +57,7 @@ async function loadCheckoutModules() {
 // ================================================================
 // ✅ Enhanced initiateCheckout with Detailed Logging
 // ================================================================
+/*
 async function initiateCheckout() {
   console.log('🔹 initiateCheckout called');
   const currentCart = getCart();
@@ -130,6 +131,91 @@ async function initiateCheckout() {
     }
 
     // Refresh icons
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+      console.log('🔄 Lucide icons refreshed');
+    }
+
+    console.log('✅ Checkout initiated successfully');
+
+  } catch (error) {
+    console.error('❌ Error during checkout initialization:', error);
+    showToast('خطأ', 'حدث خطأ أثناء فتح نظام الدفع', 'error');
+  }
+}*/
+
+
+async function initiateCheckout() {
+  console.log('🔹 initiateCheckout called');
+  const currentCart = getCart();
+
+  console.log('🔹 Cart state:', { 
+    exists: !isCartEmpty(),
+    length: getCartLength(),
+    items: getCart().map(item => ({ 
+      id: item.productId, 
+      quantity: item.quantity 
+    }))
+  });
+
+  if (isCartEmpty()) {
+    console.log('⚠️ Cart is empty, showing error');
+    const lang = window.currentLang || 'ar';
+    showToast(
+      lang === 'ar' ? 'السلة فارغة' : 'Cart is empty',
+      lang === 'ar' ? 'أضف بعض المنتجات أولاً' : 'Add some products first',
+      'error'
+    );
+    return;
+  }
+
+  if (!checkoutModules.core) {
+    console.log('🔄 Modules not loaded, loading now...');
+    const loaded = await loadCheckoutModules();
+    if (!loaded) {
+      console.error('❌ Failed to load modules, aborting checkout');
+      showToast('خطأ', 'فشل في تحميل نظام الدفع', 'error');
+      return;
+    }
+  }
+
+  console.log('🔄 Starting checkout initialization...');
+
+  try {
+    // ✅ CRITICAL: Reset ALL checkout state
+    checkoutModules.core.setDeliveryMethod(null);
+    checkoutModules.core.setBranch(null);
+    checkoutModules.core.setUserLocation(null);  // ✅ المهم جداً!
+    checkoutModules.core.setCalculatedPrices(null);
+    checkoutModules.core.setActiveCouponCode(null);
+    console.log('🔄 State reset completed (including userLocation)');
+
+    // Load branches first
+    await checkoutModules.delivery.loadBranches();
+    console.log('🔄 Branches loaded');
+
+    // Reset and fill UI
+    checkoutModules.ui.resetFormFields();
+    checkoutModules.ui.fillSavedUserData();
+    checkoutModules.ui.updateOrderSummary();
+    checkoutModules.ui.resetCheckoutUI();
+    console.log('🔄 UI reset completed');
+
+    // Show modal
+    const modal = document.getElementById('checkoutModal');
+    if (modal) {
+      console.log('🔄 Modal element found, opening...');
+      modal.classList.remove('hidden');
+      modal.classList.add('show');
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      console.log('✅ Modal opened successfully');
+    } else {
+      console.error('❌ Modal element #checkoutModal not found in DOM');
+      showToast('خطأ', 'عنصر المودال غير موجود', 'error');
+      return;
+    }
+
     if (typeof lucide !== 'undefined') {
       lucide.createIcons();
       console.log('🔄 Lucide icons refreshed');
@@ -319,7 +405,7 @@ function debounce(func, wait) {
 // ================================================================
 // ✅ Enhanced DOMContentLoaded Initialization
 // ================================================================
-/*
+
 async function initializeCheckout() {
   console.log('🔄 Initializing checkout system...');
   
@@ -363,92 +449,8 @@ async function initializeCheckout() {
   } catch (error) {
     console.error('❌ Failed to initialize checkout system:', error);
   }
-}*/
-
-
-async function initiateCheckout() {
-  console.log('🔹 initiateCheckout called');
-  const currentCart = getCart();
-
-  console.log('🔹 Cart state:', { 
-    exists: !isCartEmpty(),
-    length: getCartLength(),
-    items: getCart().map(item => ({ 
-      id: item.productId, 
-      quantity: item.quantity 
-    }))
-  });
-
-  if (isCartEmpty()) {
-    console.log('⚠️ Cart is empty, showing error');
-    const lang = window.currentLang || 'ar';
-    showToast(
-      lang === 'ar' ? 'السلة فارغة' : 'Cart is empty',
-      lang === 'ar' ? 'أضف بعض المنتجات أولاً' : 'Add some products first',
-      'error'
-    );
-    return;
-  }
-
-  if (!checkoutModules.core) {
-    console.log('🔄 Modules not loaded, loading now...');
-    const loaded = await loadCheckoutModules();
-    if (!loaded) {
-      console.error('❌ Failed to load modules, aborting checkout');
-      showToast('خطأ', 'فشل في تحميل نظام الدفع', 'error');
-      return;
-    }
-  }
-
-  console.log('🔄 Starting checkout initialization...');
-
-  try {
-    // ✅ CRITICAL: Reset ALL checkout state
-    checkoutModules.core.setDeliveryMethod(null);
-    checkoutModules.core.setBranch(null);
-    checkoutModules.core.setUserLocation(null);  // ✅ المهم جداً!
-    checkoutModules.core.setCalculatedPrices(null);
-    checkoutModules.core.setActiveCouponCode(null);
-    console.log('🔄 State reset completed (including userLocation)');
-
-    // Load branches first
-    await checkoutModules.delivery.loadBranches();
-    console.log('🔄 Branches loaded');
-
-    // Reset and fill UI
-    checkoutModules.ui.resetFormFields();
-    checkoutModules.ui.fillSavedUserData();
-    checkoutModules.ui.updateOrderSummary();
-    checkoutModules.ui.resetCheckoutUI();
-    console.log('🔄 UI reset completed');
-
-    // Show modal
-    const modal = document.getElementById('checkoutModal');
-    if (modal) {
-      console.log('🔄 Modal element found, opening...');
-      modal.classList.remove('hidden');
-      modal.classList.add('show');
-      modal.style.display = 'flex';
-      document.body.style.overflow = 'hidden';
-      console.log('✅ Modal opened successfully');
-    } else {
-      console.error('❌ Modal element #checkoutModal not found in DOM');
-      showToast('خطأ', 'عنصر المودال غير موجود', 'error');
-      return;
-    }
-
-    if (typeof lucide !== 'undefined') {
-      lucide.createIcons();
-      console.log('🔄 Lucide icons refreshed');
-    }
-
-    console.log('✅ Checkout initiated successfully');
-
-  } catch (error) {
-    console.error('❌ Error during checkout initialization:', error);
-    showToast('خطأ', 'حدث خطأ أثناء فتح نظام الدفع', 'error');
-  }
 }
+
 
 // ================================================================
 // ✅ Enhanced Loading Strategy
