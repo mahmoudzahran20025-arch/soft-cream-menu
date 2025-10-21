@@ -1,8 +1,10 @@
 // ================================================================
-// CHECKOUT DELIVERY - FIXED VERSION WITH LOCATION VALIDATION
+// CHECKOUT DELIVERY - FIXED VERSION (Option B Logic)
+// Pickup: User selects branch (no distance calc)
+// Delivery: System finds nearest branch automatically
 // ================================================================
 
-console.log('🔄 Loading checkout-delivery.js (FIXED)');
+console.log('🔄 Loading checkout-delivery.js (Option B)');
 
 import { api } from '../api.js';
 import { calculateDistance, showToast } from '../utils.js';
@@ -94,10 +96,10 @@ export async function loadBranches() {
 }
 
 // ================================================================
-// Render Branch Selection
+// ✅ Render Branch Selection (PICKUP ONLY - NO DISTANCES)
 // ================================================================
 export async function renderBranchSelection() {
-  console.log('🔄 Rendering branches...');
+  console.log('🔄 Rendering branches for PICKUP...');
   
   const branchSelection = document.getElementById('branchSelection');
   if (!branchSelection) return;
@@ -112,14 +114,7 @@ export async function renderBranchSelection() {
     branchSelection.appendChild(container);
   }
   
-  let currentLocation = null;
-  try {
-    const { getUserLocation } = await import('./checkout-core.js');
-    currentLocation = getUserLocation();
-  } catch (err) {
-    console.warn('⚠️ Could not get user location:', err);
-  }
-  
+  // ✅ NO distance calculation for pickup mode
   let html = '';
   const availableBranches = Object.keys(branches).filter(id => 
     branches[id].available !== false
@@ -136,27 +131,6 @@ export async function renderBranchSelection() {
     availableBranches.forEach(branchId => {
       const branch = branches[branchId];
       
-      let distanceHtml = '';
-      if (currentLocation && branch.location) {
-        try {
-          const distance = calculateDistance(
-            currentLocation.lat,
-            currentLocation.lng,
-            branch.location.lat,
-            branch.location.lng
-          );
-          
-          distanceHtml = `
-            <div class="branch-distance" style="display: flex; align-items: center; gap: 4px; font-size: 12px; color: #666; margin-top: 4px;">
-              <i data-lucide="navigation" style="width: 12px; height: 12px;"></i>
-              <span>${distance.toFixed(1)} ${lang === 'ar' ? 'كم' : 'km'}</span>
-            </div>
-          `;
-        } catch (err) {
-          console.warn('⚠️ Distance calc failed:', err);
-        }
-      }
-      
       html += `
         <div class="branch-card" data-branch="${branchId}" 
              onclick="checkoutModule.selectBranch('${branchId}')" 
@@ -171,7 +145,6 @@ export async function renderBranchSelection() {
             <div class="branch-address" style="font-size: 12px; color: #666; line-height: 1.4;">
               ${branch.address[lang]}
             </div>
-            ${distanceHtml}
             ${branch.phone ? `
               <div class="branch-phone" style="display: flex; align-items: center; gap: 4px; font-size: 12px; color: #666; margin-top: 4px;">
                 <i data-lucide="phone" style="width: 12px; height: 12px;"></i>
@@ -190,11 +163,11 @@ export async function renderBranchSelection() {
     lucide.createIcons();
   }
   
-  console.log('✅ Branches rendered:', availableBranches.length);
+  console.log('✅ Branches rendered (pickup mode):', availableBranches.length);
 }
 
 // ================================================================
-// Select Delivery Method
+// ✅ Select Delivery Method (FIXED)
 // ================================================================
 export async function selectDeliveryMethod(method) {
   console.log('🔄 Selecting delivery method:', method);
@@ -202,7 +175,7 @@ export async function selectDeliveryMethod(method) {
   const lang = window.currentLang || 'ar';
   
   try {
-    const { setDeliveryMethod, setBranch, recalculatePrices } = await import('./checkout-core.js');
+    const { setDeliveryMethod, setBranch, setUserLocation, recalculatePrices } = await import('./checkout-core.js');
     setDeliveryMethod(method);
     
     document.querySelectorAll('.delivery-option').forEach(opt => 
@@ -216,6 +189,7 @@ export async function selectDeliveryMethod(method) {
     const checkoutForm = document.getElementById('checkoutForm');
     
     if (method === 'pickup') {
+      // ✅ PICKUP: Show branches, hide address
       if (pickupOption) pickupOption.classList.add('selected');
       if (branchSelection) {
         branchSelection.style.display = 'block';
@@ -228,12 +202,15 @@ export async function selectDeliveryMethod(method) {
       if (addressGroup) addressGroup.style.display = 'none';
       if (checkoutForm) checkoutForm.classList.remove('show');
       
+      // ✅ Clear location (not needed for pickup)
+      setUserLocation(null);
       setBranch(null);
       document.querySelectorAll('.branch-card').forEach(card => 
         card.classList.remove('selected')
       );
       
     } else if (method === 'delivery') {
+      // ✅ DELIVERY: Hide branches, show address + location button
       if (deliveryOption) deliveryOption.classList.add('selected');
       if (branchSelection) branchSelection.style.display = 'none';
       if (addressGroup) addressGroup.style.display = 'block';
@@ -244,7 +221,9 @@ export async function selectDeliveryMethod(method) {
         }, 100);
       }
       
+      // ✅ Clear branch (backend will auto-select nearest)
       setBranch(null);
+      setUserLocation(null);
       document.querySelectorAll('.branch-card').forEach(card => 
         card.classList.remove('selected')
       );
@@ -272,10 +251,10 @@ export async function selectDeliveryMethod(method) {
 }
 
 // ================================================================
-// ✅ CRITICAL FIX: selectBranch - PREVENT BRANCH LOCATION USAGE
+// ✅ Select Branch (PICKUP ONLY)
 // ================================================================
 export async function selectBranch(branchId) {
-  console.log('🔄 Selecting branch:', branchId);
+  console.log('🔄 Selecting branch (pickup):', branchId);
   
   const lang = window.currentLang || 'ar';
   
@@ -293,40 +272,23 @@ export async function selectBranch(branchId) {
     const { 
       setBranch, 
       recalculatePrices, 
-      getUserLocation,
       getSelectedDeliveryMethod 
     } = await import('./checkout-core.js');
     
     const deliveryMethod = getSelectedDeliveryMethod();
     
-    // ✅ CRITICAL: للتوصيل - تحذير إذا لم يحدد موقعه
-    if (deliveryMethod === 'delivery') {
-      const userLocation = getUserLocation();
-      
-      if (!userLocation || !userLocation.lat || !userLocation.lng) {
-        console.warn('⚠️ No user location set for delivery!');
-        
-        showToast(
-          lang === 'ar' ? 'تنبيه!' : 'Warning!',
-          lang === 'ar' 
-            ? 'الرجاء تحديد موقعك أولاً باستخدام زر "استخدام الموقع الحالي"' 
-            : 'Please set your location first using "Use Current Location" button',
-          'warning',
-          6000
-        );
-        
-        // ⚠️ إبراز زر الموقع
-        const locationBtn = document.getElementById('locationBtn');
-        if (locationBtn) {
-          locationBtn.style.animation = 'pulse 1s ease-in-out 3';
-          locationBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-        
-        return; // ← توقف ولا تكمل!
-      }
+    // ✅ Only allow manual selection in pickup mode
+    if (deliveryMethod !== 'pickup') {
+      console.warn('⚠️ Branch selection only allowed in pickup mode');
+      showToast(
+        lang === 'ar' ? 'تنبيه' : 'Warning',
+        lang === 'ar' ? 'اختيار الفرع متاح فقط في وضع الاستلام' : 'Branch selection only in pickup mode',
+        'warning'
+      );
+      return;
     }
     
-    // ✅ Update state (branch only - NOT location!)
+    // ✅ Update state
     setBranch(branchId);
     
     // Update UI
@@ -352,7 +314,7 @@ export async function selectBranch(branchId) {
       }, 100);
     }
     
-    // Recalculate
+    // Recalculate (should be 0 for pickup)
     await recalculatePrices();
     
     const { updateOrderSummary } = await import('./checkout-ui.js');
@@ -366,7 +328,7 @@ export async function selectBranch(branchId) {
       'success'
     );
     
-    console.log('✅ Branch selected:', branchId);
+    console.log('✅ Branch selected (pickup):', branchId);
     
   } catch (error) {
     console.error('❌ Failed to select branch:', error);
@@ -379,7 +341,7 @@ export async function selectBranch(branchId) {
 }
 
 // ================================================================
-// Request Location
+// Request Location (DELIVERY ONLY)
 // ================================================================
 export function requestLocation() {
   console.log('🔄 Requesting location...');
@@ -403,10 +365,10 @@ export function requestLocation() {
 }
 
 // ================================================================
-// ✅ Allow Location - CORRECT IMPLEMENTATION
+// ✅ Allow Location (DELIVERY - Backend Auto-Selects Branch)
 // ================================================================
 export async function allowLocation() {
-  console.log('🔄 Getting user location...');
+  console.log('🔄 Getting user location for DELIVERY...');
   
   const locationBtn = document.getElementById('locationBtn');
   const lang = window.currentLang || 'ar';
@@ -434,16 +396,26 @@ export async function allowLocation() {
       console.log('✅ GPS Location obtained:', position.coords);
       
       try {
-        const { setUserLocation, recalculatePrices } = await import('./checkout-core.js');
+        const { setUserLocation, recalculatePrices, getSelectedDeliveryMethod } = await import('./checkout-core.js');
         
-        // ✅ CORRECT: موقع المستخدم من GPS (ليس موقع الفرع!)
+        const deliveryMethod = getSelectedDeliveryMethod();
+        
+        // ✅ Only use location in delivery mode
+        if (deliveryMethod !== 'delivery') {
+          console.warn('⚠️ Location only needed for delivery mode');
+          resetLocationButton();
+          closePermissionModal();
+          return;
+        }
+        
+        // ✅ Save user location
         const location = {
           lat: position.coords.latitude,
           lng: position.coords.longitude,
           accuracy: position.coords.accuracy
         };
         
-        console.log('📍 Setting user location:', location);
+        console.log('📍 Setting user location (delivery):', location);
         setUserLocation(location);
         
         // Update button
@@ -468,13 +440,13 @@ export async function allowLocation() {
         }
         
         closePermissionModal();
-        updateBranchDistances(location);
         
+        // ✅ Recalculate prices - backend will auto-select nearest branch
         await recalculatePrices();
         
         showToast(
           lang === 'ar' ? 'تم بنجاح!' : 'Success!',
-          lang === 'ar' ? 'تم تحديد موقعك بنجاح' : 'Location obtained',
+          lang === 'ar' ? 'تم تحديد موقعك - سيتم اختيار أقرب فرع تلقائياً' : 'Location set - nearest branch will be selected',
           'success'
         );
         
@@ -543,56 +515,6 @@ function closePermissionModal() {
   }
 }
 
-function updateBranchDistances(userLocation) {
-  console.log('🔄 Updating branch distances...');
-  
-  if (!userLocation || Object.keys(branches).length === 0) return;
-  
-  const lang = window.currentLang || 'ar';
-  
-  Object.keys(branches).forEach(branchId => {
-    const branch = branches[branchId];
-    if (!branch.location) return;
-    
-    try {
-      const distance = calculateDistance(
-        userLocation.lat,
-        userLocation.lng,
-        branch.location.lat,
-        branch.location.lng
-      );
-      
-      const branchCard = document.querySelector(`[data-branch="${branchId}"]`);
-      if (branchCard) {
-        let distanceEl = branchCard.querySelector('.branch-distance');
-        
-        if (!distanceEl) {
-          distanceEl = document.createElement('div');
-          distanceEl.className = 'branch-distance';
-          distanceEl.style.cssText = 'display: flex; align-items: center; gap: 4px; font-size: 12px; color: #666; margin-top: 4px;';
-          
-          const info = branchCard.querySelector('.branch-info');
-          if (info) info.appendChild(distanceEl);
-        }
-        
-        distanceEl.innerHTML = `
-          <i data-lucide="navigation" style="width: 12px; height: 12px;"></i>
-          <span>${distance.toFixed(1)} ${lang === 'ar' ? 'كم' : 'km'}</span>
-        `;
-      }
-      
-    } catch (err) {
-      console.warn('⚠️ Distance update failed:', err);
-    }
-  });
-  
-  if (typeof lucide !== 'undefined') {
-    lucide.createIcons();
-  }
-  
-  console.log('✅ Distances updated');
-}
-
 // ================================================================
 // Utility Functions
 // ================================================================
@@ -633,6 +555,12 @@ export function resetDeliveryState() {
   console.log('✅ Delivery state reset');
 }
 
+console.log('✅ checkout-delivery.js loaded (Option B Logic)');
+
+
+
+
+
 // ================================================================
 // Add pulse animation for location button
 // ================================================================
@@ -644,5 +572,3 @@ style.textContent = `
   }
 `;
 document.head.appendChild(style);
-
-console.log('✅ checkout-delivery.js loaded (FIXED VERSION)');
