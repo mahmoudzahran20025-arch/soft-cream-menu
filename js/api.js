@@ -65,7 +65,7 @@
 // api.js - Enhanced API Service (FINAL - COUPON SYSTEM)
 // CRITICAL: Never send prices from frontend - backend calculates all prices
 // ================================================================
-
+// api.js (updated) - APIService with deliveryInfo normalization & compatibility fixes
 import { generateUUID } from './utils.js';
 import { storage } from './storage.js';
 
@@ -73,429 +73,507 @@ import { storage } from './storage.js';
 // ===== API Configuration =====
 // ================================================================
 const API_CONFIG = {
-    urls: {
-        production: 'https://softcream-api.mahmoud-zahran20025.workers.dev',
-        netlify: 'https://softcream-api.mahmoud-zahran20025.workers.dev',
-        local: 'http://localhost:8787'
-    },
-    cors: {
-        credentials: 'omit',
-        allowedOrigins: [
-            'https://mahmoudzahran20025-arch.github.io',
-            'http://localhost:5500',
-            'http://127.0.0.1:5500'
-        ]
-    },
-    timeout: 30000,
-    retries: 3,
-    rateLimit: {
-        enabled: true,
-        maxRequests: 60,
-        window: 60000
-    }
+  urls: {
+    production: 'https://softcream-api.mahmoud-zahran20025.workers.dev',
+    netlify: 'https://softcream-api.mahmoud-zahran20025.workers.dev',
+    local: 'http://localhost:8787'
+  },
+  cors: {
+    credentials: 'omit',
+    allowedOrigins: [
+      'https://mahmoudzahran20025-arch.github.io',
+      'http://localhost:5500',
+      'http://127.0.0.1:5500'
+    ]
+  },
+  timeout: 30000,
+  retries: 3,
+  rateLimit: {
+    enabled: true,
+    maxRequests: 60,
+    window: 60000
+  }
 };
 
-// ================================================================
-// ===== API Service Class =====
-// ================================================================
+// Small UI fallback messages (if backend didn't return estimatedMessage)
+const FALLBACK_ESTIMATED_MESSAGE = {
+  ar: 'رسوم التوصيل تقديرية. سيتم التواصل معك لتأكيد الموقع وحساب الرسوم الفعلية.',
+  en: 'Delivery fee is estimated. We will contact you to confirm location and calculate actual fees.'
+};
+
 class APIService {
-    constructor(options = {}) {
-        this.baseURL = options.baseURL || this.detectBaseURL();
-        this.timeout = options.timeout || API_CONFIG.timeout;
-        this.retries = options.retries || API_CONFIG.retries;
-        this.authToken = options.authToken || null;
-        this.activeRequests = new Map();
-        this.requestTimestamps = [];
-        this.rateLimitEnabled = API_CONFIG.rateLimit.enabled;
+  constructor(options = {}) {
+    this.baseURL = options.baseURL || this.detectBaseURL();
+    this.timeout = options.timeout || API_CONFIG.timeout;
+    this.retries = options.retries || API_CONFIG.retries;
+    this.authToken = options.authToken || null;
+    this.activeRequests = new Map();
+    this.requestTimestamps = [];
+    this.rateLimitEnabled = API_CONFIG.rateLimit.enabled;
 
-        console.log('🚀 API Service initialized');
-        console.log('🔗 Base URL:', this.baseURL);
+    console.log('🚀 API Service initialized');
+    console.log('🔗 Base URL:', this.baseURL);
+  }
+
+  // -----------------------
+  // Helpers - internal
+  // -----------------------
+  _normalizeDeliveryInfo(raw = {}) {
+    // Accept multiple shapes and normalize to predictable keys
+    const info = raw || {};
+    return {
+      deliveryFee: Number(info.deliveryFee ?? info.delivery_fee ?? 0),
+      distanceKm: info.distanceKm ?? info.distance_km ?? null,
+      deliveryTier: info.deliveryTier ?? info.delivery_tier ?? info.tier ?? null,
+      tierNameAr: info.tierNameAr ?? (info.deliveryTier?.nameAr || info.deliveryTier?.name_ar) ?? null,
+      tierNameEn: info.tierNameEn ?? (info.deliveryTier?.nameEn || info.deliveryTier?.name_en) ?? null,
+      isEstimated: Boolean(info.isEstimated || info.isEstimatedFee || info.is_estimated_fee || info.isEstimated === 1 || info.isEstimatedFee === 1),
+      isEstimatedRaw: info.isEstimated ?? info.isEstimatedFee ?? info.is_estimated_fee ?? false,
+      estimatedMessage: info.estimatedMessage ?? info.estimated_message ?? null,
+      branchId: info.branchId ?? info.branch_id ?? info.branch ?? null,
+      branchName: info.branchName ?? info.branch_name ?? info.branchNameAr ?? info.branchNameEn ?? null,
+      etaDisplay: info.etaDisplay ?? info.eta_display ?? info.eta ?? null,
+      raw: info
+    };
+  }
+
+  _isDeliveryEstimated(rawInfo) {
+    const info = this._normalizeDeliveryInfo(rawInfo);
+    return info.isEstimated;
+  }
+
+  _getEstimatedMessage(rawInfo, lang = 'ar') {
+    const info = this._normalizeDeliveryInfo(rawInfo);
+    if (info.estimatedMessage) {
+      if (typeof info.estimatedMessage === 'string') return info.estimatedMessage;
+      return info.estimatedMessage[lang] || info.estimatedMessage.ar || info.estimatedMessage.en || FALLBACK_ESTIMATED_MESSAGE[lang];
+    }
+    return FALLBACK_ESTIMATED_MESSAGE[lang];
+  }
+
+  // -----------------------
+  // Core methods (unchanged mostly)
+  // -----------------------
+  detectBaseURL() {
+    const hostname = window.location.hostname;
+    if (hostname.includes('netlify.app')) return API_CONFIG.urls.netlify;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') return API_CONFIG.urls.local;
+    return API_CONFIG.urls.production;
+  }
+
+  configure(options) {
+    if (options.baseURL) this.baseURL = options.baseURL;
+    if (options.timeout) this.timeout = options.timeout;
+    if (options.retries) this.retries = options.retries;
+    if (options.authToken) this.authToken = options.authToken;
+    if (options.rateLimitEnabled !== undefined) this.rateLimitEnabled = options.rateLimitEnabled;
+    console.log('✅ API Service configured');
+  }
+
+  checkRateLimit() {
+    if (!this.rateLimitEnabled) return true;
+    const now = Date.now();
+    const { maxRequests, window: timeWindow } = API_CONFIG.rateLimit;
+    this.requestTimestamps = this.requestTimestamps.filter(ts => now - ts < timeWindow);
+    if (this.requestTimestamps.length >= maxRequests) {
+      const oldestRequest = this.requestTimestamps[0];
+      const timeUntilReset = timeWindow - (now - oldestRequest);
+      console.warn(`⚠️ Rate limit exceeded. Try again in ${Math.ceil(timeUntilReset / 1000)}s`);
+      return false;
+    }
+    this.requestTimestamps.push(now);
+    return true;
+  }
+
+  cancelRequest(requestId) {
+    const controller = this.activeRequests.get(requestId);
+    if (controller) {
+      controller.abort();
+      this.activeRequests.delete(requestId);
+      console.log('🚫 Request cancelled:', requestId);
+    }
+  }
+
+  cancelAllRequests() {
+    this.activeRequests.forEach((controller, requestId) => {
+      controller.abort();
+      console.log('🚫 Request cancelled:', requestId);
+    });
+    this.activeRequests.clear();
+  }
+
+  async request(method, endpoint, data = null, options = {}) {
+    if (!this.checkRateLimit()) {
+      throw new Error('Rate limit exceeded. Please try again later.');
     }
 
-    detectBaseURL() {
-        const hostname = window.location.hostname;
-        if (hostname.includes('netlify.app')) return API_CONFIG.urls.netlify;
-        if (hostname === 'localhost' || hostname === '127.0.0.1') return API_CONFIG.urls.local;
-        return API_CONFIG.urls.production;
-    }
+    const {
+      timeout = this.timeout,
+      retries = this.retries,
+      idempotencyKey = null,
+      authToken = this.authToken,
+      cancelable = true
+    } = options;
 
-    configure(options) {
-        if (options.baseURL) this.baseURL = options.baseURL;
-        if (options.timeout) this.timeout = options.timeout;
-        if (options.retries) this.retries = options.retries;
-        if (options.authToken) this.authToken = options.authToken;
-        if (options.rateLimitEnabled !== undefined) this.rateLimitEnabled = options.rateLimitEnabled;
-        console.log('✅ API Service configured');
-    }
+    let lastError;
 
-    checkRateLimit() {
-        if (!this.rateLimitEnabled) return true;
-        const now = Date.now();
-        const { maxRequests, window: timeWindow } = API_CONFIG.rateLimit;
-        this.requestTimestamps = this.requestTimestamps.filter(ts => now - ts < timeWindow);
-        if (this.requestTimestamps.length >= maxRequests) {
-            const oldestRequest = this.requestTimestamps[0];
-            const timeUntilReset = timeWindow - (now - oldestRequest);
-            console.warn(`⚠️ Rate limit exceeded. Try again in ${Math.ceil(timeUntilReset / 1000)}s`);
-            return false;
-        }
-        this.requestTimestamps.push(now);
-        return true;
-    }
-
-    cancelRequest(requestId) {
-        const controller = this.activeRequests.get(requestId);
-        if (controller) {
-            controller.abort();
-            this.activeRequests.delete(requestId);
-            console.log('🚫 Request cancelled:', requestId);
-        }
-    }
-
-    cancelAllRequests() {
-        this.activeRequests.forEach((controller, requestId) => {
-            controller.abort();
-            console.log('🚫 Request cancelled:', requestId);
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        console.log(`📡 API Request [Attempt ${attempt}/${retries}]:`, method, endpoint);
+        return await this.httpRequest(method, endpoint, data, {
+          timeout, idempotencyKey, authToken, cancelable
         });
-        this.activeRequests.clear();
-    }
-
-    async request(method, endpoint, data = null, options = {}) {
-        if (!this.checkRateLimit()) {
-            throw new Error('Rate limit exceeded. Please try again later.');
+      } catch (error) {
+        lastError = error;
+        if (error.name === 'AbortError') {
+          console.log('🚫 Request was cancelled');
+          throw error;
         }
-
-        const {
-            timeout = this.timeout,
-            retries = this.retries,
-            idempotencyKey = null,
-            authToken = this.authToken,
-            cancelable = true
-        } = options;
-
-        let lastError;
-
-        for (let attempt = 1; attempt <= retries; attempt++) {
-            try {
-                console.log(`📡 API Request [Attempt ${attempt}/${retries}]:`, method, endpoint);
-                return await this.httpRequest(method, endpoint, data, {
-                    timeout, idempotencyKey, authToken, cancelable
-                });
-            } catch (error) {
-                lastError = error;
-                if (error.name === 'AbortError') {
-                    console.log('🚫 Request was cancelled');
-                    throw error;
-                }
-                console.warn(`⚠️ Attempt ${attempt} failed:`, error.message);
-                if (error.status >= 400 && error.status < 500) throw error;
-                if (attempt < retries) {
-                    const backoff = Math.min(Math.pow(2, attempt) * 1000, 10000);
-                    console.log(`⏳ Retrying in ${backoff}ms...`);
-                    await this.delay(backoff);
-                }
-            }
+        console.warn(`⚠️ Attempt ${attempt} failed:`, error.message);
+        if (error.status >= 400 && error.status < 500) throw error;
+        if (attempt < retries) {
+          const backoff = Math.min(Math.pow(2, attempt) * 1000, 10000);
+          console.log(`⏳ Retrying in ${backoff}ms...`);
+          await this.delay(backoff);
         }
-        console.error('❌ All attempts failed:', lastError);
-        throw lastError;
+      }
     }
+    console.error('❌ All attempts failed:', lastError);
+    throw lastError;
+  }
 
-    async httpRequest(method, endpoint, data, options) {
-        if (!this.baseURL) throw new Error('API baseURL not configured');
-        const requestId = generateUUID();
-        const controller = new AbortController();
-        if (options.cancelable) this.activeRequests.set(requestId, controller);
-        const timeoutId = setTimeout(() => {
-            if(this.activeRequests.has(requestId)) controller.abort();
-        }, options.timeout);
+  async httpRequest(method, endpoint, data, options) {
+    if (!this.baseURL) throw new Error('API baseURL not configured');
+    const requestId = generateUUID();
+    const controller = new AbortController();
+    if (options.cancelable) this.activeRequests.set(requestId, controller);
+    const timeoutId = setTimeout(() => {
+      if (this.activeRequests.has(requestId)) controller.abort();
+    }, options.timeout);
 
+    try {
+      const headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Origin': window.location.origin
+      };
+      if (options.idempotencyKey) headers['Idempotency-Key'] = options.idempotencyKey;
+      const token = options.authToken || this.getAuthToken();
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const config = {
+        method,
+        headers,
+        signal: controller.signal,
+        mode: 'cors',
+        credentials: API_CONFIG.cors.credentials
+      };
+
+      let url = this.baseURL;
+      if (method === 'GET' && data && Object.keys(data).length > 0) {
+        const params = new URLSearchParams({ path: endpoint, ...data });
+        url += '?' + params.toString();
+      } else {
+        url += '?path=' + encodeURIComponent(endpoint);
+        if (data && method !== 'GET') config.body = JSON.stringify(data);
+      }
+
+      console.log(`📤 ${method}:`, url);
+      if (data && method !== 'GET') console.log('📦 Body:', data);
+
+      const response = await fetch(url, config);
+      console.log(`📥 Response Status: ${response.status}`);
+
+      if (response.status === 204) return { success: true, data: null };
+
+      let result;
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
         try {
-            const headers = {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'Origin': window.location.origin
-            };
-            if (options.idempotencyKey) headers['Idempotency-Key'] = options.idempotencyKey;
-            const token = options.authToken || this.getAuthToken();
-            if (token) headers['Authorization'] = `Bearer ${token}`;
-
-            const config = {
-                method,
-                headers,
-                signal: controller.signal,
-                mode: 'cors',
-                credentials: API_CONFIG.cors.credentials
-            };
-
-            let url = this.baseURL;
-            if (method === 'GET' && data && Object.keys(data).length > 0) {
-                const params = new URLSearchParams({ path: endpoint, ...data });
-                url += '?' + params.toString();
-            } else {
-                url += '?path=' + encodeURIComponent(endpoint);
-                if (data && method !== 'GET') config.body = JSON.stringify(data);
-            }
-
-            console.log(`📤 ${method}:`, url);
-            if (data && method !== 'GET') console.log('📦 Body:', data);
-
-            const response = await fetch(url, config);
-            console.log(`📥 Response Status: ${response.status}`);
-
-            if (response.status === 204) return { success: true, data: null };
-
-            let result;
-            const contentType = response.headers.get('content-type');
-            if (contentType && contentType.includes('application/json')) {
-                try {
-                    result = await response.json();
-                } catch (parseError) {
-                    console.warn('Failed to parse JSON response:', parseError);
-                    result = { success: false, error: 'Invalid JSON response' };
-                }
-            } else {
-                const text = await response.text();
-                console.warn('Non-JSON response:', text);
-                result = { success: false, error: 'Expected JSON response', rawResponse: text };
-            }
-
-            if (!response.ok) {
-                const error = new Error(result.error || `HTTP ${response.status}: ${response.statusText}`);
-                error.status = response.status;
-                error.data = result;
-                throw error;
-            }
-
-            console.log('✅ Response:', result);
-            return result;
-
-        } catch (error) {
-            if (error.name === 'AbortError') {
-                if (!this.activeRequests.has(requestId)) {
-                    throw new Error(`Request timeout after ${options.timeout}ms`);
-                }
-                throw error;
-            }
-            throw error;
-        } finally {
-            clearTimeout(timeoutId);
-            if (options.cancelable) this.activeRequests.delete(requestId);
+          result = await response.json();
+        } catch (parseError) {
+          console.warn('Failed to parse JSON response:', parseError);
+          result = { success: false, error: 'Invalid JSON response' };
         }
-    }
+      } else {
+        const text = await response.text();
+        console.warn('Non-JSON response:', text);
+        result = { success: false, error: 'Expected JSON response', rawResponse: text };
+      }
 
-    getErrorMessage(error, lang = 'ar') {
-        if (error.name === 'AbortError') return lang === 'ar' ? 'تم إلغاء الطلب' : 'Request cancelled';
-        if (error.message?.includes('Rate limit') || error.message?.includes('Too many')) {
-            return lang === 'ar' ? 'عدد كبير من المحاولات. يرجى الانتظار قليلاً' : 'Too many attempts. Please wait a moment';
+      if (!response.ok) {
+        const error = new Error(result.error || `HTTP ${response.status}: ${response.statusText}`);
+        error.status = response.status;
+        error.data = result;
+        throw error;
+      }
+
+      console.log('✅ Response:', result);
+      return result;
+
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        if (!this.activeRequests.has(requestId)) {
+          throw new Error(`Request timeout after ${options.timeout}ms`);
         }
-        if (error.message?.includes('timeout')) return lang === 'ar' ? 'انتهت مهلة الاتصال. تحقق من الإنترنت' : 'Connection timeout. Check your internet';
-        if (error.message?.includes('Network') || error.message?.includes('Failed to fetch')) {
-            return lang === 'ar' ? 'مشكلة في الاتصال. تحقق من الإنترنت' : 'Connection problem. Check your internet';
+        throw error;
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeoutId);
+      if (options.cancelable) this.activeRequests.delete(requestId);
+    }
+  }
+
+  getErrorMessage(error, lang = 'ar') {
+    if (error.name === 'AbortError') return lang === 'ar' ? 'تم إلغاء الطلب' : 'Request cancelled';
+    if (error.message?.includes('Rate limit') || error.message?.includes('Too many')) {
+      return lang === 'ar' ? 'عدد كبير من المحاولات. يرجى الانتظار قليلاً' : 'Too many attempts. Please wait a moment';
+    }
+    if (error.message?.includes('timeout')) return lang === 'ar' ? 'انتهت مهلة الاتصال. تحقق من الإنترنت' : 'Connection timeout. Check your internet';
+    if (error.message?.includes('Network') || error.message?.includes('Failed to fetch')) {
+      return lang === 'ar' ? 'مشكلة في الاتصال. تحقق من الإنترنت' : 'Connection problem. Check your internet';
+    }
+    if (error.data?.error) return error.data.error;
+    if (error.status >= 400 && error.status < 500) {
+      if (error.status === 404) return lang === 'ar' ? 'المورد غير موجود' : 'Resource not found';
+      if (error.status === 400) return lang === 'ar' ? 'بيانات غير صحيحة' : 'Invalid data';
+      return error.message;
+    }
+    if (error.status >= 500) return lang === 'ar' ? 'خطأ في الخادم. حاول مرة أخرى' : 'Server error. Try again';
+    return error.message || (lang === 'ar' ? 'حدث خطأ. حاول مرة أخرى' : 'An error occurred. Try again');
+  }
+
+  getAuthToken() { return storage.getAuthToken(); }
+  setAuthToken(token) { token ? storage.setAuthToken(token) : storage.clearAuthToken(); }
+  getSessionId() { return storage.getSessionId(); }
+  delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+  generateIdempotencyKey() { return generateUUID(); }
+
+  // ================================================================
+  // ORDER ENDPOINTS (UPDATED WITH ADDRESS TYPE SUPPORT & compatibility)
+  // ================================================================
+  async submitOrder(orderData) {
+    if (!orderData || !Array.isArray(orderData.items)) throw new Error('Invalid order data');
+
+    if (orderData.items.some(item => item.price || item.subtotal)) {
+      console.error('❌ SECURITY WARNING: Frontend should not send prices!');
+      throw new Error('Invalid order data: prices should not be sent from frontend');
+    }
+    if (orderData.subtotal || orderData.total || orderData.discount) {
+      console.error('❌ SECURITY WARNING: Frontend should not send totals!');
+      throw new Error('Invalid order data: totals should not be sent from frontend');
+    }
+
+    const idempotencyKey = orderData.idempotencyKey || this.generateIdempotencyKey();
+
+    // determine address input type
+    const addressInputType = orderData.addressInputType || (orderData.location?.lat ? 'gps' : 'manual');
+
+    const cleanOrderData = {
+      items: orderData.items.map(item => ({
+        productId: item.productId,
+        quantity: item.quantity
+      })),
+      customer: orderData.customer,
+      deliveryMethod: orderData.deliveryMethod || 'delivery',
+      branch: orderData.branch || null,
+      location: orderData.location || null,
+      addressInputType: addressInputType,
+      deliveryAddress: orderData.deliveryAddress || orderData.customer?.address || null,
+      customerPhone: orderData.customerPhone || orderData.customer?.phone || null,
+      deviceId: orderData.deviceId || storage.getDeviceId(),
+      couponCode: orderData.couponCode || null,
+      idempotencyKey
+    };
+
+    console.log('📦 Submitting order:', {
+      items: cleanOrderData.items.length,
+      addressType: addressInputType,
+      hasGPS: !!cleanOrderData.location?.lat,
+      hasAddress: !!cleanOrderData.deliveryAddress
+    });
+
+    try {
+      const result = await this.request('POST', '/orders/submit', cleanOrderData, {
+        idempotencyKey,
+        retries: 3
+      });
+      console.log('📥 Raw submit response:', result);
+
+      // result.data should be the payload returned by submitOrder() on the server
+      const responseData = result.data || result;
+      if (!responseData) throw new Error('Empty response from order submission');
+
+      // normalize delivery info
+      const deliveryInfo = this._normalizeDeliveryInfo(responseData.calculatedPrices?.deliveryInfo || {});
+
+      if (this._isDeliveryEstimated(deliveryInfo)) {
+        console.warn('⚠️ Delivery fee is estimated - confirmation required');
+        // optionally notify UI: you can return a flag or handle in UI based on responseData
+      }
+
+      console.log('✅ Order submitted:', responseData.orderId || responseData.id || responseData.data?.orderId);
+      return responseData;
+    } catch (error) {
+      console.error('❌ Order submission failed:', error);
+      throw error;
+    }
+  }
+
+  async trackOrder(orderId) {
+    return this.request('GET', '/orders/track', { orderId });
+  }
+
+  async cancelOrder(orderId) {
+    return this.request('POST', '/orders/cancel', { orderId });
+  }
+
+  // ================================================================
+  // calculateOrderPrices - supports location & addressInputType
+  // ================================================================
+  async calculateOrderPrices(items, couponCode = null, deliveryMethod = 'delivery', customerPhone = null, location = null, addressInputType = null) {
+    try {
+      const inputType = addressInputType || (location?.lat ? 'gps' : 'manual');
+
+      console.log('📤 Requesting price calculation:', {
+        items: items?.length ?? 0,
+        couponCode,
+        deliveryMethod,
+        addressType: inputType,
+        hasLocation: !!location?.lat
+      });
+
+      const result = await this.request('POST', '/orders/prices', {
+        items,
+        couponCode,
+        deliveryMethod,
+        customerPhone,
+        deviceId: storage.getDeviceId(),
+        location,
+        addressInputType: inputType
+      });
+
+      console.log('📥 Raw API response:', result);
+
+      const calculatedPrices = result.data?.calculatedPrices || result.data || result.calculatedPrices;
+      if (!calculatedPrices) {
+        console.error('❌ Unexpected response structure:', result);
+        throw new Error('Invalid response structure from price calculation');
+      }
+
+      const deliveryInfoRaw = calculatedPrices.deliveryInfo || {};
+      const deliveryInfo = this._normalizeDeliveryInfo(deliveryInfoRaw);
+
+      if (deliveryInfo.isEstimated) {
+        console.warn('⚠️ Delivery fee is estimated:', deliveryInfo.tierNameAr || deliveryInfo.deliveryTier?.nameAr);
+        console.warn('📢 Message:', this._getEstimatedMessage(deliveryInfoRaw, 'ar'));
+      }
+
+      console.log('✅ Extracted calculatedPrices:', {
+        subtotal: calculatedPrices.subtotal,
+        deliveryFee: calculatedPrices.deliveryFee,
+        total: calculatedPrices.total,
+        isEstimated: deliveryInfo.isEstimated
+      });
+
+      return calculatedPrices;
+    } catch (error) {
+      console.error('❌ Price calculation failed:', error);
+      throw error;
+    }
+  }
+
+  // ================================================================
+  // Products, branches, coupons, analytics (unchanged)
+  // ================================================================
+  async getProducts(filters = {}) {
+    const result = await this.request('GET', '/products', filters);
+    console.log('📦 Products loaded from backend (with prices):', result.data?.length || 0);
+    return result.data;
+  }
+
+  async getProduct(productId) {
+    const result = await this.request('GET', `/products/${productId}`);
+    return result.data;
+  }
+
+  async searchProducts(query) {
+    const result = await this.request('GET', '/products/search', { q: query });
+    return result.data;
+  }
+
+  async getBranches() {
+    const result = await this.request('GET', '/branches');
+    return result.data;
+  }
+
+  async checkBranchAvailability(branchId) {
+    const result = await this.request('GET', '/branches/availability', { branchId });
+    return result.data;
+  }
+
+  async getBranchHours(branchId) {
+    const result = await this.request('GET', `/branches/${branchId}/hours`);
+    return result.data;
+  }
+
+  async validateCoupon(code, phone, subtotal) {
+    try {
+      console.log('🎟️ Validating coupon:', { code, phone, subtotal });
+      const result = await this.request('POST', '/coupons/validate', {
+        code,
+        phone,
+        deviceId: storage.getDeviceId(),
+        subtotal
+      });
+      console.log('✅ Coupon validation result:', result.data);
+      return result.data;
+    } catch (error) {
+      console.error('❌ Coupon validation failed:', error);
+      throw error;
+    }
+  }
+
+  async trackEvent(event) {
+    try {
+      console.log('📊 Tracking event:', event);
+      const enrichedEvent = {
+        eventName: event.name || event.eventName,
+        eventData: {
+          ...event,
+          timestamp: Date.now(),
+          sessionId: this.getSessionId(),
+          userAgent: navigator.userAgent,
+          url: window.location.href
         }
-        if (error.data?.error) return error.data.error;
-        if (error.status >= 400 && error.status < 500) {
-            if (error.status === 404) return lang === 'ar' ? 'المورد غير موجود' : 'Resource not found';
-            if (error.status === 400) return lang === 'ar' ? 'بيانات غير صحيحة' : 'Invalid data';
-            return error.message;
-        }
-        if (error.status >= 500) return lang === 'ar' ? 'خطأ في الخادم. حاول مرة أخرى' : 'Server error. Try again';
-        return error.message || (lang === 'ar' ? 'حدث خطأ. حاول مرة أخرى' : 'An error occurred. Try again');
+      };
+      const url = `${this.baseURL}?path=${encodeURIComponent('/analytics/event')}`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Origin': window.location.origin },
+        body: JSON.stringify(enrichedEvent),
+        keepalive: true,
+        mode: 'cors',
+        credentials: 'omit'
+      });
+      if (!response.ok) {
+        console.warn(`⚠️ Analytics returned ${response.status} (non-critical)`);
+        return { success: false };
+      }
+      console.log('✅ Event tracked successfully');
+      return { success: true };
+    } catch (error) {
+      console.warn('⚠️ Analytics tracking failed (non-critical):', error.message);
+      return { success: false, error: error.message };
     }
-
-    getAuthToken() { return storage.getAuthToken(); }
-    setAuthToken(token) { token ? storage.setAuthToken(token) : storage.clearAuthToken(); }
-    getSessionId() { return storage.getSessionId(); }
-    delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
-    generateIdempotencyKey() { return generateUUID(); }
-
-    // ================================================================
-    // ✅ ORDER ENDPOINTS (COUPON SYSTEM)
-    // ================================================================
-    async submitOrder(orderData) {
-        if (orderData.items.some(item => item.price || item.subtotal)) {
-            console.error('❌ SECURITY WARNING: Frontend should not send prices!');
-            throw new Error('Invalid order data: prices should not be sent from frontend');
-        }
-        if (orderData.subtotal || orderData.total || orderData.discount) {
-            console.error('❌ SECURITY WARNING: Frontend should not send totals!');
-            throw new Error('Invalid order data: totals should not be sent from frontend');
-        }
-
-        const idempotencyKey = orderData.idempotencyKey || this.generateIdempotencyKey();
-        const cleanOrderData = {
-            items: orderData.items.map(item => ({
-                productId: item.productId,
-                quantity: item.quantity
-            })),
-            customer: orderData.customer,
-            deliveryMethod: orderData.deliveryMethod || 'delivery',
-            branch: orderData.branch || null,
-            location: orderData.location || null,
-            customerPhone: orderData.customerPhone || orderData.customer?.phone,
-            deviceId: orderData.deviceId || storage.getDeviceId(),
-            couponCode: orderData.couponCode || null, // ✅ FIXED
-            idempotencyKey: idempotencyKey
-        };
-
-        console.log('📦 Submitting order (IDs only):', cleanOrderData);
-
-        try {
-            const result = await this.request('POST', '/orders/submit', cleanOrderData, {
-                idempotencyKey: idempotencyKey,
-                retries: 3
-            });
-            console.log('📥 Raw submit response:', result);
-
-            let responseData = result.data || result;
-            if (!responseData) throw new Error('Empty response from order submission');
-            console.log('✅ Extracted response data:', responseData);
-            if (!responseData.orderId) {
-                console.error('❌ Missing orderId in response:', responseData);
-                throw new Error('Invalid response: missing orderId');
-            }
-            console.log('💰 Received calculated prices from backend:', responseData.calculatedPrices);
-            return responseData;
-        } catch (error) {
-            console.error('❌ Order submission failed:', error);
-            throw error;
-        }
-    }
-
-    async trackOrder(orderId) {
-        return this.request('GET', '/orders/track', { orderId });
-    }
-
-    async cancelOrder(orderId) {
-        return this.request('POST', '/orders/cancel', { orderId });
-    }
-
-    async calculateOrderPrices(items, couponCode = null, deliveryMethod = 'delivery', customerPhone = null) {
-        try {
-            console.log('📤 Requesting price calculation:', { items, couponCode, deliveryMethod, customerPhone });
-            const result = await this.request('POST', '/orders/prices', {
-                items,
-                couponCode, // ✅ FIXED
-                deliveryMethod,
-                customerPhone,
-                deviceId: storage.getDeviceId()
-            });
-            console.log('📥 Raw API response:', result);
-
-            let calculatedPrices = result.data?.calculatedPrices || result.data || result.calculatedPrices;
-            if (!calculatedPrices) {
-                console.error('❌ Unexpected response structure:', result);
-                throw new Error('Invalid response structure from price calculation');
-            }
-            console.log('✅ Extracted calculatedPrices:', calculatedPrices);
-            if (!calculatedPrices.items || calculatedPrices.subtotal === undefined) {
-                console.error('❌ Missing required fields in calculatedPrices:', calculatedPrices);
-                throw new Error('Incomplete price data received');
-            }
-            return calculatedPrices;
-        } catch (error) {
-            console.error('❌ Price calculation failed:', error);
-            throw error;
-        }
-    }
-
-    // ================================================================
-    // ✅ PRODUCT ENDPOINTS
-    // ================================================================
-    async getProducts(filters = {}) {
-        const result = await this.request('GET', '/products', filters);
-        console.log('📦 Products loaded from backend (with prices):', result.data?.length || 0);
-        return result.data;
-    }
-
-    async getProduct(productId) {
-        const result = await this.request('GET', `/products/${productId}`);
-        return result.data;
-    }
-
-    async searchProducts(query) {
-        const result = await this.request('GET', '/products/search', { q: query });
-        return result.data;
-    }
-
-    // ================================================================
-    // ✅ BRANCH ENDPOINTS
-    // ================================================================
-    async getBranches() {
-        const result = await this.request('GET', '/branches');
-        return result.data;
-    }
-
-    async checkBranchAvailability(branchId) {
-        const result = await this.request('GET', '/branches/availability', { branchId });
-        return result.data;
-    }
-
-    async getBranchHours(branchId) {
-        const result = await this.request('GET', `/branches/${branchId}/hours`);
-        return result.data;
-    }
-
-    // ================================================================
-    // ✅ COUPON ENDPOINTS (NEW SYSTEM)
-    // ================================================================
-    async validateCoupon(code, phone, subtotal) {
-        try {
-            console.log('🎟️ Validating coupon:', { code, phone, subtotal });
-            const result = await this.request('POST', '/coupons/validate', {
-                code,
-                phone,
-                deviceId: storage.getDeviceId(),
-                subtotal
-            });
-            console.log('✅ Coupon validation result:', result.data);
-            return result.data;
-        } catch (error) {
-            console.error('❌ Coupon validation failed:', error);
-            throw error;
-        }
-    }
-
-    // ================================================================
-    // ✅ ANALYTICS
-    // ================================================================
-    async trackEvent(event) {
-        try {
-            console.log('📊 Tracking event:', event);
-            const enrichedEvent = {
-                eventName: event.name || event.eventName,
-                eventData: {
-                    ...event,
-                    timestamp: Date.now(),
-                    sessionId: this.getSessionId(),
-                    userAgent: navigator.userAgent,
-                    url: window.location.href
-                }
-            };
-            const url = `${this.baseURL}?path=${encodeURIComponent('/analytics/event')}`;
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Origin': window.location.origin },
-                body: JSON.stringify(enrichedEvent),
-                keepalive: true,
-                mode: 'cors',
-                credentials: 'omit'
-            });
-            if (!response.ok) {
-                console.warn(`⚠️ Analytics returned ${response.status} (non-critical)`);
-                return { success: false };
-            }
-            console.log('✅ Event tracked successfully');
-            return { success: true };
-        } catch (error) {
-            console.warn('⚠️ Analytics tracking failed (non-critical):', error.message);
-            return { success: false, error: error.message };
-        }
-    }
+  }
 }
 
 export const api = new APIService();
 if (typeof window !== 'undefined') window.apiService = api;
-console.log('✅ API Service loaded (FINAL - COUPON SYSTEM)');
+console.log('✅ API Service loaded (UPDATED - deliveryInfo compatibility)');
+
 // ================================================================
 // INITIALIZATION EXAMPLE
 // ================================================================

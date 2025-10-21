@@ -1,5 +1,5 @@
 // ================================================================
-// CHECKOUT UI - واجهة المستخدم (FIXED VERSION)
+// CHECKOUT UI - واجهة المستخدم (UPDATED VERSION)
 // ================================================================
 
 console.log('🔄 Loading checkout-ui.js');
@@ -93,23 +93,41 @@ export async function updateOrderSummary() {
             <span style="font-weight: 600; color: #333;">${subtotal.toFixed(2)} EGP</span>
           </div>
           
-          ${deliveryFee > 0 ? `
-            <div class="total-row" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 14px;">
-              <span style="color: #666; display: flex; align-items: center; gap: 6px;">
-                <i data-lucide="truck" style="width: 16px; height: 16px;"></i>
-                ${lang === 'ar' ? 'رسوم التوصيل' : 'Delivery Fee'}
-              </span>
-              <span style="font-weight: 600; color: #333;">${deliveryFee.toFixed(2)} EGP</span>
-            </div>
-          ` : `
-            <div class="total-row" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 14px;">
-              <span style="color: #666; display: flex; align-items: center; gap: 6px;">
-                <i data-lucide="package-check" style="width: 16px; height: 16px;"></i>
-                ${lang === 'ar' ? 'رسوم التوصيل' : 'Delivery Fee'}
-              </span>
-              <span style="font-weight: 600; color: #4caf50;">${lang === 'ar' ? 'مجاني' : 'FREE'}</span>
-            </div>
-          `}
+          ${deliveryMethod === 'delivery' ? `
+            ${deliveryFee > 0 ? `
+              <div class="total-row" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 14px;">
+                <span style="color: #666; display: flex; align-items: center; gap: 6px;">
+                  <i data-lucide="truck" style="width: 16px; height: 16px;"></i>
+                  ${lang === 'ar' ? 'رسوم التوصيل' : 'Delivery Fee'}
+                  ${calculatedPrices.deliveryInfo?.isEstimated ? `
+                    <span style="background: #fff3cd; color: #856404; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600;">
+                      ${lang === 'ar' ? 'تقديري' : 'Estimated'}
+                    </span>
+                  ` : ''}
+                </span>
+                <span style="font-weight: 600; color: #333;">${deliveryFee.toFixed(2)} EGP</span>
+              </div>
+              ${calculatedPrices.deliveryInfo?.isEstimated ? `
+                <div class="estimated-fee-warning" style="margin: 8px 0; padding: 10px; background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); border-radius: 6px; border-left: 3px solid #f39c12; font-size: 12px; color: #856404; line-height: 1.4;">
+                  <div style="display: flex; align-items: start; gap: 8px;">
+                    <i data-lucide="info" style="width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px;"></i>
+                    <div>
+                      <strong style="display: block; margin-bottom: 2px;">${lang === 'ar' ? 'ملاحظة هامة:' : 'Important Note:'}</strong>
+                      ${lang === 'ar' ? 'رسوم التوصيل تقديرية. سيتم التواصل معك لتأكيد الموقع وحساب الرسوم الفعلية.' : 'Delivery fee is estimated. We will contact you to confirm location and calculate actual fee.'}
+                    </div>
+                  </div>
+                </div>
+              ` : ''}
+            ` : `
+              <div class="total-row" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 14px;">
+                <span style="color: #666; display: flex; align-items: center; gap: 6px;">
+                  <i data-lucide="truck" style="width: 16px; height: 16px;"></i>
+                  ${lang === 'ar' ? 'رسوم التوصيل' : 'Delivery Fee'}
+                </span>
+                <span style="font-weight: 600; color: #4caf50;">${lang === 'ar' ? 'مجاني' : 'FREE'}</span>
+              </div>
+            `}
+          ` : ''}
           
           ${discount > 0 ? `
             <div class="total-row discount" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 14px; background: #fff3e0; margin: 8px -16px; padding-left: 16px; padding-right: 16px;">
@@ -338,176 +356,7 @@ export function showProcessingModal(show = true, showError = false, errorMessage
     }
   }
 }
-
-// ================================================================
-// ✅ FIXED: showConfirmedModal - العودة للطريقة القديمة الشغالة
-// ================================================================
 /*
-export function showConfirmedModal(orderId, eta, customerPhone, itemsText, orderData) {
-  console.log('🔄 Showing confirmed modal:', { orderId, eta });
-  
-  const modal = document.getElementById('orderConfirmedModal');
-  if (!modal) {
-    console.error('❌ Confirmed modal not found');
-    return;
-  }
-  
-  const lang = window.currentLang || 'ar';
-  
-  // ✅ تحديث محتوى المودال
-  const orderIdEl = modal.querySelector('#confirmedOrderId');
-  const etaEl = modal.querySelector('#confirmedEta');
-  const branchInfoEl = modal.querySelector('#selectedBranchInfo');
-  const branchNameEl = modal.querySelector('#selectedBranchName');
-  const branchAddressEl = modal.querySelector('#selectedBranchAddress');
-  
-  if (orderIdEl) orderIdEl.textContent = orderId;
-  if (etaEl) etaEl.textContent = lang === 'ar' ? `الوقت المتوقع: ≈ ${eta}` : `Estimated time: ≈ ${eta}`;
-  
-  // ✅ معلومات الفرع
-  if (orderData?.deliveryMethod === 'pickup' && orderData?.branch && branchInfoEl) {
-    import('./checkout-delivery.js').then(({ branches }) => {
-      const branch = branches[orderData.branch];
-      if (branch && branchNameEl && branchAddressEl) {
-        branchNameEl.textContent = branch.name[lang];
-        branchAddressEl.textContent = branch.address[lang];
-        branchInfoEl.style.display = 'block';
-      }
-    }).catch(err => console.warn('⚠️ Branch info load failed:', err));
-  } else if (branchInfoEl) {
-    branchInfoEl.style.display = 'none';
-  }
-  
-  // ✅ FIXED: setup الأزرار زي القديم بالظبط
-  const copyBtn = modal.querySelector('#copyOrderIdBtn');
-  const whatsappBtn = modal.querySelector('#shareWhatsAppBtn');
-  const trackBtn = modal.querySelector('#trackOrderBtn');
-  const continueBtn = modal.querySelector('#continueShoppingBtn');
-  const closeBtn = modal.querySelector('#closeConfirmedBtn');
-  
-  // ✅ بدون preventDefault - زي القديم
-  if (copyBtn) {
-    copyBtn.onclick = () => copyOrderId(orderId);
-  }
-  
-  if (whatsappBtn) {
-    whatsappBtn.onclick = () => shareOnWhatsApp(orderId, itemsText, customerPhone);
-  }
-  
-  if (trackBtn) {
-    trackBtn.onclick = () => {
-      closeConfirmedModal();
-      setTimeout(() => showTrackingModal(orderId), 300);
-    };
-  }
-  
-  if (continueBtn) {
-    continueBtn.onclick = () => {
-      closeConfirmedModal();
-      setTimeout(() => { document.body.style.overflow = ''; }, 100);
-    };
-  }
-  
-  if (closeBtn) {
-    closeBtn.onclick = () => closeConfirmedModal();
-  }
-  
-  // ✅ إظهار المودال
-  modal.classList.remove('hidden');
-  modal.classList.add('show');
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-  
-  // ✅ Setup handlers بعد الإظهار
-  setTimeout(() => {
-    setupModalCloseHandlers();
-    if (typeof lucide !== 'undefined') lucide.createIcons();
-  }, 100);
-  
-  console.log('✅ Confirmed modal shown');
-}
-*/
-/*
-export function showConfirmedModal(orderId, eta, customerPhone, itemsText, orderData) {
-  console.log('🔄 Showing confirmed modal:', { orderId, eta });
-  
-  const modal = document.getElementById('orderConfirmedModal');
-  if (!modal) {
-    console.error('❌ Confirmed modal not found');
-    return;
-  }
-  
-  const lang = window.currentLang || 'ar';
-  
-  // ✅ تحديث محتوى المودال
-  const orderIdEl = modal.querySelector('#confirmedOrderId');
-  const etaEl = modal.querySelector('#confirmedEta');
-  const branchInfoEl = modal.querySelector('#selectedBranchInfo');
-  const branchNameEl = modal.querySelector('#selectedBranchName');
-  const branchAddressEl = modal.querySelector('#selectedBranchAddress');
-  
-  if (orderIdEl) orderIdEl.textContent = orderId;
-  if (etaEl) etaEl.textContent = lang === 'ar' ? `الوقت المتوقع: ≈ ${eta}` : `Estimated time: ≈ ${eta}`;
-  
-  // ✅ معلومات الفرع
-  if (orderData?.deliveryMethod === 'pickup' && orderData?.branch && branchInfoEl) {
-    import('./checkout-delivery.js').then(({ branches }) => {
-      const branch = branches[orderData.branch];
-      if (branch && branchNameEl && branchAddressEl) {
-        branchNameEl.textContent = branch.name[lang];
-        branchAddressEl.textContent = branch.address[lang];
-        branchInfoEl.style.display = 'block';
-      }
-    }).catch(err => console.warn('⚠️ Branch info load failed:', err));
-  } else if (branchInfoEl) {
-    branchInfoEl.style.display = 'none';
-  }
-  
-  // ✅ Setup الأزرار
-  const copyBtn = modal.querySelector('#copyOrderIdBtn');
-  const whatsappBtn = modal.querySelector('#shareWhatsAppBtn');
-  const trackBtn = modal.querySelector('#trackOrderBtn');
-  const continueBtn = modal.querySelector('#continueShoppingBtn');
-  const closeBtn = modal.querySelector('#closeConfirmedBtn');
-  
-  if (copyBtn) {
-    copyBtn.onclick = () => copyOrderId(orderId);
-  }
-  
-  if (whatsappBtn) {
-    whatsappBtn.onclick = () => shareOnWhatsApp(orderId, itemsText, customerPhone);
-  }
-  
-  if (trackBtn) {
-    trackBtn.onclick = () => {
-      closeConfirmedModal();
-      setTimeout(() => showTrackingModal(orderId), 300);
-    };
-  }
-  
-  if (continueBtn) {
-    continueBtn.onclick = () => {
-      closeConfirmedModal();
-    };
-  }
-  
-  if (closeBtn) {
-    closeBtn.onclick = () => closeConfirmedModal();
-  }
-  
-  // ✅ إظهار المودال
-  modal.style.display = 'flex';
-  modal.classList.add('show');
-  modal.classList.remove('hidden');
-  document.body.style.overflow = 'hidden';
-  
-  // ✅ Refresh icons
-  if (typeof lucide !== 'undefined') {
-    lucide.createIcons();
-  }
-  
-  console.log('✅ Confirmed modal shown');
-}*/
 export function showConfirmedModal(orderId, eta, customerPhone, itemsText, orderData) {
   console.log('🔄 Showing confirmed modal:', { orderId, eta });
   
@@ -573,7 +422,109 @@ export function showConfirmedModal(orderId, eta, customerPhone, itemsText, order
   }
   
   console.log('✅ Confirmed modal shown - display:', modal.style.display);
+}*/
+// ================================================================
+// ✅ showConfirmedModal - الدالة الكاملة بعد التعديل
+// ================================================================
+
+export function showConfirmedModal(orderId, eta, customerPhone, itemsText, orderData) {
+  console.log('🔄 Showing confirmed modal:', { orderId, eta });
+  
+  const modal = document.getElementById('orderConfirmedModal');
+  if (!modal) {
+    console.error('❌ Confirmed modal not found in DOM');
+    return;
+  }
+  
+  const lang = window.currentLang || 'ar';
+  
+  // ✅ Update content
+  const orderIdEl = modal.querySelector('#confirmedOrderId');
+  const etaEl = modal.querySelector('#confirmedEta');
+  const branchInfoEl = modal.querySelector('#selectedBranchInfo');
+  const branchNameEl = modal.querySelector('#selectedBranchName');
+  const branchAddressEl = modal.querySelector('#selectedBranchAddress');
+  const deliveryNoticeEl = modal.querySelector('#deliveryEstimatedNotice');
+  
+  if (orderIdEl) orderIdEl.textContent = orderId;
+  if (etaEl) etaEl.textContent = lang === 'ar' ? `الوقت المتوقع: ≈ ${eta}` : `Estimated time: ≈ ${eta}`;
+  
+  // ✅ إشعار رسوم التوصيل التقديرية (للديليفري فقط)
+  if (deliveryNoticeEl && orderData?.deliveryMethod === 'delivery') {
+    const deliveryInfo = orderData?.calculatedPrices?.deliveryInfo;
+    
+    if (deliveryInfo && deliveryInfo.isEstimated) {
+      const message = deliveryInfo.estimatedMessage?.[lang] || 
+                     (lang === 'ar' ? 'رسوم التوصيل تقديرية - سيتم التواصل معك للتأكيد' : 
+                      'Delivery fee is estimated - we will contact you for confirmation');
+      
+      deliveryNoticeEl.innerHTML = `
+        <div style="display: flex; align-items: start; gap: 10px; padding: 12px; background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); border-radius: 8px; border-left: 4px solid #f39c12; margin-top: 16px;">
+          <i data-lucide="info" style="width: 20px; height: 20px; color: #f39c12; flex-shrink: 0; margin-top: 2px;"></i>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: #856404; margin-bottom: 4px; font-size: 14px;">
+              ${lang === 'ar' ? 'ملاحظة هامة' : 'Important Note'}
+            </div>
+            <div style="font-size: 13px; color: #856404; line-height: 1.5;">
+              ${message}
+            </div>
+          </div>
+        </div>
+      `;
+      deliveryNoticeEl.style.display = 'block';
+    } else {
+      deliveryNoticeEl.style.display = 'none';
+    }
+  } else if (deliveryNoticeEl) {
+    deliveryNoticeEl.style.display = 'none';
+  }
+  
+  // ✅ Branch info (للاستلام فقط)
+  if (orderData?.deliveryMethod === 'pickup' && orderData?.branch && branchInfoEl) {
+    import('./checkout-delivery.js').then(({ branches }) => {
+      const branch = branches[orderData.branch];
+      if (branch && branchNameEl && branchAddressEl) {
+        branchNameEl.textContent = branch.name[lang];
+        branchAddressEl.textContent = branch.address[lang];
+        branchInfoEl.style.display = 'block';
+      }
+    }).catch(err => console.warn('⚠️ Branch info load failed:', err));
+  } else if (branchInfoEl) {
+    branchInfoEl.style.display = 'none';
+  }
+  
+  // ✅ Setup buttons
+  const copyBtn = modal.querySelector('#copyOrderIdBtn');
+  const whatsappBtn = modal.querySelector('#shareWhatsAppBtn');
+  const trackBtn = modal.querySelector('#trackOrderBtn');
+  const continueBtn = modal.querySelector('#continueShoppingBtn');
+  const closeBtn = modal.querySelector('#closeConfirmedBtn');
+  
+  if (copyBtn) copyBtn.onclick = () => copyOrderId(orderId);
+  if (whatsappBtn) whatsappBtn.onclick = () => shareOnWhatsApp(orderId, itemsText, customerPhone);
+  if (trackBtn) trackBtn.onclick = () => { closeConfirmedModal(); setTimeout(() => showTrackingModal(orderId), 300); };
+  if (continueBtn) continueBtn.onclick = () => closeConfirmedModal();
+  if (closeBtn) closeBtn.onclick = () => closeConfirmedModal();
+  
+  // ✅ CRITICAL: Show modal with all methods
+  modal.style.display = 'flex';
+  modal.style.opacity = '1';
+  modal.style.visibility = 'visible';
+  modal.classList.remove('hidden');
+  modal.classList.add('show');
+  document.body.style.overflow = 'hidden';
+  
+  // ✅ Force reflow
+  void modal.offsetHeight;
+  
+  // ✅ Refresh icons
+  if (typeof lucide !== 'undefined') {
+    setTimeout(() => lucide.createIcons(), 100);
+  }
+  
+  console.log('✅ Confirmed modal shown - display:', modal.style.display);
 }
+
 // ================================================================
 // ✅ Form Management
 // ================================================================
@@ -945,4 +896,4 @@ if (document.readyState === 'loading') {
 window.closeTrackingModal = closeTrackingModal;
 window.closeConfirmedModal = closeConfirmedModal;
 
-console.log('✅ checkout-ui.js loaded successfully (FIXED VERSION)');
+console.log('✅ checkout-ui.js loaded successfully (UPDATED VERSION)');
