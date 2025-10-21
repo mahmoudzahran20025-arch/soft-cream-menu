@@ -29,7 +29,7 @@ export function toggleLanguage() {
   
   const langBtn = document.getElementById('langToggle');
   if (langBtn) {
-    langBtn.textContent = currentLang === 'ar' ? 'EN' : 'ع';
+    langBtn.textContent = currentLang === 'ar' ? 'EN' : 'AR';
   }
   
   updateLanguage();
@@ -587,6 +587,9 @@ export async function openProductModal(productId) {
     lucide.createIcons();
   }
 }*/
+// ================================================================
+// ===== نافذة المنتج - FIXED for Tailwind =====
+// ================================================================
 
 export async function openProductModal(productId) {
   // ✅ الحصول على المنتج من productsManager
@@ -633,7 +636,9 @@ export async function openProductModal(productId) {
   
   const modal = document.getElementById('productModal');
   if (modal) {
-    modal.classList.add('show');
+    // ✅ FIXED: استخدام Tailwind classes بدل 'show'
+    modal.classList.remove('hidden');  // شيل hidden
+    modal.classList.add('flex');       // حط flex علشان يظهر
     document.body.style.overflow = 'hidden';
   }
   
@@ -643,11 +648,14 @@ export async function openProductModal(productId) {
 }
 
 export function closeProductModal(event) {
-  if (event && !event.target.classList.contains('modal-overlay')) return;
+  // ✅ FIXED: التحقق الصحيح من الضغط على الـ overlay
+  if (event && event.target.id !== 'productModal') return;
   
   const modal = document.getElementById('productModal');
   if (modal) {
-    modal.classList.remove('show');
+    // ✅ FIXED: استخدام Tailwind classes بدل 'show'
+    modal.classList.add('hidden');     // حط hidden علشان يختفي
+    modal.classList.remove('flex');    // شيل flex
     document.body.style.overflow = '';
   }
   

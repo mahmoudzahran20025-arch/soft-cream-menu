@@ -119,7 +119,31 @@
       background: linear-gradient(180deg, rgba(255, 249, 245, 0) 0%, rgba(255, 249, 245, 0.98) 100%);
       z-index: 1;
     }
-    
+    .snowflake {
+    position: absolute;
+    color: #fff;
+    text-shadow: 0 0 8px rgba(0,0,0,0.4);
+    user-select: none;
+    pointer-events: none;
+    animation: snowfall linear infinite;
+    font-size: 1rem;
+  }
+
+  @keyframes snowfall {
+  0% {
+    transform: translateY(-100px) translateX(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) translateX(var(--x-shift)) rotate(360deg);
+    opacity: 0.2;
+  }
+}
+
+body.dark .floating-shape {
+  opacity: 0.08;
+  filter: blur(70px);
+}
     .floating-shape {
       position: absolute;
       border-radius: 50%;
@@ -492,8 +516,14 @@ body.sidebar-open {
   overflow: hidden;
 }
 
-    /* Cart Modal Animation */
-    /*cart modal animation*/
+/* ================================================================
+   Cart Minimal CSS - Animations & Special Effects ONLY
+   Everything else uses Tailwind classes directly in HTML
+   ================================================================ */
+
+/* ============================================================
+   Modal Animations
+   ============================================================ */
 
 .cart-modal-overlay {
   animation: fadeIn 0.3s ease;
@@ -503,40 +533,118 @@ body.sidebar-open {
   display: flex !important;
 }
 
+.cart-modal-overlay.show > div {
+  animation: slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
 @keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
   from {
+    transform: translateY(100%);
     opacity: 0;
   }
   to {
+    transform: translateY(0);
     opacity: 1;
   }
 }
 
-/* Cart Items Styling */
-.cart-item {
-  @apply bg-gray-50 dark:bg-gray-700 rounded-xl p-4 mb-3 border border-gray-200 dark:border-gray-600 transition-all hover:shadow-md;
+/* ============================================================
+   Custom Scrollbar (Tailwind doesn't support this)
+   ============================================================ */
+
+#cartItemsMobile::-webkit-scrollbar,
+#cartItemsDesktop::-webkit-scrollbar {
+  width: 6px;
 }
 
-.cart-item-name {
-  @apply font-semibold text-gray-800 dark:text-gray-100 mb-1;
+#cartItemsMobile::-webkit-scrollbar-track,
+#cartItemsDesktop::-webkit-scrollbar-track {
+  background: #f9fafb;
+  border-radius: 10px;
 }
 
-.cart-item-price {
-  @apply text-primary font-bold;
+.dark #cartItemsMobile::-webkit-scrollbar-track,
+.dark #cartItemsDesktop::-webkit-scrollbar-track {
+  background: #374151;
 }
 
-.quantity-controls {
-  @apply flex items-center gap-2;
+#cartItemsMobile::-webkit-scrollbar-thumb,
+#cartItemsDesktop::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #ec4899, #8b5cf6);
+  border-radius: 10px;
 }
 
-.quantity-btn {
-  @apply w-8 h-8 rounded-lg bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 flex items-center justify-center hover:bg-primary hover:text-white hover:border-primary transition-all;
+#cartItemsMobile::-webkit-scrollbar-thumb:hover,
+#cartItemsDesktop::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #db2777, #7c3aed);
 }
 
-.quantity-value {
-  @apply min-w-[40px] text-center font-bold text-gray-800 dark:text-gray-100;
+/* ============================================================
+   Pulse Animation for Empty State
+   ============================================================ */
+
+.cart-empty-pulse {
+  animation: gentlePulse 2s ease-in-out infinite;
 }
 
+@keyframes gentlePulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+/* ============================================================
+   Glow Effect for Checkout Button
+   ============================================================ */
+
+.shadow-glow {
+  box-shadow: 0 10px 40px rgba(236, 72, 153, 0.4);
+}
+
+.dark .shadow-glow {
+  box-shadow: 0 10px 40px rgba(236, 72, 153, 0.3);
+}
+
+/* ============================================================
+   Ripple Effect on Button Click
+   ============================================================ */
+
+.btn-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-ripple::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn-ripple:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* ============================================================
+   THAT'S IT! Everything else = Tailwind classes ✅
+   ============================================================ */
 /*product card hover effect*/
 /* Product Grid - Enhanced */
 .products-grid {
@@ -1192,47 +1300,111 @@ body.sidebar-open {
   </div>
 </aside>
 
-   <!-- Cart Modal -->
-<div class="cart-modal-overlay fixed inset-0 bg-black/75 backdrop-blur-md z-[200] hidden items-end md:items-center justify-center md:p-6" id="cartModal" onclick="closeCartModal(event)">
-  <div class="bg-white dark:bg-gray-800 rounded-t-3xl md:rounded-3xl max-w-[750px] w-full max-h-[92vh] md:max-h-[85vh] overflow-y-auto shadow-2xl relative transition-all duration-300" onclick="event.stopPropagation()">
+ <!-- ================================================================
+     Cart Modal - Pure Tailwind CSS (No custom classes)
+     ================================================================ -->
+
+<div class="cart-modal-overlay fixed inset-0 bg-black/75 backdrop-blur-md z-[200] hidden items-end md:items-center justify-center md:p-6" 
+     id="cartModal" 
+     onclick="closeCartModal(event)">
+  
+  <div class="bg-white dark:bg-gray-800 rounded-t-3xl md:rounded-3xl max-w-[750px] w-full max-h-[92vh] md:max-h-[85vh] overflow-hidden shadow-2xl relative" 
+       onclick="event.stopPropagation()">
     
-    <!-- Cart Header -->
+    <!-- ============================================================
+         Cart Header
+         ============================================================ -->
     <div class="flex items-center justify-between p-5 border-b border-pink-100 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10 backdrop-blur-sm">
+      
+      <!-- Title + Badge -->
       <div class="flex items-center gap-3">
-        <i data-lucide="shopping-cart" class="w-6 h-6 text-primary"></i>
-        <span class="text-xl font-bold text-gray-800 dark:text-gray-100" id="cart-title-mobile">سلة الطلبات</span>
-        <span class="min-w-[24px] h-6 px-2 bg-primary text-white rounded-full text-sm font-bold flex items-center justify-center shadow-sm" id="cartBadgeMobile">0</span>
-      </div>
-      <button class="w-10 h-10 rounded-full hover:bg-pink-50 dark:hover:bg-gray-700 flex items-center justify-center transition-all duration-200 hover:rotate-90" onclick="closeCartModal()">
-        <i data-lucide="x" class="w-5 h-5 text-gray-700 dark:text-gray-300"></i>
-      </button>
-    </div>
-
-    <!-- Cart Items -->
-    <div class="p-5 min-h-[300px]" id="cartItemsMobile">
-      <div class="flex flex-col items-center justify-center py-16 text-center text-gray-400">
-        <div class="w-20 h-20 bg-pink-50 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
-          <i data-lucide="shopping-basket" class="w-10 h-10 text-gray-300 dark:text-gray-500"></i>
+        <div class="w-11 h-11 bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/30 dark:to-purple-900/30 rounded-xl flex items-center justify-center shadow-sm">
+          <i data-lucide="shopping-cart" class="w-5 h-5 text-primary"></i>
         </div>
-        <p class="text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2">سلتك فارغة حالياً</p>
-        <p class="text-sm text-gray-500 dark:text-gray-400">أضف بعض الآيس كريم اللذيذ! 🍦</p>
+        <span class="text-xl font-bold text-gray-800 dark:text-gray-100" id="cart-title-mobile">سلة الطلبات</span>
+        <span class="min-w-[28px] h-6 px-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-full text-sm font-bold flex items-center justify-center shadow-lg" 
+              id="cartBadgeMobile">0</span>
       </div>
+      
+      <!-- Close Button -->
+      <button class="w-11 h-11 rounded-xl hover:bg-pink-50 dark:hover:bg-gray-700 flex items-center justify-center transition-all duration-200 hover:rotate-90 active:scale-95" 
+              onclick="closeCartModal()">
+        <i data-lucide="x" class="w-6 h-6 text-gray-700 dark:text-gray-300"></i>
+      </button>
+      
     </div>
 
-    <!-- Cart Footer -->
-    <div class="hidden p-5 border-t border-pink-100 dark:border-gray-700 space-y-4 sticky bottom-0 bg-white dark:bg-gray-800 backdrop-blur-sm" id="cartFooterMobile">
-      <div class="flex justify-between items-center text-lg font-bold">
-        <span class="text-gray-700 dark:text-gray-300">الإجمالي:</span>
-        <span class="text-2xl text-primary" id="cartTotalMobile">0 ج.م</span>
+    <!-- ============================================================
+         Cart Items Area (Scrollable)
+         ============================================================ -->
+    <div class="p-5 min-h-[350px] max-h-[calc(85vh-280px)] overflow-y-auto" 
+         id="cartItemsMobile">
+      
+      <!-- Empty State (Default) -->
+      <div class="flex flex-col items-center justify-center py-16 text-center">
+        <div class="cart-empty-pulse w-24 h-24 bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-full flex items-center justify-center mb-5">
+          <i data-lucide="shopping-basket" class="w-12 h-12 text-pink-300 dark:text-gray-500"></i>
+        </div>
+        <p class="text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2" 
+           id="cart-empty-title">سلتك فارغة حالياً</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400" 
+           id="cart-empty-subtitle">أضف بعض الآيس كريم اللذيذ! 🍦</p>
       </div>
-      <button class="w-full py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-2xl font-bold text-lg flex items-center justify-center gap-3 shadow-lg transition-all hover:-translate-y-1 hover:shadow-glow active:scale-95" onclick="initiateCheckout()">
-        <i data-lucide="check-circle-2" class="w-5 h-5"></i>
-        <span>إتمام الطلب</span>
+      
+      <!-- Cart items will be injected here by JavaScript -->
+      
+    </div>
+
+    <!-- ============================================================
+         Cart Footer (Hidden when empty)
+         ============================================================ -->
+    <div class="hidden p-5 border-t border-pink-100 dark:border-gray-700 space-y-4 sticky bottom-0 bg-gradient-to-t from-white via-white to-transparent dark:from-gray-800 dark:via-gray-800 backdrop-blur-sm" 
+         id="cartFooterMobile">
+      
+      <!-- Total Price Box -->
+      <div class="flex justify-between items-center bg-gradient-to-r from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-2xl p-4 shadow-sm border border-pink-100 dark:border-gray-600">
+        <div class="flex items-center gap-2">
+          <i data-lucide="calculator" class="w-5 h-5 text-primary"></i>
+          <span class="text-lg font-bold text-gray-700 dark:text-gray-300" 
+                id="cart-total-label">الإجمالي:</span>
+        </div>
+        <span class="text-2xl font-extrabold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent" 
+              id="cartTotalMobile">0 ج.م</span>
+      </div>
+      
+      <!-- Checkout Button -->
+      <button class="btn-ripple w-full py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-2xl font-bold text-lg flex items-center justify-center gap-3 shadow-lg transition-all hover:-translate-y-1 hover:shadow-glow active:scale-95 relative overflow-hidden group" 
+              onclick="initiateCheckout()">
+        <span class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></span>
+        <i data-lucide="check-circle-2" class="w-6 h-6 relative z-10"></i>
+        <span class="relative z-10" id="checkout-btn-text">إتمام الطلب</span>
       </button>
+      
+      <!-- Trust Badges -->
+      <div class="flex items-center justify-center gap-4 text-xs text-gray-500 dark:text-gray-400 pt-2 border-t border-pink-100 dark:border-gray-700">
+        <div class="flex items-center gap-1.5">
+          <i data-lucide="shield-check" class="w-4 h-4 text-green-500"></i>
+          <span id="secure-payment-text">دفع آمن</span>
+        </div>
+        <div class="w-1 h-1 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
+        <div class="flex items-center gap-1.5">
+          <i data-lucide="truck" class="w-4 h-4 text-blue-500"></i>
+          <span id="fast-delivery-text">توصيل سريع</span>
+        </div>
+      </div>
+      
     </div>
     
   </div>
 </div>
+
+<!-- ================================================================
+     NOTES:
+     ✅ All styling uses Tailwind classes directly
+     ✅ Only animations are in separate CSS file
+     ✅ JavaScript will inject cart items dynamically
+     ✅ IDs are used for translation updates
+     ================================================================ -->
 
 <!-- Product Modal - ENHANCED -->
 <div class="modal-overlay fixed inset-0 bg-gray-900/80 backdrop-blur-lg z-[200] hidden items-center justify-center p-4 animate-fade-in" id="productModal" onclick="closeProductModal(event)">
