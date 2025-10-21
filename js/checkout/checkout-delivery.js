@@ -1,27 +1,21 @@
 // ================================================================
-// CHECKOUT DELIVERY - التوصيل والفروع (FIXED VERSION)
+// CHECKOUT DELIVERY - FIXED VERSION WITH LOCATION VALIDATION
 // ================================================================
 
-console.log('🔄 Loading checkout-delivery.js');
+console.log('🔄 Loading checkout-delivery.js (FIXED)');
 
-// ================================================================
-// Static Imports
-// ================================================================
 import { api } from '../api.js';
 import { calculateDistance, showToast } from '../utils.js';
 
-// ================================================================
-// State Management
-// ================================================================
 export let branches = {};
 let _isLoadingBranches = false;
 
 // ================================================================
-// ✅ FIX 1: Enhanced loadBranches with Better Error Handling
+// Load Branches
 // ================================================================
 export async function loadBranches() {
   if (_isLoadingBranches) {
-    console.log('⚠️ Branches already loading, waiting...');
+    console.log('⚠️ Branches already loading...');
     return;
   }
   
@@ -30,7 +24,7 @@ export async function loadBranches() {
   
   try {
     const branchesData = await api.getBranches();
-    console.log('📤 Received branches data:', branchesData);
+    console.log('📤 Received branches:', branchesData);
     
     branches = {};
     
@@ -51,22 +45,21 @@ export async function loadBranches() {
             lng: parseFloat(branch.lng || branch.longitude || 31.2357) 
           },
           phone: branch.phone || '',
-          available: branch.available !== false // Default to true if not specified
+          available: branch.available !== false
         };
       });
       
       console.log('✅ Branches processed:', Object.keys(branches).length);
     } else {
-      throw new Error('No branches data received or empty array');
+      throw new Error('No branches data');
     }
     
-    // Render branches after loading
     renderBranchSelection();
     
   } catch (error) {
-    console.error('❌ Failed to load branches from API:', error);
+    console.error('❌ Failed to load branches:', error);
     
-    // Fallback branches
+    // Fallback
     branches = {
       'main': {
         id: 'main',
@@ -77,7 +70,7 @@ export async function loadBranches() {
         available: true
       },
       'maadi': {
-        id: 'maadi', 
+        id: 'maadi',
         name: { ar: 'فرع المعادي', en: 'Maadi Branch' },
         address: { ar: 'شارع 9، المعادي', en: '9 St, Maadi' },
         location: { lat: 29.9602, lng: 31.2494 },
@@ -94,7 +87,6 @@ export async function loadBranches() {
       }
     };
     
-    console.log('⚠️ Using fallback branches:', Object.keys(branches).length);
     renderBranchSelection();
   } finally {
     _isLoadingBranches = false;
@@ -102,32 +94,24 @@ export async function loadBranches() {
 }
 
 // ================================================================
-// ✅ FIX 2: Enhanced renderBranchSelection
+// Render Branch Selection
 // ================================================================
 export async function renderBranchSelection() {
-  console.log('🔄 Rendering branch selection...');
+  console.log('🔄 Rendering branches...');
   
   const branchSelection = document.getElementById('branchSelection');
-  if (!branchSelection) {
-    console.warn('⚠️ Branch selection element not found');
-    return;
-  }
+  if (!branchSelection) return;
   
   const lang = window.currentLang || 'ar';
-  let container = branchSelection.querySelector('.branches-grid');
+  let container = branchSelection.querySelector('.branches-grid') || 
+                  branchSelection.querySelector('.branch-options');
   
   if (!container) {
-    container = branchSelection.querySelector('.branch-options');
-  }
-  
-  if (!container) {
-    console.warn('⚠️ Branch container not found, creating one...');
     container = document.createElement('div');
     container.className = 'branches-grid';
     branchSelection.appendChild(container);
   }
   
-  // Get user location for distance calculation
   let currentLocation = null;
   try {
     const { getUserLocation } = await import('./checkout-core.js');
@@ -137,17 +121,15 @@ export async function renderBranchSelection() {
   }
   
   let html = '';
-  
-  const availableBranches = Object.keys(branches).filter(branchId => {
-    const branch = branches[branchId];
-    return branch.available !== false;
-  });
+  const availableBranches = Object.keys(branches).filter(id => 
+    branches[id].available !== false
+  );
   
   if (availableBranches.length === 0) {
     html = `
       <div class="no-branches" style="text-align: center; padding: 20px; color: #666;">
-        <i data-lucide="store-x" style="width: 48px; height: 48px; margin-bottom: 16px;"></i>
-        <p>${lang === 'ar' ? 'لا توجد فروع متاحة حالياً' : 'No branches available currently'}</p>
+        <i data-lucide="store-x" style="width: 48px; height: 48px;"></i>
+        <p>${lang === 'ar' ? 'لا توجد فروع متاحة' : 'No branches available'}</p>
       </div>
     `;
   } else {
@@ -171,18 +153,24 @@ export async function renderBranchSelection() {
             </div>
           `;
         } catch (err) {
-          console.warn('⚠️ Error calculating distance for branch:', branchId, err);
+          console.warn('⚠️ Distance calc failed:', err);
         }
       }
       
       html += `
-        <div class="branch-card" data-branch="${branchId}" onclick="checkoutModule.selectBranch('${branchId}')" style="cursor: pointer; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; transition: all 0.2s ease; background: white;">
+        <div class="branch-card" data-branch="${branchId}" 
+             onclick="checkoutModule.selectBranch('${branchId}')" 
+             style="cursor: pointer; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; transition: all 0.2s; background: white;">
           <div class="branch-icon" style="margin-bottom: 8px; color: #2196F3;">
             <i data-lucide="store" style="width: 20px; height: 20px;"></i>
           </div>
           <div class="branch-info">
-            <div class="branch-name" style="font-weight: 600; color: #333; margin-bottom: 4px;">${branch.name[lang]}</div>
-            <div class="branch-address" style="font-size: 12px; color: #666; line-height: 1.4;">${branch.address[lang]}</div>
+            <div class="branch-name" style="font-weight: 600; color: #333; margin-bottom: 4px;">
+              ${branch.name[lang]}
+            </div>
+            <div class="branch-address" style="font-size: 12px; color: #666; line-height: 1.4;">
+              ${branch.address[lang]}
+            </div>
             ${distanceHtml}
             ${branch.phone ? `
               <div class="branch-phone" style="display: flex; align-items: center; gap: 4px; font-size: 12px; color: #666; margin-top: 4px;">
@@ -198,38 +186,15 @@ export async function renderBranchSelection() {
   
   container.innerHTML = html;
   
-  // Add CSS for hover and selected states
-  const style = document.createElement('style');
-  style.textContent = `
-    .branch-card:hover {
-      border-color: #2196F3 !important;
-      box-shadow: 0 2px 8px rgba(33, 150, 243, 0.15) !important;
-    }
-    .branch-card.selected {
-      border-color: #2196F3 !important;
-      background: #f0f7ff !important;
-      box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2) !important;
-    }
-    .branch-card.selected .branch-icon {
-      color: #1976D2 !important;
-    }
-  `;
-  
-  if (!document.getElementById('branch-card-styles')) {
-    style.id = 'branch-card-styles';
-    document.head.appendChild(style);
-  }
-  
-  // Refresh icons
   if (typeof lucide !== 'undefined') {
     lucide.createIcons();
   }
   
-  console.log('✅ Branch selection rendered with', availableBranches.length, 'branches');
+  console.log('✅ Branches rendered:', availableBranches.length);
 }
 
 // ================================================================
-// ✅ FIX 3: Enhanced selectDeliveryMethod with Better State Management
+// Select Delivery Method
 // ================================================================
 export async function selectDeliveryMethod(method) {
   console.log('🔄 Selecting delivery method:', method);
@@ -237,14 +202,12 @@ export async function selectDeliveryMethod(method) {
   const lang = window.currentLang || 'ar';
   
   try {
-    // Update core state
     const { setDeliveryMethod, setBranch, recalculatePrices } = await import('./checkout-core.js');
     setDeliveryMethod(method);
     
-    // Update UI selections
-    document.querySelectorAll('.delivery-option').forEach(option => {
-      option.classList.remove('selected');
-    });
+    document.querySelectorAll('.delivery-option').forEach(opt => 
+      opt.classList.remove('selected')
+    );
     
     const pickupOption = document.getElementById('pickupOption');
     const deliveryOption = document.getElementById('deliveryOption');
@@ -253,74 +216,45 @@ export async function selectDeliveryMethod(method) {
     const checkoutForm = document.getElementById('checkoutForm');
     
     if (method === 'pickup') {
-      console.log('🔄 Setting up pickup method...');
-      
-      // Select pickup option
       if (pickupOption) pickupOption.classList.add('selected');
-      
-      // Show branch selection
       if (branchSelection) {
         branchSelection.style.display = 'block';
-        
-        // Ensure branches are rendered
         if (Object.keys(branches).length === 0) {
           await loadBranches();
         } else {
           renderBranchSelection();
         }
       }
-      
-      // Hide address group
       if (addressGroup) addressGroup.style.display = 'none';
+      if (checkoutForm) checkoutForm.classList.remove('show');
       
-      // Hide checkout form until branch is selected
-      if (checkoutForm) {
-        checkoutForm.classList.remove('show');
-      }
-      
-      // Clear selected branch
       setBranch(null);
-      document.querySelectorAll('.branch-card').forEach(card => {
-        card.classList.remove('selected');
-      });
+      document.querySelectorAll('.branch-card').forEach(card => 
+        card.classList.remove('selected')
+      );
       
     } else if (method === 'delivery') {
-      console.log('🔄 Setting up delivery method...');
-      
-      // Select delivery option
       if (deliveryOption) deliveryOption.classList.add('selected');
-      
-      // Hide branch selection
       if (branchSelection) branchSelection.style.display = 'none';
-      
-      // Show address group
       if (addressGroup) addressGroup.style.display = 'block';
-      
-      // Show checkout form
       if (checkoutForm) {
         checkoutForm.classList.add('show');
-        
-        // Scroll to form after a brief delay
         setTimeout(() => {
           checkoutForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }, 100);
       }
       
-      // Clear selected branch
       setBranch(null);
-      document.querySelectorAll('.branch-card').forEach(card => {
-        card.classList.remove('selected');
-      });
+      document.querySelectorAll('.branch-card').forEach(card => 
+        card.classList.remove('selected')
+      );
     }
     
-    // Recalculate prices
     await recalculatePrices();
     
-    // Update order summary
     const { updateOrderSummary } = await import('./checkout-ui.js');
     updateOrderSummary();
     
-    // Refresh icons
     if (typeof lucide !== 'undefined') {
       lucide.createIcons();
     }
@@ -331,14 +265,14 @@ export async function selectDeliveryMethod(method) {
     console.error('❌ Failed to select delivery method:', error);
     showToast(
       lang === 'ar' ? 'خطأ' : 'Error',
-      lang === 'ar' ? 'فشل في تحديد طريقة التوصيل' : 'Failed to select delivery method',
+      lang === 'ar' ? 'فشل في تحديد طريقة التوصيل' : 'Failed to select method',
       'error'
     );
   }
 }
 
 // ================================================================
-// ✅ FIX 4: Enhanced selectBranch with Better UX
+// ✅ CRITICAL FIX: selectBranch - PREVENT BRANCH LOCATION USAGE
 // ================================================================
 export async function selectBranch(branchId) {
   console.log('🔄 Selecting branch:', branchId);
@@ -356,53 +290,83 @@ export async function selectBranch(branchId) {
   }
   
   try {
-    // Update core state
-    const { setBranch, recalculatePrices } = await import('./checkout-core.js');
+    const { 
+      setBranch, 
+      recalculatePrices, 
+      getUserLocation,
+      getSelectedDeliveryMethod 
+    } = await import('./checkout-core.js');
+    
+    const deliveryMethod = getSelectedDeliveryMethod();
+    
+    // ✅ CRITICAL: للتوصيل - تحذير إذا لم يحدد موقعه
+    if (deliveryMethod === 'delivery') {
+      const userLocation = getUserLocation();
+      
+      if (!userLocation || !userLocation.lat || !userLocation.lng) {
+        console.warn('⚠️ No user location set for delivery!');
+        
+        showToast(
+          lang === 'ar' ? 'تنبيه!' : 'Warning!',
+          lang === 'ar' 
+            ? 'الرجاء تحديد موقعك أولاً باستخدام زر "استخدام الموقع الحالي"' 
+            : 'Please set your location first using "Use Current Location" button',
+          'warning',
+          6000
+        );
+        
+        // ⚠️ إبراز زر الموقع
+        const locationBtn = document.getElementById('locationBtn');
+        if (locationBtn) {
+          locationBtn.style.animation = 'pulse 1s ease-in-out 3';
+          locationBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        return; // ← توقف ولا تكمل!
+      }
+    }
+    
+    // ✅ Update state (branch only - NOT location!)
     setBranch(branchId);
     
-    // Update UI selections
-    document.querySelectorAll('.branch-card').forEach(card => {
-      card.classList.remove('selected');
-    });
+    // Update UI
+    document.querySelectorAll('.branch-card').forEach(card => 
+      card.classList.remove('selected')
+    );
     
     const selectedCard = document.querySelector(`[data-branch="${branchId}"]`);
     if (selectedCard) {
       selectedCard.classList.add('selected');
-      
-      // Brief highlight effect
       selectedCard.style.transform = 'scale(1.02)';
       setTimeout(() => {
         selectedCard.style.transform = '';
       }, 150);
     }
     
-    // Show checkout form
+    // Show form
     const checkoutForm = document.getElementById('checkoutForm');
     if (checkoutForm) {
       checkoutForm.classList.add('show');
-      
-      // Smooth scroll to form
       setTimeout(() => {
         checkoutForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }, 100);
     }
     
-    // Recalculate prices
+    // Recalculate
     await recalculatePrices();
     
-    // Update order summary
     const { updateOrderSummary } = await import('./checkout-ui.js');
     updateOrderSummary();
     
-    // Show success feedback
+    // Success
     const branch = branches[branchId];
     showToast(
       lang === 'ar' ? 'تم التحديد' : 'Selected',
-      `${branch.name[lang]} - ${branch.address[lang]}`,
+      `${branch.name[lang]}`,
       'success'
     );
     
-    console.log('✅ Branch selected:', branchId, branch.name[lang]);
+    console.log('✅ Branch selected:', branchId);
     
   } catch (error) {
     console.error('❌ Failed to select branch:', error);
@@ -415,10 +379,10 @@ export async function selectBranch(branchId) {
 }
 
 // ================================================================
-// ✅ FIX 5: Enhanced Location Functions
+// Request Location
 // ================================================================
 export function requestLocation() {
-  console.log('🔄 Requesting location permission...');
+  console.log('🔄 Requesting location...');
   
   if (!navigator.geolocation) {
     const lang = window.currentLang || 'ar';
@@ -430,22 +394,23 @@ export function requestLocation() {
     return;
   }
   
-  const permissionModal = document.getElementById('permissionModal');
-  if (permissionModal) {
-    permissionModal.classList.remove('hidden');
-    permissionModal.classList.add('show'); 
-    permissionModal.style.display = 'flex';
-    console.log('✅ Permission modal shown');
+  const modal = document.getElementById('permissionModal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.classList.add('show');
+    modal.style.display = 'flex';
   }
 }
 
+// ================================================================
+// ✅ Allow Location - CORRECT IMPLEMENTATION
+// ================================================================
 export async function allowLocation() {
   console.log('🔄 Getting user location...');
   
   const locationBtn = document.getElementById('locationBtn');
   const lang = window.currentLang || 'ar';
   
-  // Update button to loading state
   if (locationBtn) {
     locationBtn.disabled = true;
     locationBtn.innerHTML = `
@@ -461,25 +426,27 @@ export async function allowLocation() {
   const options = {
     enableHighAccuracy: true,
     timeout: 10000,
-    maximumAge: 300000 // 5 minutes
+    maximumAge: 300000
   };
   
   navigator.geolocation.getCurrentPosition(
     async (position) => {
-      console.log('✅ Location obtained:', position.coords);
+      console.log('✅ GPS Location obtained:', position.coords);
       
       try {
-        // Update core state
         const { setUserLocation, recalculatePrices } = await import('./checkout-core.js');
+        
+        // ✅ CORRECT: موقع المستخدم من GPS (ليس موقع الفرع!)
         const location = {
           lat: position.coords.latitude,
           lng: position.coords.longitude,
           accuracy: position.coords.accuracy
         };
         
+        console.log('📍 Setting user location:', location);
         setUserLocation(location);
         
-        // Update button to success state
+        // Update button
         if (locationBtn) {
           locationBtn.classList.add('active');
           locationBtn.disabled = false;
@@ -489,29 +456,25 @@ export async function allowLocation() {
           `;
         }
         
-        // Fill address field with coordinates
+        // Fill address
         const addressField = document.getElementById('customerAddress');
         if (addressField) {
           const coords = `${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`;
-          const accuracyText = lang === 'ar' ? `الدقة: ${Math.round(position.coords.accuracy)}م` : `Accuracy: ${Math.round(position.coords.accuracy)}m`;
+          const accuracy = Math.round(position.coords.accuracy);
           
-          addressField.value = lang === 'ar' 
-            ? `الموقع الحالي (${coords}) - ${accuracyText}`
-            : `Current location (${coords}) - ${accuracyText}`;
+          addressField.value = lang === 'ar'
+            ? `الموقع الحالي (${coords}) - الدقة: ${accuracy}م`
+            : `Current location (${coords}) - Accuracy: ${accuracy}m`;
         }
         
-        // Close permission modal
         closePermissionModal();
-        
-        // Update branch distances
         updateBranchDistances(location);
         
-        // Recalculate prices if delivery method is selected
         await recalculatePrices();
         
         showToast(
           lang === 'ar' ? 'تم بنجاح!' : 'Success!',
-          lang === 'ar' ? 'تم تحديد موقعك بنجاح' : 'Location obtained successfully',
+          lang === 'ar' ? 'تم تحديد موقعك بنجاح' : 'Location obtained',
           'success'
         );
         
@@ -525,29 +488,26 @@ export async function allowLocation() {
       }
     },
     (error) => {
-      console.error('❌ Location error:', error);
+      console.error('❌ GPS error:', error);
       
+      const lang = window.currentLang || 'ar';
       let errorMessage = '';
+      
       switch (error.code) {
         case error.PERMISSION_DENIED:
-          errorMessage = lang === 'ar' ? 'تم رفض إذن الموقع' : 'Location permission denied';
+          errorMessage = lang === 'ar' ? 'تم رفض إذن الموقع' : 'Permission denied';
           break;
         case error.POSITION_UNAVAILABLE:
-          errorMessage = lang === 'ar' ? 'الموقع غير متاح' : 'Location unavailable';
+          errorMessage = lang === 'ar' ? 'الموقع غير متاح' : 'Unavailable';
           break;
         case error.TIMEOUT:
-          errorMessage = lang === 'ar' ? 'انتهت مهلة تحديد الموقع' : 'Location request timeout';
+          errorMessage = lang === 'ar' ? 'انتهت المهلة' : 'Timeout';
           break;
         default:
-          errorMessage = lang === 'ar' ? 'خطأ في تحديد الموقع' : 'Location error';
-          break;
+          errorMessage = lang === 'ar' ? 'خطأ في الموقع' : 'Location error';
       }
       
-      showToast(
-        lang === 'ar' ? 'خطأ' : 'Error',
-        errorMessage,
-        'error'
-      );
+      showToast(lang === 'ar' ? 'خطأ' : 'Error', errorMessage, 'error');
       
       resetLocationButton();
       closePermissionModal();
@@ -557,13 +517,13 @@ export async function allowLocation() {
 }
 
 function resetLocationButton() {
-  const locationBtn = document.getElementById('locationBtn');
+  const btn = document.getElementById('locationBtn');
   const lang = window.currentLang || 'ar';
   
-  if (locationBtn) {
-    locationBtn.disabled = false;
-    locationBtn.classList.remove('active');
-    locationBtn.innerHTML = `
+  if (btn) {
+    btn.disabled = false;
+    btn.classList.remove('active');
+    btn.innerHTML = `
       <i data-lucide="navigation"></i>
       <span>${lang === 'ar' ? 'استخدام الموقع الحالي' : 'Use Current Location'}</span>
     `;
@@ -586,15 +546,12 @@ function closePermissionModal() {
 function updateBranchDistances(userLocation) {
   console.log('🔄 Updating branch distances...');
   
-  if (!userLocation || Object.keys(branches).length === 0) {
-    return;
-  }
+  if (!userLocation || Object.keys(branches).length === 0) return;
   
   const lang = window.currentLang || 'ar';
   
   Object.keys(branches).forEach(branchId => {
     const branch = branches[branchId];
-    
     if (!branch.location) return;
     
     try {
@@ -605,21 +562,17 @@ function updateBranchDistances(userLocation) {
         branch.location.lng
       );
       
-      // Update existing distance display
       const branchCard = document.querySelector(`[data-branch="${branchId}"]`);
       if (branchCard) {
         let distanceEl = branchCard.querySelector('.branch-distance');
         
         if (!distanceEl) {
-          // Create distance element if it doesn't exist
           distanceEl = document.createElement('div');
           distanceEl.className = 'branch-distance';
           distanceEl.style.cssText = 'display: flex; align-items: center; gap: 4px; font-size: 12px; color: #666; margin-top: 4px;';
           
-          const branchInfo = branchCard.querySelector('.branch-info');
-          if (branchInfo) {
-            branchInfo.appendChild(distanceEl);
-          }
+          const info = branchCard.querySelector('.branch-info');
+          if (info) info.appendChild(distanceEl);
         }
         
         distanceEl.innerHTML = `
@@ -629,20 +582,19 @@ function updateBranchDistances(userLocation) {
       }
       
     } catch (err) {
-      console.warn('⚠️ Error updating distance for branch:', branchId, err);
+      console.warn('⚠️ Distance update failed:', err);
     }
   });
   
-  // Refresh icons
   if (typeof lucide !== 'undefined') {
     lucide.createIcons();
   }
   
-  console.log('✅ Branch distances updated');
+  console.log('✅ Distances updated');
 }
 
 // ================================================================
-// ✅ FIX 6: Utility Functions
+// Utility Functions
 // ================================================================
 export function getBranches() {
   return branches;
@@ -656,22 +608,17 @@ export function isLoadingBranches() {
   return _isLoadingBranches;
 }
 
-// ================================================================
-// ✅ FIX 7: Cleanup Function
-// ================================================================
 export function resetDeliveryState() {
   console.log('🔄 Resetting delivery state...');
   
-  // Clear branch selection UI
-  document.querySelectorAll('.delivery-option').forEach(option => {
-    option.classList.remove('selected');
-  });
+  document.querySelectorAll('.delivery-option').forEach(opt => 
+    opt.classList.remove('selected')
+  );
   
-  document.querySelectorAll('.branch-card').forEach(card => {
-    card.classList.remove('selected');
-  });
+  document.querySelectorAll('.branch-card').forEach(card => 
+    card.classList.remove('selected')
+  );
   
-  // Hide UI elements
   const branchSelection = document.getElementById('branchSelection');
   if (branchSelection) branchSelection.style.display = 'none';
   
@@ -681,10 +628,21 @@ export function resetDeliveryState() {
   const checkoutForm = document.getElementById('checkoutForm');
   if (checkoutForm) checkoutForm.classList.remove('show');
   
-  // Reset location button
   resetLocationButton();
   
   console.log('✅ Delivery state reset');
 }
 
-console.log('✅ checkout-delivery.js loaded successfully');
+// ================================================================
+// Add pulse animation for location button
+// ================================================================
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(33, 150, 243, 0.7); }
+    50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(33, 150, 243, 0); }
+  }
+`;
+document.head.appendChild(style);
+
+console.log('✅ checkout-delivery.js loaded (FIXED VERSION)');

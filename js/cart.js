@@ -316,6 +316,9 @@ async function updateDesktopCartSidebar(total, translations) {
 // ================================================================
 // Update Single Cart UI (Mobile/Desktop Modal)
 // ================================================================
+// ================================================================
+// Update Single Cart UI (Mobile/Desktop Modal)
+// ================================================================
 async function updateSingleCartUI(itemsId, totalId, footerId, total, translations) {
   const cartItemsEl = document.getElementById(itemsId);
   const cartTotal = document.getElementById(totalId);
@@ -372,27 +375,61 @@ async function updateSingleCartUI(itemsId, totalId, footerId, total, translation
       const name = currentLang === 'ar' ? product.name : (product.nameEn || product.name);
       const price = product.price || 0;
       const itemTotal = price * item.quantity;
+      const imageUrl = product.image || 'https://via.placeholder.com/80x80?text=Ice+Cream';
       
       html += `
-        <div class="cart-item">
-          <div class="cart-item-header">
-            <span class="cart-item-name">${name}</span>
-            <button class="cart-item-remove" onclick="window.cartModule.removeFromCart('${item.productId}')">
-              <i data-lucide="x"></i>
-            </button>
+        <div class="flex items-start gap-4 p-4 bg-gradient-to-br from-pink-50/50 to-purple-50/50 dark:from-gray-700/30 dark:to-gray-600/30 rounded-2xl hover:shadow-lg transition-all duration-300 mb-3">
+          
+          <!-- Product Image -->
+          <div class="relative flex-shrink-0">
+            <img src="${imageUrl}" 
+                 alt="${name}" 
+                 class="w-20 h-20 rounded-xl object-cover shadow-md ring-2 ring-white dark:ring-gray-600">
+            <div class="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-primary to-secondary text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg">
+              ${item.quantity}
+            </div>
           </div>
-          <div class="cart-item-footer">
-            <div class="quantity-controls">
-              <button class="quantity-btn" onclick="window.cartModule.updateQuantity('${item.productId}', -1)">
-                <i data-lucide="minus"></i>
-              </button>
-              <span class="quantity-value">${item.quantity}</span>
-              <button class="quantity-btn" onclick="window.cartModule.updateQuantity('${item.productId}', 1)">
-                <i data-lucide="plus"></i>
+          
+          <!-- Product Details -->
+          <div class="flex-1 min-w-0">
+            
+            <!-- Name + Remove Button -->
+            <div class="flex items-start justify-between gap-2 mb-3">
+              <h4 class="text-base font-bold text-gray-800 dark:text-gray-100 leading-tight">${name}</h4>
+              <button onclick="window.cartModule.removeFromCart('${item.productId}')" 
+                      class="flex-shrink-0 w-8 h-8 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center justify-center transition-colors group">
+                <i data-lucide="trash-2" class="w-4 h-4 text-gray-400 group-hover:text-red-500 transition-colors"></i>
               </button>
             </div>
-            <span class="cart-item-price">${itemTotal.toFixed(2)} ${currency}</span>
+            
+            <!-- Price + Quantity Controls -->
+            <div class="flex items-center justify-between">
+              
+              <!-- Quantity Controls -->
+              <div class="flex items-center gap-2 bg-white dark:bg-gray-700 rounded-xl shadow-sm p-1">
+                <button onclick="window.cartModule.updateQuantity('${item.productId}', -1)" 
+                        class="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/30 dark:to-purple-900/30 hover:from-primary hover:to-secondary hover:text-white flex items-center justify-center transition-all duration-200 active:scale-95">
+                  <i data-lucide="minus" class="w-4 h-4"></i>
+                </button>
+                <span class="min-w-[32px] text-center font-bold text-gray-800 dark:text-gray-100">${item.quantity}</span>
+                <button onclick="window.cartModule.updateQuantity('${item.productId}', 1)" 
+                        class="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/30 dark:to-purple-900/30 hover:from-primary hover:to-secondary hover:text-white flex items-center justify-center transition-all duration-200 active:scale-95">
+                  <i data-lucide="plus" class="w-4 h-4"></i>
+                </button>
+              </div>
+              
+              <!-- Item Total Price -->
+              <div class="text-right">
+                <div class="text-xs text-gray-500 dark:text-gray-400 mb-0.5">${price.toFixed(2)} ${currency}</div>
+                <div class="text-lg font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  ${itemTotal.toFixed(2)} ${currency}
+                </div>
+              </div>
+              
+            </div>
+            
           </div>
+          
         </div>
       `;
     } catch (error) {
