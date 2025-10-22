@@ -88,7 +88,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   
   <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
   
   <!-- Fuse.js -->
   <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>
@@ -2083,7 +2082,10 @@ body.sidebar-open {
   <!-- External Scripts -->
    <!-- npm install -D tailwindcss -->
   <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js"></script>
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<script type="module">
+  import { createIcons } from "https://cdn.jsdelivr.net/npm/lucide@0.475.0/dist/esm/lucide.js";
+  createIcons();
+</script>
   <script type="module" src="js/animations.js"></script>
   <script src="js/translations-data.js"></script>
   <script type="module" src="js/translations.js"></script>

@@ -414,21 +414,18 @@ export class ToastManager {
  * Toast Manager - Mobile & Desktop Optimized
  * Features: Swipe to dismiss, Haptic feedback, Auto-stack management
  */
+/**
+ * Toast Manager - Simplified & Fixed
+ */
 
-export function showToast(type = 'success', title = 'Success', message = '', duration = 5000) {
+export function showToast(type = 'success', title = 'Success', message = '', duration = 3000) {
   if (!window.toastManager) {
     window.toastManager = new ToastManager('toastContainer');
   }
   
-  // Add haptic feedback on mobile
+  // Simple haptic feedback on mobile
   if ('vibrate' in navigator) {
-    if (type === 'error') {
-      navigator.vibrate(200);
-    } else if (type === 'success') {
-      navigator.vibrate([50, 50, 50]);
-    } else if (type === 'warning') {
-      navigator.vibrate(100);
-    }
+    navigator.vibrate(50);
   }
   
   return window.toastManager.show(type, title, message, duration);
@@ -445,10 +442,10 @@ export class ToastManager {
     }
   }
 
-  show(type = 'success', title = 'Success', message = '', duration = 5000) {
+  show(type = 'success', title = 'Success', message = '', duration = 3000) {
     if (!this.container) return;
 
-    // Remove oldest toast if we hit the limit
+    // Remove oldest if limit reached
     if (this.toasts.length >= this.maxToasts) {
       this.hide(this.toasts[0]);
     }
@@ -457,183 +454,117 @@ export class ToastManager {
     this.container.appendChild(toastEl);
     this.toasts.push(toastEl);
 
-    // Show animation
-    requestAnimationFrame(() => {
-      toastEl.classList.add('show');
-    });
+    // Show with animation
+    setTimeout(() => toastEl.classList.add('show'), 10);
 
     // Auto hide
-    const hideTimeout = setTimeout(() => {
+    const timeout = setTimeout(() => {
       this.hide(toastEl);
     }, duration);
 
-    // Store timeout ID for manual dismiss
-    toastEl.dataset.timeoutId = hideTimeout;
+    toastEl.hideTimeout = timeout;
 
     return toastEl;
   }
 
   createToast(type, title, message, duration) {
     const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
+    toast.className = `toast toast-${type}`;
 
-    const iconMap = {
-      success: '<i class="fas fa-check-circle"></i>',
-      error: '<i class="fas fa-times-circle"></i>',
-      warning: '<i class="fas fa-exclamation-triangle"></i>',
-      info: '<i class="fas fa-info-circle"></i>'
+    const icons = {
+      success: '✓',
+      error: '✕',
+      warning: '⚠',
+      info: 'ℹ'
     };
 
     toast.innerHTML = `
-      <div class="toast-icon">${iconMap[type] || iconMap.info}</div>
+      <div class="toast-icon">${icons[type] || icons.info}</div>
       <div class="toast-content">
         <div class="toast-title">${title}</div>
         ${message ? `<div class="toast-message">${message}</div>` : ''}
       </div>
-      <button class="toast-close" type="button" aria-label="Close">
-        <i class="fas fa-times"></i>
-      </button>
-      <div class="toast-progress" style="animation-duration: ${duration}ms"></div>
+      <button class="toast-close" type="button">×</button>
+      <div class="toast-bar" style="animation-duration: ${duration}ms"></div>
     `;
 
     // Close button
-    const closeBtn = toast.querySelector('.toast-close');
-    closeBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      clearTimeout(toast.dataset.timeoutId);
+    toast.querySelector('.toast-close').onclick = () => {
+      clearTimeout(toast.hideTimeout);
       this.hide(toast);
+    };
+
+    // Simple swipe for mobile
+    let startX = 0;
+    let currentX = 0;
+
+    toast.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+      clearTimeout(toast.hideTimeout);
     });
 
-    // Add touch support for swipe to dismiss (mobile)
-    this.addSwipeSupport(toast);
-
-    // Pause progress on hover (desktop)
-    toast.addEventListener('mouseenter', () => {
-      const progress = toast.querySelector('.toast-progress');
-      progress.style.animationPlayState = 'paused';
-      clearTimeout(toast.dataset.timeoutId);
+    toast.addEventListener('touchmove', (e) => {
+      currentX = e.touches[0].clientX;
+      const diff = currentX - startX;
+      if (Math.abs(diff) > 10) {
+        toast.style.transform = `translateX(${diff}px)`;
+        toast.style.opacity = Math.max(0, 1 - Math.abs(diff) / 150);
+      }
     });
 
-    toast.addEventListener('mouseleave', () => {
-      const progress = toast.querySelector('.toast-progress');
-      progress.style.animationPlayState = 'running';
-      
-      // Calculate remaining time
-      const computedStyle = window.getComputedStyle(progress);
-      const animationDuration = parseFloat(computedStyle.animationDuration) * 1000;
-      const currentTime = parseFloat(computedStyle.animationDelay) || 0;
-      const remainingTime = animationDuration + currentTime;
-      
-      const hideTimeout = setTimeout(() => {
+    toast.addEventListener('touchend', () => {
+      const diff = currentX - startX;
+      if (Math.abs(diff) > 80) {
         this.hide(toast);
-      }, Math.max(remainingTime, 500));
-      
-      toast.dataset.timeoutId = hideTimeout;
+      } else {
+        toast.style.transform = '';
+        toast.style.opacity = '';
+        toast.hideTimeout = setTimeout(() => this.hide(toast), 2000);
+      }
     });
 
     return toast;
   }
 
-  addSwipeSupport(toast) {
-    let touchStartX = 0;
-    let touchStartY = 0;
-    let touchCurrentX = 0;
-    let isSwiping = false;
-
-    toast.addEventListener('touchstart', (e) => {
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-      isSwiping = false;
-      
-      // Pause auto-hide while touching
-      clearTimeout(toast.dataset.timeoutId);
-      const progress = toast.querySelector('.toast-progress');
-      progress.style.animationPlayState = 'paused';
-    }, { passive: true });
-
-    toast.addEventListener('touchmove', (e) => {
-      touchCurrentX = e.touches[0].clientX;
-      const touchCurrentY = e.touches[0].clientY;
-      const diffX = touchCurrentX - touchStartX;
-      const diffY = Math.abs(touchCurrentY - touchStartY);
-
-      // Only swipe horizontally if not scrolling vertically
-      if (Math.abs(diffX) > 10 && diffY < 30) {
-        isSwiping = true;
-        e.preventDefault();
-        
-        const opacity = Math.max(0, 1 - Math.abs(diffX) / 200);
-        toast.style.transform = `translateX(${diffX}px)`;
-        toast.style.opacity = opacity;
-      }
-    }, { passive: false });
-
-    toast.addEventListener('touchend', (e) => {
-      const diffX = touchCurrentX - touchStartX;
-
-      if (isSwiping && Math.abs(diffX) > 100) {
-        // Dismiss if swiped far enough
-        toast.style.transform = `translateX(${diffX > 0 ? '100%' : '-100%'})`;
-        toast.style.opacity = '0';
-        setTimeout(() => this.hide(toast), 200);
-      } else {
-        // Reset position
-        toast.style.transform = '';
-        toast.style.opacity = '';
-        
-        // Resume auto-hide
-        const progress = toast.querySelector('.toast-progress');
-        progress.style.animationPlayState = 'running';
-        
-        const remainingTime = 2000; // Resume with 2 seconds remaining
-        const hideTimeout = setTimeout(() => {
-          this.hide(toast);
-        }, remainingTime);
-        
-        toast.dataset.timeoutId = hideTimeout;
-      }
-
-      isSwiping = false;
-    }, { passive: true });
-  }
-
   hide(toastEl) {
     if (!toastEl || !toastEl.parentNode) return;
     
-    toastEl.classList.remove('show');
     toastEl.classList.add('hide');
-    
     setTimeout(() => {
-      if (toastEl.parentNode) {
-        toastEl.remove();
-      }
+      toastEl.remove();
       this.toasts = this.toasts.filter(t => t !== toastEl);
     }, 300);
   }
 
-  success(title, message = '', duration = 5000) {
+  success(title, message = '', duration = 3000) {
     return this.show('success', title, message, duration);
   }
 
-  error(title, message = '', duration = 5000) {
+  error(title, message = '', duration = 3000) {
     return this.show('error', title, message, duration);
   }
 
-  warning(title, message = '', duration = 5000) {
+  warning(title, message = '', duration = 3000) {
     return this.show('warning', title, message, duration);
   }
 
-  info(title, message = '', duration = 5000) {
+  info(title, message = '', duration = 3000) {
     return this.show('info', title, message, duration);
   }
 
   clearAll() {
     this.toasts.forEach(toast => {
-      clearTimeout(toast.dataset.timeoutId);
+      clearTimeout(toast.hideTimeout);
       this.hide(toast);
     });
   }
 }
+
+// Usage:
+// showToast('success', 'تم الحفظ', 'تم حفظ البيانات بنجاح');
+// showToast('error', 'خطأ', 'حدث خطأ في الاتصال');
+// showToast('warning', 'تحذير');
+// showToast('info', 'معلومة جديدة');
 
 // Usage Examples:
 /*
