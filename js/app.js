@@ -231,12 +231,12 @@ async function initApp() {
       });
       console.log('✅ API configured for:', calculatedBaseURL);
     }
-    
+    /*
     // 3️⃣ تهيئة أيقونات Lucide
     if (typeof lucide !== 'undefined') {
       lucide.createIcons();
       console.log('✅ Lucide icons initialized');
-    }
+    }*/
   
     // 4️⃣ تحميل المنتجات من API
     if (window.productsManager) {

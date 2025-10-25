@@ -1,2108 +1,1294 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Soft cream</title>
-  <meta name="description" content="استمتع بألذ أنواع الآيس كريم والسوفت كريم. منيو رقمي تفاعلي مع توصيل سريع">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+		<title>Soft cream - سوفت كريم</title>
+		<meta name="description" content="استمتع بألذ أنواع الآيس كريم والسوفت كريم. منيو رقمي تفاعلي مع توصيل سريع" />
+		<meta name="theme-color" content="#FF6B9D" />
+		<link rel="icon" href="favicon.ico" type="image/x-icon" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link rel="preconnect" href="https://i.ibb.co" />
+		<link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&family=Tajawal:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
 
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Tailwind Config -->
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            primary: {
-              DEFAULT: '#FF6B9D',
-              dark: '#E85589',
-              light: '#FF8FB3'
-            },
-            secondary: '#C9A0DC',
-            accent: '#A8E6CF',
-            cream: {
-              50: '#FFF9F5',
-              100: '#FFF5EE',
-              200: '#FFE4E1'
-            }
-          },
-          fontFamily: {
-            cairo: ['Cairo', 'sans-serif'],
-            tajawal: ['Tajawal', 'sans-serif']
-          },
-          animation: {
-            'float': 'float 3s ease-in-out infinite',
-            'slide-up': 'slideUp 0.4s ease',
-            'slide-in-right': 'slideInRight 0.3s ease',
-            'fade-in': 'fadeIn 0.3s ease',
-            'scale-in': 'scaleIn 0.4s ease',
-            'spin-slow': 'spin 3s linear infinite',
-            'pulse-glow': 'pulseGlow 2s infinite'
-          },
-          keyframes: {
-            float: {
-              '0%, 100%': { transform: 'translateY(0px)' },
-              '50%': { transform: 'translateY(-20px)' }
-            },
-            slideUp: {
-              '0%': { transform: 'translateY(100%)', opacity: '0' },
-              '100%': { transform: 'translateY(0)', opacity: '1' }
-            },
-            slideInRight: {
-              '0%': { transform: 'translateX(50px)', opacity: '0' },
-              '100%': { transform: 'translateX(0)', opacity: '1' }
-            },
-            fadeIn: {
-              '0%': { opacity: '0' },
-              '100%': { opacity: '1' }
-            },
-            scaleIn: {
-              '0%': { transform: 'scale(0.9)', opacity: '0' },
-              '100%': { transform: 'scale(1)', opacity: '1' }
-            },
-            pulseGlow: {
-              '0%, 100%': { boxShadow: '0 0 20px rgba(255, 107, 157, 0.4)' },
-              '50%': { boxShadow: '0 0 40px rgba(255, 107, 157, 0.8)' }
-            }
-          },
-          boxShadow: {
-            'glow': '0 0 40px rgba(255, 107, 157, 0.5)',
-            'glow-lg': '0 10px 60px rgba(255, 107, 157, 0.4)',
-            'cream': '0 4px 20px rgba(255, 107, 157, 0.18)'
-          }
-        }
+		<link rel="stylesheet" href="./dist/output.css" />
+
+		<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Restaurant",
+  "@id": "https://www.talabat.com/egypt/soft-cream",
+  "name": "Soft Cream",
+  "alternateName": "سوفت كريم",
+  "description": "استمتع بألذ أنواع الآيس كريم والسوفت كريم. منيو رقمي تفاعلي مع توصيل سريع عبر Talabat.",
+  "image": "https://i.ibb.co/C5zs6WZ6/546595638-767747059559727-9006561812810172332-n-1-1.jpg",
+  "servesCuisine": ["Desserts", "Ice Cream"],
+  "priceRange": "$$",
+  "telephone": "+201277771411",
+  "email": "info@softcream.eg",
+  "url": "https://www.talabat.com/egypt/soft-cream",
+  "menu": "https://www.talabat.com/egypt/soft-cream",
+  "sameAs": [
+    "https://www.facebook.com/Soft.cream9",
+    "https://www.instagram.com/soft.cream9/",
+    "https://goo.gl/maps/your-main-branch-map-link"
+  ],
+  "foundingDate": "2020",
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.5",
+    "reviewCount": "8542",
+    "author": {
+      "@type": "Organization",
+      "name": "Talabat"
+    }
+  },
+
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"],
+      "opens": "10:00",
+      "closes": "00:00"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": "Friday",
+      "opens": "14:00",
+      "closes": "00:00"
+    }
+  ],
+
+  "hasMenu": {
+    "@type": "Menu",
+    "url": "https://www.talabat.com/egypt/soft-cream"
+  },
+
+  "hasBranch": [
+    {
+      "@type": "Restaurant",
+      "name": "Soft Cream - Downtown (Talaat Harb)",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Talaat Harb, Bab Al Louq, Qasr El Nil, Cairo Governorate 4280170",
+        "addressLocality": "Cairo",
+        "addressCountry": "EG"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 30.0444,
+        "longitude": 31.2357
+      },
+      "telephone": "+201277771411",
+      "sameAs": ["https://goo.gl/maps/your-downtown-map"]
+    },
+    {
+      "@type": "Restaurant",
+      "name": "Soft Cream - Maadi (El Nahda Street)",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "El Nahda Street, Maadi, Cairo Governorate",
+        "addressLocality": "Maadi",
+        "addressCountry": "EG"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 29.9622,
+        "longitude": 31.2769
+      },
+      "telephone": "+201277771422",
+      "sameAs": ["https://goo.gl/maps/your-maadi-map"]
+    },
+    {
+      "@type": "Restaurant",
+      "name": "Soft Cream - Zamalek (26 July Street)",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "26 July Street, Zamalek, Cairo Governorate",
+        "addressLocality": "Zamalek",
+        "addressCountry": "EG"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 30.0621,
+        "longitude": 31.2196
+      },
+      "telephone": "+201277771433",
+      "sameAs": ["https://goo.gl/maps/your-zamalek-map"]
+    }
+  ]
+}
+
+
+		</script>
+	</head>
+
+	<body class="bg-cream-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 overflow-x-hidden transition-colors duration-300">
+		<svg xmlns="http://www.w3.org/2000/svg" style="display: none;" aria-hidden="true" id="critical-icons-sprite">
+			<symbol id="shopping-cart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<circle cx="9" cy="21" r="1" />
+				<circle cx="20" cy="21" r="1" />
+				<path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+			</symbol>
+			<symbol id="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></symbol>
+			<symbol id="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<circle cx="12" cy="12" r="5" />
+				<line x1="12" x2="12" y1="1" y2="3" />
+				<line x1="12" x2="12" y1="21" y2="23" />
+				<line x1="4.22" x2="5.64" y1="4.22" y2="5.64" />
+				<line x1="18.36" x2="19.78" y1="18.36" y2="19.78" />
+				<line x1="1" x2="3" y1="12" y2="12" />
+				<line x1="21" x2="23" y1="12" y2="12" />
+				<line x1="4.22" x2="5.64" y1="19.78" y2="18.36" />
+				<line x1="18.36" x2="19.78" y1="5.64" y2="4.22" />
+			</symbol>
+			<symbol id="menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<line x1="3" y1="12" x2="21" y2="12" />
+				<line x1="3" y1="6" x2="21" y2="6" />
+				<line x1="3" y1="18" x2="21" y2="18" />
+			</symbol>
+			<symbol id="home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+				<polyline points="9 22 9 12 15 12 15 22" />
+			</symbol>
+			<symbol id="search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<circle cx="11" cy="11" r="8" />
+				<path d="m21 21-4.3-4.3" />
+			</symbol>
+			<symbol id="x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M18 6 6 18" />
+				<path d="m6 6 12 12" />
+			</symbol>
+			<symbol id="user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+				<circle cx="12" cy="7" r="4" />
+			</symbol>
+			<symbol id="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M5 12h14" />
+				<path d="M12 5v14" />
+			</symbol>
+			<symbol id="minus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14" /></symbol>
+			<symbol id="package" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<path d="m7.5 4.27 9 5.15" />
+				<path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+				<path d="m3.3 7 8.7 5 8.7-5" />
+				<path d="M12 22V12" />
+			</symbol>
+			<symbol id="map-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+				<circle cx="12" cy="10" r="3" />
+			</symbol>
+			<symbol id="check-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+				<polyline points="22 4 12 14.01 9 11.01" />
+			</symbol>
+			<symbol id="globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<circle cx="12" cy="12" r="10" />
+				<path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+				<path d="M2 12h20" />
+			</symbol>
+			<symbol id="check-circle-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<circle cx="12" cy="12" r="10" />
+				<path d="m9 12 2 2 4-4" />
+			</symbol>
+			<symbol id="calculator" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<rect width="16" height="20" x="4" y="2" rx="2" />
+				<line x1="8" x2="16" y1="6" y2="6" />
+				<line x1="16" x2="16" y1="14" y2="18" />
+				<path d="M16 10h.01" />
+				<path d="M12 10h.01" />
+				<path d="M8 10h.01" />
+				<path d="M12 14h.01" />
+				<path d="M8 14h.01" />
+				<path d="M12 18h.01" />
+				<path d="M8 18h.01" />
+			</symbol>
+			<symbol id="shield-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+				<path d="m9 12 2 2 4-4" />
+			</symbol>
+			<symbol id="truck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" />
+				<path d="M15 18H9" />
+				<path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14" />
+				<circle cx="17" cy="18" r="2" />
+				<circle cx="7" cy="18" r="2" />
+			</symbol>
+			<symbol id="shopping-basket" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<path d="m15 11-1 9" />
+				<path d="m19 11-4-7" />
+				<path d="M2 11h20" />
+				<path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4" />
+				<path d="M4.5 15.5h15" />
+				<path d="m5 11 4-7" />
+				<path d="m9 11 1 9" />
+			</symbol>
+		</svg>
+
+		<div class="animated-background" aria-hidden="true">
+			<div class="floating-shape shape-1"></div>
+			<div class="floating-shape shape-2"></div>
+			<div class="floating-shape shape-3"></div>
+		</div>
+
+		<div class="page-content relative z-10">
+			<div
+				id="toastContainer"
+				class="fixed z-toast flex flex-col gap-3 pointer-events-none top-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-md md:top-6 md:right-6 md:left-auto md:translate-x-0 md:w-auto md:max-w-[420px]"
+			></div>
+
+			<header
+				class="header fixed top-0 left-0 right-0 z-header backdrop-blur-2xl bg-cream-50/90 dark:bg-gray-900/90 border-b border-pink-100 dark:border-gray-800 shadow-lg transition-[height,background-color,box-shadow] duration-300 h-[100px]"
+				id="header"
+			>
+				<div class="header-content max-w-[1600px] mx-auto px-6 h-full flex items-center justify-between">
+					<div class="header-logo flex items-center gap-4 cursor-pointer transition-transform hover:scale-105" onclick="scrollToTop()">
+						<div class="logo-icon">
+							<img
+								src="https://i.ibb.co/C5zs6WZ6/546595638-767747059559727-9006561812810172332-n-1-1.jpg"
+								alt="سوفت كريم"
+								class="w-[50px] h-[50px] rounded-full object-cover ring-2 ring-pink-200 dark:ring-pink-500/30"
+								loading="eager"
+								width="50"
+								height="50"
+							/>
+						</div>
+						<div class="logo-text">
+							<h1 id="header-title" class="text-3xl font-black gradient-text leading-tight tracking-tight">سوفت كريم</h1>
+							<p id="header-subtitle" class="text-sm font-semibold text-gray-600 dark:text-gray-400">اصل الايس كريم 🍦</p>
+						</div>
+					</div>
+					<div class="header-actions flex items-center gap-2">
+						<button class="header-cart-btn icon-btn icon-btn-ghost group relative" onclick="openCartModal()" aria-label="فتح سلة التسوق" role="button">
+							<svg class="icon-md text-gray-700 dark:text-gray-300 group-hover:text-primary transition-colors" aria-hidden="true"><use href="#shopping-cart"></use></svg>
+							<span
+								class="header-cart-badge absolute top-1.5 right-1.5 min-w-[20px] h-5 px-1.5 bg-red-500 text-white rounded-full text-[11px] font-bold hidden items-center justify-center shadow-lg animate-pulse"
+								id="headerCartBadge"
+							>
+								0
+							</span>
+						</button>
+						<button class="lang-toggle icon-btn icon-btn-ghost text-sm font-semibold" onclick="toggleLanguage()" id="langToggle" aria-label="تغيير اللغة" role="button">EN</button>
+						<button class="sidebar-trigger icon-btn icon-btn-ghost z-sidebar" id="sidebarTrigger" aria-label="فتح القائمة" role="button">
+							<span class="hamburger-icon w-[22px] h-4 relative flex flex-col justify-between">
+								<span class="block h-[2.5px] w-full bg-gray-700 dark:bg-gray-300 rounded transition-all duration-300"></span>
+								<span class="block h-[2.5px] w-full bg-gray-700 dark:bg-gray-300 rounded transition-all duration-300"></span>
+								<span class="block h-[2.5px] w-full bg-gray-700 dark:bg-gray-300 rounded transition-all duration-300"></span>
+							</span>
+						</button>
+					</div>
+				</div>
+			</header>
+
+			<main id="main-content">
+				<div class="tab-content active" id="menu-tab">
+					<div class="w-full max-w-6xl mx-auto pt-[120px]">
+						<div class="carousel-container relative mb-8">
+							<div class="absolute top-0 left-0 right-0 h-1 bg-white/10 rounded-full overflow-hidden z-20">
+								<div class="progress-bar absolute top-0 left-0 h-full w-1/4 bg-gradient-to-r from-pink-500 via-purple-500 to-amber-500"></div>
+							</div>
+							<button
+								class="nav-button absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center z-20 text-white touch-manipulation"
+								onclick="prevSlide()"
+								title="السابق"
+								aria-label="الشريحة السابقة"
+								role="button"
+							>
+								<svg class="icon-md sm:icon-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+							</button>
+							<button
+								class="nav-button absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center z-20 text-white touch-manipulation"
+								onclick="nextSlide()"
+								title="التالي"
+								aria-label="الشريحة التالية"
+								role="button"
+							>
+								<svg class="icon-md sm:icon-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+							</button>
+							<div class="carousel-track relative h-[500px] sm:h-[550px] md:h-[600px] overflow-hidden">
+								<div class="carousel-item active absolute top-0 left-0 w-full h-full">
+									<div class="w-full h-full p-4 sm:p-8">
+										<div class="w-full h-full rounded-xl sm:rounded-2xl overflow-hidden relative group bg-gradient-to-br from-pink-50/95 to-white/95 dark:from-gray-800/95 dark:to-gray-900/95">
+											<div class="shimmer"></div>
+											<div class="carousel-content absolute inset-0 flex flex-col-reverse md:flex-row items-center gap-4 md:gap-6 p-4 sm:p-8 md:p-12">
+												<div class="w-full md:w-1/2 h-64 md:h-full flex items-center justify-center">
+													<div class="relative w-full max-w-sm aspect-square">
+														<img
+															src="https://i.ibb.co/LzP97qhB/481279444-627854640201713-219907065737357117-n-min.webp"
+															alt="آيس كريم فانيليا بصوص كراميل"
+															class="w-full h-full object-cover rounded-3xl shadow-2xl transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
+															loading="eager"
+															decoding="async"
+															width="400"
+															height="400"
+														/>
+														<div class="absolute inset-0 bg-gradient-to-br from-pink-500/20 to-amber-500/20 rounded-3xl"></div>
+													</div>
+												</div>
+												<div class="w-full md:w-1/2 text-right space-y-4">
+													<h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-pink-600 mb-4 tracking-wide">آيس كريم فانيليا بصوص كراميل</h2>
+													<p class="text-lg sm:text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
+														آيس كريم فانيليا كريمي يخطف الأنفاس، تعلوه طبقة سلسة من صوص الكراميل الذهبي، يقدم تجربة تناغم بين نعومة الفانيليا وغنى الكراميل في كل قضمة.
+													</p>
+													<div class="pt-4">
+														<span class="inline-block px-6 py-3 bg-gradient-to-r from-pink-500 to-amber-500 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
+															اطلب الآن
+														</span>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="carousel-item next absolute top-0 left-0 w-full h-full">
+									<div class="w-full h-full p-4 sm:p-8">
+										<div class="w-full h-full rounded-xl sm:rounded-2xl overflow-hidden relative group bg-gradient-to-br from-purple-50/95 to-white/95 dark:from-gray-700/95 dark:to-gray-800/95">
+											<div class="shimmer"></div>
+											<div class="carousel-content absolute inset-0 flex flex-col md:flex-row-reverse items-center gap-6 p-6 sm:p-12">
+												<div class="w-full md:w-1/2 h-64 md:h-full flex items-center justify-center">
+													<div class="relative w-full max-w-sm aspect-square">
+														<img
+															src="https://i.ibb.co/4nNL0KR6/Gemini-Generated-Image-7z63p77z63p77z63.png"
+															alt="سوفت مانجو طبيعي"
+															class="w-full h-full object-cover rounded-3xl shadow-2xl transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-3"
+															loading="eager"
+															decoding="async"
+															width="400"
+															height="400"
+														/>
+														<div class="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-3xl"></div>
+													</div>
+												</div>
+												<div class="w-full md:w-1/2 text-left space-y-4">
+													<h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-purple-600 mb-4 tracking-wide">سوفت مانجو طبيعي</h2>
+													<p class="text-lg sm:text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
+														سوفت مانجو يختزل جوهر الفاكهة الاستوائية في كل ملعقة. قوام حريري يذوب بلطف، بنقاء ولون طبيعي يعكس طبيعة المانجو الطازج دون أي إضافات صناعية.
+													</p>
+													<div class="pt-4">
+														<span class="inline-block px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
+															اطلب الآن
+														</span>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="carousel-item hidden absolute top-0 left-0 w-full h-full">
+									<div class="w-full h-full p-4 sm:p-8">
+										<div class="w-full h-full rounded-xl sm:rounded-2xl overflow-hidden relative group bg-gradient-to-br from-amber-50/95 to-white/95 dark:from-gray-600/95 dark:to-gray-700/95">
+											<div class="shimmer"></div>
+											<div class="carousel-content absolute inset-0 flex flex-col md:flex-row items-center gap-6 p-6 sm:p-12">
+												<div class="w-full md:w-1/2 h-64 md:h-full flex items-center justify-center">
+													<div class="relative w-full max-w-sm aspect-square">
+														<img
+															src="https://i.ibb.co/3YspR2nn/489627654-645413408459760-7730691560634138295-n-min.jpg"
+															alt="فانيليا بقطع براوني"
+															class="w-full h-full object-cover rounded-3xl shadow-2xl transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
+															loading="eager"
+															decoding="async"
+															width="400"
+															height="400"
+														/>
+														<div class="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-3xl"></div>
+													</div>
+												</div>
+												<div class="w-full md:w-1/2 text-right space-y-4">
+													<h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-amber-600 mb-4 tracking-wide">فانيليا بقطع براوني</h2>
+													<p class="text-lg sm:text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
+														فانيليا كريمية فاخرة تتخللها قطع غنية من البراوني الشوكولاتي، تخلق تناقضاً رائعاً بين نعومة الآيس كريم وقرمشة الشوكولاتة في تجربة لا تقاوم.
+													</p>
+													<div class="pt-4">
+														<span class="inline-block px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
+															اطلب الآن
+														</span>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="carousel-item hidden absolute top-0 left-0 w-full h-full">
+									<div class="w-full h-full p-4 sm:p-8">
+										<div class="w-full h-full rounded-xl sm:rounded-2xl overflow-hidden relative group bg-gradient-to-br from-green-50/95 to-white/95 dark:from-gray-800/95 dark:to-gray-900/95">
+											<div class="shimmer"></div>
+											<div class="carousel-content absolute inset-0 flex flex-col md:flex-row-reverse items-center gap-6 p-6 sm:p-12">
+												<div class="w-full md:w-1/2 h-64 md:h-full flex items-center justify-center">
+													<div class="relative w-full max-w-sm aspect-square">
+														<img
+															src="https://i.ibb.co/67cV4CJc/484157834-622859394048495-6880924063204865717-n-min.webp"
+															alt="نقاء السوفت آيس كريم"
+															class="w-full h-full object-cover rounded-3xl shadow-2xl transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-3"
+															loading="eager"
+															decoding="async"
+															width="400"
+															height="400"
+														/>
+														<div class="absolute inset-0 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-3xl"></div>
+													</div>
+												</div>
+												<div class="w-full md:w-1/2 text-left space-y-4">
+													<h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-green-600 mb-4 tracking-wide">نقاء السوفت آيس كريم</h2>
+													<p class="text-lg sm:text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
+														تجسيد للنقاء والطبيعة في كل حبة، حيث يبرز السوفت آيس كريم بمكوناته الطبيعية الخالصة، خالي من الألوان الاصطناعية، ليقدم لك جوهر المتعة الحقيقية.
+													</p>
+													<div class="pt-4">
+														<span class="inline-block px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
+															اطلب الآن
+														</span>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-1 sm:gap-2 z-20">
+								<button class="w-8 sm:w-12 h-1 sm:h-1.5 rounded-full bg-white/40 hover:bg-white/60 transition-colors" title="الشريحة 1" aria-label="الانتقال إلى الشريحة 1"></button>
+								<button class="w-8 sm:w-12 h-1 sm:h-1.5 rounded-full bg-white/20 hover:bg-white/60 transition-colors" title="الشريحة 2" aria-label="الانتقال إلى الشريحة 2"></button>
+								<button class="w-8 sm:w-12 h-1 sm:h-1.5 rounded-full bg-white/20 hover:bg-white/60 transition-colors" title="الشريحة 3" aria-label="الانتقال إلى الشريحة 3"></button>
+								<button class="w-8 sm:w-12 h-1 sm:h-1.5 rounded-full bg-white/20 hover:bg-white/60 transition-colors" title="الشريحة 4" aria-label="الانتقال إلى الشريحة 4"></button>
+							</div>
+						</div>
+						<div class="search-section px-4 mb-8">
+							<div class="search-container relative max-w-[700px] mx-auto">
+								<svg class="search-icon absolute right-7 top-1/2 -translate-y-1/2 icon-md text-gray-400 pointer-events-none" aria-hidden="true"><use href="#search"></use></svg>
+								<input
+									type="search"
+									id="searchInput"
+									class="search-input w-full h-[60px] pr-16 pl-6 text-base border-2 border-pink-100 dark:border-gray-700 rounded-full bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder:text-gray-400 transition-all duration-300 focus:outline-none focus:border-primary focus:shadow-glow focus:-translate-y-1 shadow-md hover:shadow-lg"
+									placeholder="ابحث عن منتج..."
+									oninput="handleSearch()"
+									aria-label="البحث عن منتج"
+									style="font-family: 'Cairo', sans-serif;"
+								/>
+								<button
+									class="clear-search absolute left-5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-pink-100 dark:bg-gray-700 text-primary hover:bg-pink-200 dark:hover:bg-gray-600 transition-colors duration-200 items-center justify-center hover:scale-110 active:scale-95 hidden"
+									id="clearSearch"
+									onclick="clearSearch()"
+									aria-label="مسح البحث"
+									role="button"
+								>
+									<svg class="icon-sm" aria-hidden="true"><use href="#x"></use></svg>
+								</button>
+							</div>
+						</div>
+						<div
+							class="categories-section sticky top-[100px] left-0 right-0 backdrop-blur-2xl bg-cream-50/95 dark:bg-gray-900/95 py-4 border-b border-pink-100 dark:border-gray-800 shadow-md transition-all duration-300"
+							id="categoriesSection"
+						>
+							<div class="categories-scroll relative flex gap-3 overflow-x-auto px-4 scroll-smooth scrollbar-hide" id="categoriesScroll"></div>
+						</div>
+						<div class="products-container px-4 pb-8" id="productsContainer"></div>
+					</div>
+				</div>
+			</main>
+
+			<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+			<aside
+				class="sidebar fixed top-0 h-screen bg-white dark:bg-gray-800 shadow-2xl border-r border-pink-100 dark:border-gray-700 flex flex-col z-sidebar overflow-hidden"
+				id="mainSidebar"
+				role="navigation"
+				aria-label="القائمة الجانبية"
+			>
+				<div class="sidebar-header flex items-center justify-between p-4 min-h-[70px] bg-gradient-to-br from-primary to-secondary text-white border-b border-white/20">
+					<div class="sidebar-logo flex items-center gap-3">
+						<img
+							src="https://i.ibb.co/C5zs6WZ6/546595638-767747059559727-9006561812810172332-n-1-1.jpg"
+							alt="سوفت كريم"
+							class="sidebar-logo-img w-12 h-12 rounded-full object-cover border-2 border-white/30 shadow-lg"
+							loading="lazy"
+							decoding="async"
+							width="48"
+							height="48"
+						/>
+						<div class="sidebar-brand">
+							<h3 class="sidebar-brand-title text-lg font-bold m-0">سوفت كريم</h3>
+							<p class="sidebar-brand-subtitle text-xs m-0 opacity-90">أطيب آيس كريم 🍦</p>
+						</div>
+					</div>
+					<button
+						class="sidebar-close w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-[transform,background-color] hover:rotate-90 duration-300"
+						onclick="closeSidebar()"
+						aria-label="إغلاق القائمة"
+						role="button"
+					>
+						<svg class="icon-md" aria-hidden="true"><use href="#x"></use></svg>
+					</button>
+				</div>
+				<div class="sidebar-content flex-1 overflow-y-auto overflow-x-hidden py-3 px-2">
+					<div class="sidebar-section mb-3">
+						<div
+							class="sidebar-profile flex items-center gap-3 p-3 bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-xl cursor-pointer hover:from-pink-100 hover:to-purple-100 dark:hover:from-gray-600 dark:hover:to-gray-500 transition-colors duration-300 border border-pink-100 dark:border-gray-600"
+						>
+							<div class="sidebar-profile-avatar w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white shadow-lg">
+								<svg class="icon-lg" aria-hidden="true"><use href="#user"></use></svg>
+							</div>
+							<div class="sidebar-profile-info">
+								<div class="sidebar-profile-name text-sm font-semibold text-gray-800 dark:text-gray-100 mb-0.5" id="sidebarProfileName">مرحباً بك! 👋</div>
+								<div class="sidebar-profile-status text-xs text-gray-500 dark:text-gray-400" id="sidebarProfileStatus">زائر</div>
+							</div>
+						</div>
+					</div>
+					<div class="sidebar-section mb-3">
+						<nav class="sidebar-nav flex flex-col gap-1" aria-label="التنقل الرئيسي">
+							<a
+								href="#"
+								class="sidebar-nav-item flex items-center gap-3 p-3 rounded-xl text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-colors duration-200 active border border-transparent hover:border-pink-100 dark:hover:border-gray-600"
+								onclick="switchTab('menu'); closeSidebar();"
+							>
+								<div class="sidebar-nav-icon w-10 h-10 flex items-center justify-center rounded-lg bg-gradient-to-br from-primary to-secondary text-white shadow-md">
+									<svg class="icon-md" aria-hidden="true"><use href="#home"></use></svg>
+								</div>
+								<span class="sidebar-nav-text flex-1">الرئيسية</span>
+							</a>
+							<a
+								href="#"
+								class="sidebar-nav-item flex items-center gap-3 p-3 rounded-xl text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-colors duration-200 border border-transparent hover:border-pink-100 dark:hover:border-gray-600"
+								onclick="switchTab('menu'); closeSidebar();"
+							>
+								<div class="sidebar-nav-icon w-10 h-10 flex items-center justify-center rounded-lg bg-pink-50 dark:bg-gray-700 border border-pink-100 dark:border-gray-600">
+									<svg class="icon-md text-primary" aria-hidden="true"><use href="#utensils"></use></svg>
+								</div>
+								<span class="sidebar-nav-text flex-1">المنيو</span>
+							</a>
+							<a
+								href="#"
+								class="sidebar-nav-item flex items-center gap-3 p-3 rounded-xl text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-colors duration-200 border border-transparent hover:border-pink-100 dark:hover:border-gray-600"
+								onclick="openCartModal(); closeSidebar();"
+							>
+								<div class="sidebar-nav-icon w-10 h-10 flex items-center justify-center rounded-lg bg-pink-50 dark:bg-gray-700 relative border border-pink-100 dark:border-gray-600">
+									<svg class="icon-md text-primary" aria-hidden="true"><use href="#shopping-cart"></use></svg>
+									<span class="sidebar-badge-dot absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-gray-700 animate-pulse"></span>
+								</div>
+								<span class="sidebar-nav-text flex-1">السلة</span>
+								<span class="sidebar-badge min-w-[22px] h-5 px-2 bg-gradient-to-r from-primary to-secondary text-white rounded-full text-xs font-bold flex items-center justify-center shadow-sm" id="sidebarCartBadge">0</span>
+							</a>
+							<a
+								href="#"
+								class="sidebar-nav-item flex items-center gap-3 p-3 rounded-xl text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-colors duration-200 border border-transparent hover:border-pink-100 dark:hover:border-gray-600"
+								onclick="openOrdersPage(); closeSidebar();"
+							>
+								<div class="sidebar-nav-icon w-10 h-10 flex items-center justify-center rounded-lg bg-pink-50 dark:bg-gray-700 border border-pink-100 dark:border-gray-600">
+									<svg class="icon-md text-primary" aria-hidden="true"><use href="#package"></use></svg>
+								</div>
+								<span class="sidebar-nav-text flex-1">طلباتي</span>
+								<span class="sidebar-badge sidebar-badge-danger min-w-[22px] h-5 px-2 bg-red-500 text-white rounded-full text-xs font-bold items-center justify-center hidden" id="sidebarOrdersBadge">0</span>
+							</a>
+						</nav>
+					</div>
+					<div class="sidebar-divider h-px bg-gradient-to-r from-transparent via-pink-200 to-transparent dark:via-gray-600 my-3" role="separator"></div>
+					<div class="sidebar-section mb-3">
+						<div class="sidebar-section-title text-xs font-bold uppercase tracking-wider text-primary mb-2 px-2 flex items-center gap-2">
+							<svg class="w-3 h-3" aria-hidden="true"><use href="#sparkles"></use></svg><span>قصتنا</span>
+						</div>
+						<div class="sidebar-about-card bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-800 rounded-xl p-4 border border-pink-100 dark:border-gray-600 shadow-sm">
+							<p class="text-xs text-gray-600 dark:text-gray-300 leading-relaxed mb-3">نحن متخصصون في تقديم أفخر أنواع السوفت آيس كريم والديسرت المميز. منذ تأسيسنا ونحن نسعى لتقديم تجربة استثنائية لعملائنا.</p>
+							<div class="space-y-2">
+								<div class="flex items-start gap-2"><span class="text-primary text-sm mt-0.5">✓</span><span class="text-xs text-gray-700 dark:text-gray-300 font-medium">مكونات طبيعية 100%</span></div>
+								<div class="flex items-start gap-2"><span class="text-primary text-sm mt-0.5">✓</span><span class="text-xs text-gray-700 dark:text-gray-300 font-medium">توصيل سريع خلال 30 دقيقة</span></div>
+								<div class="flex items-start gap-2"><span class="text-primary text-sm mt-0.5">✓</span><span class="text-xs text-gray-700 dark:text-gray-300 font-medium">نكهات حصرية ومتجددة</span></div>
+							</div>
+						</div>
+					</div>
+					<div class="sidebar-section mb-3">
+						<div class="sidebar-section-title text-xs font-bold uppercase tracking-wider text-primary mb-2 px-2 flex items-center gap-2">
+							<svg class="w-3 h-3" aria-hidden="true"><use href="#clock"></use></svg><span>ساعات العمل</span>
+						</div>
+						<div class="sidebar-hours-card bg-gradient-to-br from-green-50 to-blue-50 dark:from-gray-700 dark:to-gray-800 rounded-xl p-4 border border-green-100 dark:border-gray-600 shadow-sm">
+							<div class="space-y-2.5">
+								<div class="flex justify-between items-center">
+									<span class="text-xs font-semibold text-gray-700 dark:text-gray-300">السبت - الخميس</span>
+									<span class="text-xs font-bold text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded-lg">10:00 ص - 12:00 م</span>
+								</div>
+								<div class="flex justify-between items-center">
+									<span class="text-xs font-semibold text-gray-700 dark:text-gray-300">الجمعة</span>
+									<span class="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded-lg">2:00 م - 12:00 م</span>
+								</div>
+							</div>
+							<div class="mt-3 pt-3 border-t border-green-200 dark:border-gray-600">
+								<div class="flex items-center gap-2">
+									<span class="relative flex h-2 w-2">
+										<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+									</span>
+									<span class="text-xs font-bold text-green-600 dark:text-green-400">مفتوح الآن</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="sidebar-divider h-px bg-gradient-to-r from-transparent via-pink-200 to-transparent dark:via-gray-600 my-3" role="separator"></div>
+					<div class="sidebar-section mb-3">
+						<div class="sidebar-section-title text-xs font-bold uppercase tracking-wider text-primary mb-2 px-2 flex items-center gap-2">
+							<svg class="w-3 h-3" aria-hidden="true"><use href="#phone"></use></svg><span>تواصل معنا</span>
+						</div>
+						<div class="sidebar-contact-card bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-800 rounded-xl p-4 border border-blue-100 dark:border-gray-600 shadow-sm space-y-3">
+							<a href="tel:+201234567890" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white dark:hover:bg-gray-700 transition-colors group">
+								<div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition-transform">
+									<svg class="icon-sm" aria-hidden="true"><use href="#phone"></use></svg>
+								</div>
+								<div class="flex-1">
+									<div class="text-[10px] text-gray-500 dark:text-gray-400 font-medium">الهاتف</div>
+									<div class="text-xs font-bold text-gray-800 dark:text-gray-100 direction-ltr">+20 123 456 7890</div>
+								</div>
+							</a>
+							<a href="mailto:info@softcream.com" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white dark:hover:bg-gray-700 transition-colors group">
+								<div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition-transform">
+									<svg class="icon-sm" aria-hidden="true"><use href="#mail"></use></svg>
+								</div>
+								<div class="flex-1">
+									<div class="text-[10px] text-gray-500 dark:text-gray-400 font-medium">البريد</div>
+									<div class="text-xs font-bold text-gray-800 dark:text-gray-100">info@softcream.com</div>
+								</div>
+							</a>
+							<div class="flex items-start gap-3 p-2">
+								<div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white shadow-sm flex-shrink-0">
+									<svg class="icon-sm" aria-hidden="true"><use href="#map-pin"></use></svg>
+								</div>
+								<div class="flex-1">
+									<div class="text-[10px] text-gray-500 dark:text-gray-400 font-medium mb-1">العنوان</div>
+									<div class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">شارع الجيزة، أمام المول الكبير، الجيزة، مصر</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="sidebar-divider h-px bg-gradient-to-r from-transparent via-pink-200 to-transparent dark:via-gray-600 my-3" role="separator"></div>
+					<div class="sidebar-section mb-3">
+						<div class="sidebar-section-title text-xs font-bold uppercase tracking-wider text-gray-400 mb-2 px-2">التفضيلات</div>
+						<div class="sidebar-setting-item flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 mb-2 border border-pink-100 dark:border-gray-600">
+							<label for="sidebarThemeToggle" class="sidebar-setting-label flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+								<svg class="icon-md text-primary" aria-hidden="true"><use href="#moon"></use></svg><span>الوضع الليلي</span>
+							</label>
+							<label class="sidebar-toggle relative w-11 h-6 inline-block cursor-pointer">
+								<input type="checkbox" id="sidebarThemeToggle" class="opacity-0 w-0 h-0" onchange="toggleTheme()" />
+								<span
+									class="sidebar-toggle-slider absolute inset-0 bg-gray-300 dark:bg-gray-600 rounded-full transition-all duration-300 before:absolute before:content-[''] before:h-4 before:w-4 before:left-1 before:bottom-1 before:bg-white before:rounded-full before:transition-all before:duration-300"
+								></span>
+							</label>
+						</div>
+						<div class="sidebar-setting-item flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 border border-pink-100 dark:border-gray-600">
+							<div class="sidebar-setting-label flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+								<svg class="icon-md text-primary" aria-hidden="true"><use href="#globe"></use></svg><span>اللغة</span>
+							</div>
+							<button
+								class="sidebar-lang-btn py-1.5 px-3 bg-white dark:bg-gray-600 border border-pink-200 dark:border-gray-500 rounded-lg text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-pink-100 dark:hover:bg-gray-500 transition-colors duration-300 shadow-sm"
+								id="sidebarLangToggle"
+								onclick="toggleLanguage()"
+								aria-label="تبديل اللغة"
+							>
+								<span class="lang-option" data-lang="ar">🇪🇬 العربية</span><span class="lang-option hidden" data-lang="en">🇬🇧 English</span>
+							</button>
+						</div>
+					</div>
+					<div class="sidebar-divider h-px bg-gradient-to-r from-transparent via-pink-200 to-transparent dark:via-gray-600 my-3" role="separator"></div>
+					<div class="sidebar-section mb-3">
+						<div class="sidebar-section-title text-xs font-bold uppercase tracking-wider text-primary mb-2 px-2 flex items-center gap-2">
+							<svg class="w-3 h-3" aria-hidden="true"><use href="#share-2"></use></svg><span>تابعنا</span>
+						</div>
+						<div class="sidebar-social grid grid-cols-4 gap-2">
+							<a
+								href="https://facebook.com"
+								target="_blank"
+								class="sidebar-social-link w-full aspect-square flex items-center justify-center bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:from-primary hover:to-secondary hover:text-white hover:-translate-y-1 hover:shadow-lg transition-all duration-200 border border-pink-100 dark:border-gray-600"
+								aria-label="Facebook"
+							>
+								<svg class="icon-md" aria-hidden="true"><use href="#facebook"></use></svg>
+							</a>
+							<a
+								href="https://instagram.com"
+								target="_blank"
+								class="sidebar-social-link w-full aspect-square flex items-center justify-center bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:from-primary hover:to-secondary hover:text-white hover:-translate-y-1 hover:shadow-lg transition-all duration-200 border border-pink-100 dark:border-gray-600"
+								aria-label="Instagram"
+							>
+								<svg class="icon-md" aria-hidden="true"><use href="#instagram"></use></svg>
+							</a>
+							<a
+								href="https://twitter.com"
+								target="_blank"
+								class="sidebar-social-link w-full aspect-square flex items-center justify-center bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:from-primary hover:to-secondary hover:text-white hover:-translate-y-1 hover:shadow-lg transition-all duration-200 border border-pink-100 dark:border-gray-600"
+								aria-label="Twitter"
+							>
+								<svg class="icon-md" aria-hidden="true"><use href="#twitter"></use></svg>
+							</a>
+							<a
+								href="https://wa.me/201234567890"
+								target="_blank"
+								class="sidebar-social-link w-full aspect-square flex items-center justify-center bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:from-primary hover:to-secondary hover:text-white hover:-translate-y-1 hover:shadow-lg transition-all duration-200 border border-pink-100 dark:border-gray-600"
+								aria-label="WhatsApp"
+							>
+								<svg class="icon-md" aria-hidden="true"><use href="#message-circle"></use></svg>
+							</a>
+						</div>
+					</div>
+				</div>
+				<div class="sidebar-footer py-3 px-4 border-t border-pink-100 dark:border-gray-700 bg-gradient-to-r from-pink-50 to-purple-50 dark:from-gray-800 dark:to-gray-700">
+					<div class="flex items-center justify-between text-xs">
+						<span class="text-gray-600 dark:text-gray-400 font-medium">© 2025 سوفت كريم</span><span class="px-2 py-1 bg-gradient-to-r from-primary to-secondary text-white rounded-lg font-bold shadow-sm">v1.0.1</span>
+					</div>
+				</div>
+			</aside>
+
+			<div
+				class="cart-modal-overlay fixed inset-0 bg-black/75 backdrop-blur-md z-modal hidden items-end md:items-center justify-center md:p-6"
+				id="cartModal"
+				onclick="closeCartModal(event)"
+				role="dialog"
+				aria-modal="true"
+				aria-labelledby="cart-title-mobile"
+			>
+				<div class="bg-white dark:bg-gray-800 rounded-t-3xl md:rounded-3xl max-w-[750px] w-full max-h-[92vh] md:max-h-[85vh] overflow-hidden shadow-2xl relative" onclick="event.stopPropagation()">
+					<div class="flex items-center justify-between p-5 border-b border-pink-100 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10 backdrop-blur-sm">
+						<div class="flex items-center gap-3">
+							<div class="w-11 h-11 bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/30 dark:to-purple-900/30 rounded-xl flex items-center justify-center shadow-sm">
+								<svg class="icon-md text-primary" aria-hidden="true"><use href="#shopping-cart"></use></svg>
+							</div>
+							<span class="text-xl font-bold text-gray-800 dark:text-gray-100" id="cart-title-mobile">سلة الطلبات</span>
+							<span class="min-w-[28px] h-6 px-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-full text-sm font-bold flex items-center justify-center shadow-lg" id="cartBadgeMobile">0</span>
+						</div>
+						<button
+							class="w-11 h-11 rounded-xl hover:bg-pink-50 dark:hover:bg-gray-700 flex items-center justify-center transition-[background-color,transform] duration-200 hover:rotate-90 active:scale-95"
+							onclick="closeCartModal()"
+							aria-label="إغلاق السلة"
+							role="button"
+						>
+							<svg class="icon-lg text-gray-700 dark:text-gray-300" aria-hidden="true"><use href="#x"></use></svg>
+						</button>
+					</div>
+					<div class="p-5 min-h-[350px] max-h-[calc(85vh-280px)] overflow-y-auto" id="cartItemsMobile">
+						<div class="flex flex-col items-center justify-center py-16 text-center">
+							<div class="cart-empty-pulse w-24 h-24 bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-full flex items-center justify-center mb-5">
+								<svg class="w-12 h-12 text-pink-300 dark:text-gray-500" aria-hidden="true"><use href="#shopping-basket"></use></svg>
+							</div>
+							<p class="text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2" id="cart-empty-title">سلتك فارغة حالياً</p>
+							<p class="text-sm text-gray-500 dark:text-gray-400" id="cart-empty-subtitle">أضف بعض الآيس كريم اللذيذ! 🍦</p>
+						</div>
+					</div>
+					<div
+						class="hidden p-5 border-t border-pink-100 dark:border-gray-700 space-y-4 sticky bottom-0 bg-gradient-to-t from-white via-white to-transparent dark:from-gray-800 dark:via-gray-800 backdrop-blur-sm"
+						id="cartFooterMobile"
+					>
+						<div class="flex justify-between items-center bg-gradient-to-r from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-2xl p-4 shadow-sm border border-pink-100 dark:border-gray-600">
+							<div class="flex items-center gap-2">
+								<svg class="icon-md text-primary" aria-hidden="true"><use href="#calculator"></use></svg><span class="text-lg font-bold text-gray-700 dark:text-gray-300" id="cart-total-label">الإجمالي:</span>
+							</div>
+							<span class="text-2xl font-extrabold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent" id="cartTotalMobile">0 ج.م</span>
+						</div>
+						<button
+							class="btn-ripple w-full py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-2xl font-bold text-lg flex items-center justify-center gap-3 shadow-lg transition-[transform,box-shadow] hover:-translate-y-1 hover:shadow-glow active:scale-95 relative overflow-hidden group"
+							onclick="initiateCheckout()"
+						>
+							<span class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" aria-hidden="true"></span>
+							<svg class="icon-lg relative z-10" aria-hidden="true"><use href="#check-circle-2"></use></svg><span class="relative z-10" id="checkout-btn-text">إتمام الطلب</span>
+						</button>
+						<div class="flex items-center justify-center gap-4 text-xs text-gray-500 dark:text-gray-400 pt-2 border-t border-pink-100 dark:border-gray-700">
+							<div class="flex items-center gap-1.5">
+								<svg class="icon-sm text-green-500" aria-hidden="true"><use href="#shield-check"></use></svg><span id="secure-payment-text">دفع آمن</span>
+							</div>
+							<div class="w-1 h-1 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
+							<div class="flex items-center gap-1.5">
+								<svg class="icon-sm text-blue-500" aria-hidden="true"><use href="#truck"></use></svg><span id="fast-delivery-text">توصيل سريع</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div
+				class="modal-overlay fixed inset-0 bg-gray-900/80 backdrop-blur-lg z-modal hidden items-center justify-center p-4 animate-fade-in"
+				id="productModal"
+				onclick="closeProductModal(event)"
+				role="dialog"
+				aria-modal="true"
+				aria-labelledby="modalTitle"
+			>
+				<div class="modal-content bg-white dark:bg-gray-800 rounded-3xl max-w-[850px] w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-scale-in" onclick="event.stopPropagation()">
+					<button
+						class="modal-close absolute top-4 left-4 md:top-6 md:left-6 z-20 w-11 h-11 rounded-full bg-white/90 dark:bg-gray-700/90 backdrop-blur-sm shadow-lg hover:scale-110 hover:rotate-90 active:scale-95 transition-[transform,background-color] duration-200 flex items-center justify-center"
+						onclick="closeProductModal()"
+						aria-label="إغلاق المنتج"
+						role="button"
+					>
+						<svg class="icon-md text-gray-700 dark:text-gray-300" aria-hidden="true"><use href="#x"></use></svg>
+					</button>
+					<div class="modal-image-container relative w-full h-64 md:h-80 overflow-hidden bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-900 dark:to-gray-800">
+						<img id="modalImage" class="modal-image w-full h-full object-cover transition-transform duration-500 hover:scale-105" src="" alt="" loading="lazy" decoding="async" />
+					</div>
+					<div class="modal-body p-6 md:p-8">
+						<div class="mb-6">
+							<h2 class="modal-title text-2xl md:text-3xl font-black mb-3 leading-tight text-gray-800 dark:text-gray-100" id="modalTitle">اسم المنتج</h2>
+							<p class="modal-description text-gray-600 dark:text-gray-400 text-sm md:text-base leading-relaxed" id="modalDescription">وصف المنتج هنا</p>
+						</div>
+						<div class="modal-price-section bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-800 rounded-2xl p-5 md:p-6 mb-6 border-2 border-pink-100 dark:border-gray-600">
+							<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+								<div class="flex-1">
+									<div class="modal-price-label text-xs text-gray-500 dark:text-gray-400 mb-1 font-semibold uppercase tracking-wide" id="modal-price-label">السعر</div>
+									<span class="modal-price text-3xl md:text-4xl font-black text-primary" id="modalPrice">0 ج.م</span>
+								</div>
+								<div class="modal-quantity flex items-center gap-3 bg-white dark:bg-gray-900 rounded-full py-2 px-3 shadow-lg border-2 border-pink-100 dark:border-gray-600">
+									<button
+										class="modal-quantity-btn w-10 h-10 rounded-full bg-pink-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gradient-to-br hover:from-primary hover:to-secondary hover:text-white hover:scale-110 active:scale-95 transition-all duration-200 flex items-center justify-center"
+										onclick="updateModalQuantity(-1)"
+										aria-label="إنقاص الكمية"
+										role="button"
+									>
+										<svg class="icon-sm" aria-hidden="true"><use href="#minus"></use></svg>
+									</button>
+									<span class="modal-quantity-value font-bold text-xl min-w-[40px] text-center text-gray-800 dark:text-gray-100" id="modalQuantity" aria-live="polite">1</span>
+									<button
+										class="modal-quantity-btn w-10 h-10 rounded-full bg-pink-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gradient-to-br hover:from-primary hover:to-secondary hover:text-white hover:scale-110 active:scale-95 transition-all duration-200 flex items-center justify-center"
+										onclick="updateModalQuantity(1)"
+										aria-label="زيادة الكمية"
+										role="button"
+									>
+										<svg class="icon-sm" aria-hidden="true"><use href="#plus"></use></svg>
+									</button>
+								</div>
+							</div>
+						</div>
+						<div class="suggestions-section mb-6" id="suggestionsSection">
+							<h3 class="suggestions-title text-lg md:text-xl font-bold mb-4 flex items-center gap-2 text-gray-800 dark:text-gray-100">
+								<svg class="icon-md text-primary" aria-hidden="true"><use href="#sparkles"></use></svg><span id="suggestions-title-text">قد يعجبك أيضاً</span>
+							</h3>
+							<div class="suggestions-grid grid grid-cols-2 gap-3 md:gap-4" id="suggestionsGrid"></div>
+						</div>
+						<div class="modal-actions">
+							<button
+								class="modal-add-btn w-full py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-2xl font-bold text-base md:text-lg shadow-lg hover:shadow-glow hover:-translate-y-1 active:scale-98 transition-[transform,box-shadow] duration-300 flex items-center justify-center gap-3 relative overflow-hidden group"
+								onclick="addModalToCart()"
+							>
+								<div class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" aria-hidden="true"></div>
+								<svg class="icon-md relative z-10" aria-hidden="true"><use href="#shopping-cart"></use></svg><span id="modalAddBtnText" class="relative z-10">أضف للسلة</span>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div
+				class="checkout-modal-overlay fixed inset-0 bg-gray-900/80 backdrop-blur-md hidden items-center justify-center z-modal animate-fade-in overflow-y-auto p-5"
+				id="checkoutModal"
+				onclick="checkoutModule.closeCheckoutModal(event)"
+				role="dialog"
+				aria-modal="true"
+				aria-labelledby="checkout-title"
+			>
+				<div class="checkout-content bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-[650px] w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-scale-in relative" onclick="event.stopPropagation()">
+					<button
+						class="checkout-close absolute top-4 right-4 bg-gray-100 dark:bg-gray-700 w-10 h-10 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white hover:rotate-90 transition-all duration-300 z-10"
+						onclick="checkoutModule.closeCheckoutModal()"
+						aria-label="إغلاق نافذة الدفع"
+						role="button"
+					>
+						<svg class="icon-md" aria-hidden="true"><use href="#x"></use></svg>
+					</button>
+					<div class="checkout-header text-center mb-7">
+						<div class="checkout-icon w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4 text-white shadow-lg">
+							<svg class="icon-xl" aria-hidden="true"><use href="#shopping-cart"></use></svg>
+						</div>
+						<h3 class="checkout-title text-[26px] font-black text-gray-800 dark:text-gray-100 mb-2" id="checkout-title">تأكيد الطلب</h3>
+						<p class="checkout-subtitle text-base text-gray-600 dark:text-gray-400" id="checkout-subtitle">اختر طريقة الاستلام وأكمل بياناتك</p>
+					</div>
+					<div class="order-summary bg-gray-50 dark:bg-gray-700 rounded-2xl p-5 mb-6 border-2 border-gray-200 dark:border-gray-600" id="orderSummary">
+						<div class="order-summary-title flex items-center gap-2.5 text-base font-bold text-gray-800 dark:text-gray-100 mb-4 pb-3 border-b-2 border-gray-300 dark:border-gray-600">
+							<svg class="icon-md" aria-hidden="true"><use href="#receipt"></use></svg><span id="order-summary-title">ملخص الطلب</span>
+						</div>
+						<div id="orderItems"></div>
+					</div>
+					<div class="delivery-options mb-6">
+						<div
+							class="delivery-option flex items-center gap-4 p-4.5 border-2 border-gray-300 dark:border-gray-600 rounded-2xl mb-3 cursor-pointer hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 hover:-translate-x-1 hover:shadow-lg transition-all duration-300 bg-white dark:bg-gray-800 relative"
+							id="pickupOption"
+							onclick="checkoutModule.selectDeliveryMethod('pickup')"
+						>
+							<div class="delivery-option-icon w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center text-white">
+								<svg class="icon-lg" aria-hidden="true"><use href="#store"></use></svg>
+							</div>
+							<div class="delivery-option-content flex-1">
+								<div class="delivery-option-title text-base font-bold text-gray-800 dark:text-gray-100 mb-1" id="pickup-title">الاستلام من الفرع</div>
+								<div class="delivery-option-desc text-sm text-gray-600 dark:text-gray-400" id="pickup-desc">مجاناً - جاهز خلال 15 دقيقة</div>
+							</div>
+							<div class="selection-indicator w-7 h-7 rounded-full border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center text-transparent transition-all duration-300">
+								<svg class="icon-md" aria-hidden="true"><use href="#check-circle"></use></svg>
+							</div>
+						</div>
+						<div class="branch-selection hidden bg-gray-50 dark:bg-gray-700 rounded-2xl p-5 my-4 border-2 border-gray-200 dark:border-gray-600 animate-slide-up" id="branchSelection">
+							<label class="branch-label flex items-center gap-2 text-base font-bold text-gray-800 dark:text-gray-100 mb-4">
+								<svg class="icon-md" aria-hidden="true"><use href="#map-pin"></use></svg><span id="branch-label">اختر الفرع المناسب:</span>
+							</label>
+							<div class="branches-grid grid gap-3"></div>
+						</div>
+						<div id="deliveryEstimatedNotice" style="display: none;"></div>
+						<div
+							class="delivery-option flex items-center gap-4 p-4.5 border-2 border-gray-300 dark:border-gray-600 rounded-2xl cursor-pointer hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 hover:-translate-x-1 hover:shadow-lg transition-all duration-300 bg-white dark:bg-gray-800 relative"
+							id="deliveryOption"
+							onclick="checkoutModule.selectDeliveryMethod('delivery')"
+						>
+							<div class="delivery-option-icon w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center text-white">
+								<svg class="icon-lg" aria-hidden="true"><use href="#truck"></use></svg>
+							</div>
+							<div class="delivery-option-content flex-1">
+								<div class="delivery-option-title text-base font-bold text-gray-800 dark:text-gray-100 mb-1" id="delivery-title">التوصيل</div>
+								<div class="delivery-option-desc text-sm text-gray-600 dark:text-gray-400" id="delivery-desc">15 ج.م - خلال 30 دقيقة</div>
+							</div>
+							<div class="selection-indicator w-7 h-7 rounded-full border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center text-transparent transition-all duration-300">
+								<svg class="icon-md" aria-hidden="true"><use href="#check-circle"></use></svg>
+							</div>
+						</div>
+					</div>
+					<div class="checkout-form mb-6" id="checkoutForm">
+						<div class="form-group mb-5">
+							<label class="form-label" for="customerName">
+								<svg class="w-4.5 h-4.5 text-green-500" aria-hidden="true"><use href="#user"></use></svg><span>الاسم الكامل *</span>
+							</label>
+							<input type="text" class="form-input" id="customerName" placeholder="أدخل اسمك الكامل" required aria-required="true" />
+						</div>
+						<div class="form-group mb-5">
+							<label class="form-label" for="customerPhone">
+								<svg class="w-4.5 h-4.5 text-green-500" aria-hidden="true"><use href="#phone"></use></svg><span>رقم الهاتف *</span>
+							</label>
+							<input type="tel" class="form-input" id="customerPhone" placeholder="01234567890" required dir="ltr" aria-required="true" />
+							<small class="form-hint block mt-1.5 text-xs text-gray-500 dark:text-gray-400" id="phone-hint">مثال: 01012345678</small>
+						</div>
+						<div class="form-group mb-5 hidden" id="addressGroup">
+							<label class="form-label" for="customerAddress">
+								<svg class="w-4.5 h-4.5 text-green-500" aria-hidden="true"><use href="#map-pin"></use></svg><span>العنوان التفصيلي *</span>
+							</label>
+							<textarea class="form-textarea min-h-[80px]" id="customerAddress" rows="3" placeholder="الشارع، المنطقة، المدينة، معالم قريبة..." aria-required="true"></textarea>
+							<button
+								type="button"
+								class="location-btn w-full mt-3 py-3.5 px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl text-sm font-semibold hover:from-blue-600 hover:to-blue-700 hover:-translate-y-1 hover:shadow-lg active:scale-98 transition-all duration-300 flex items-center justify-center gap-2"
+								id="locationBtn"
+								onclick="checkoutModule.requestLocation()"
+							>
+								<svg class="icon-sm" aria-hidden="true"><use href="#navigation"></use></svg><span id="location-btn-text">استخدام الموقع الحالي</span>
+							</button>
+						</div>
+						<div class="form-group mb-5">
+							<label class="form-label" for="orderNotes">
+								<svg class="w-4.5 h-4.5 text-green-500" aria-hidden="true"><use href="#message-square"></use></svg><span>ملاحظات إضافية</span>
+							</label>
+							<textarea class="form-textarea min-h-[60px]" id="orderNotes" rows="2" placeholder="أي طلبات خاصة (اختياري)"></textarea>
+						</div>
+						<div class="form-group">
+							<label class="form-label" for="couponCodeInput">
+								<svg class="w-4.5 h-4.5 text-green-500" aria-hidden="true"><use href="#tag"></use></svg><span id="coupon-label">كود الخصم (اختياري)</span>
+							</label>
+							<div class="coupon-input-group flex gap-2">
+								<input type="text" class="form-input flex-1" id="couponCodeInput" placeholder="أدخل كود الخصم" dir="ltr" />
+								<button
+									type="button"
+									class="apply-coupon-btn py-3.5 px-6 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl text-sm font-bold hover:from-green-600 hover:to-green-700 hover:-translate-y-1 hover:shadow-lg active:scale-98 transition-all duration-300"
+									id="applyPromoBtn"
+									onclick="window.applyCoupon?.() || alert('Loading...')"
+								>
+									<span id="apply-coupon-text">تطبيق</span>
+								</button>
+							</div>
+							<div id="couponStatus" class="hidden mt-2"></div>
+						</div>
+					</div>
+					<div class="checkout-actions flex gap-3">
+						<button class="checkout-action-btn secondary" onclick="checkoutModule.closeCheckoutModal()" id="cancel-btn">
+							<svg class="icon-md" aria-hidden="true"><use href="#x"></use></svg><span id="cancel-btn-text">إلغاء</span>
+						</button>
+						<button
+							class="checkout-action-btn primary flex-1 py-4 px-6 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-2xl text-base font-bold shadow-lg hover:from-green-600 hover:to-green-700 hover:-translate-y-1 hover:shadow-glow active:scale-98 transition-all duration-300 flex items-center justify-center gap-2.5"
+							onclick="checkoutModule.confirmOrder()"
+							id="confirm-btn"
+						>
+							<svg class="icon-md" aria-hidden="true"><use href="#check-circle-2"></use></svg><span id="confirm-btn-text">تأكيد الطلب</span>
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="permission-modal fixed inset-0 bg-gray-900/80 backdrop-blur-md hidden items-center justify-center z-modal animate-fade-in p-5" id="permissionModal" role="dialog" aria-modal="true" aria-labelledby="permission-title">
+				<div class="permission-content bg-white dark:bg-gray-800 rounded-3xl p-10 max-w-[480px] w-full text-center shadow-2xl animate-scale-in">
+					<div class="permission-icon w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white animate-pulse-glow">
+						<svg class="w-10 h-10" aria-hidden="true"><use href="#map-pin"></use></svg>
+					</div>
+					<h3 class="permission-title text-2xl font-black text-gray-800 dark:text-gray-100 mb-3" id="permission-title">نحتاج موقعك للتوصيل الدقيق</h3>
+					<p class="permission-text text-base text-gray-600 dark:text-gray-400 mb-6 leading-relaxed" id="permission-text">لنتمكن من توصيل طلبك في أسرع وقت وبأفضل دقة، نحتاج إلى معرفة موقعك الحالي.</p>
+					<div class="permission-features flex justify-center gap-5 mb-7 flex-wrap">
+						<div class="permission-feature flex items-center gap-1.5 text-sm text-green-500 font-semibold">
+							<svg class="w-4.5 h-4.5" aria-hidden="true"><use href="#zap"></use></svg><span>توصيل أسرع</span>
+						</div>
+						<div class="permission-feature flex items-center gap-1.5 text-sm text-green-500 font-semibold">
+							<svg class="w-4.5 h-4.5" aria-hidden="true"><use href="#check-circle"></use></svg><span>دقة أعلى</span>
+						</div>
+						<div class="permission-feature flex items-center gap-1.5 text-sm text-green-500 font-semibold">
+							<svg class="w-4.5 h-4.5" aria-hidden="true"><use href="#shield-check"></use></svg><span>آمن ومحمي</span>
+						</div>
+					</div>
+					<div class="permission-actions flex flex-col gap-3">
+						<button
+							class="permission-btn primary py-4 px-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl text-base font-bold shadow-lg hover:from-blue-600 hover:to-blue-700 hover:-translate-y-1 hover:shadow-glow active:scale-98 transition-all duration-300 flex items-center justify-center gap-2.5"
+							onclick="checkoutModule.allowLocation()"
+							id="permission-allow"
+						>
+							<svg class="icon-md" aria-hidden="true"><use href="#map-pin"></use></svg><span>السماح بالوصول للموقع</span>
+						</button>
+						<button
+							class="permission-btn secondary bg-transparent text-gray-600 dark:text-gray-400 underline hover:text-gray-800 dark:hover:text-gray-200 transition-colors duration-300"
+							onclick="checkoutModule.closePermissionModal()"
+							id="permission-cancel"
+						>
+							<span>سأكتب العنوان يدوياً</span>
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<div
+				class="processing-modal fixed inset-0 bg-gray-900/85 backdrop-blur-md hidden items-center justify-center z-modal animate-fade-in"
+				id="processingModal"
+				style="display: none;"
+				role="alertdialog"
+				aria-modal="true"
+				aria-labelledby="processing-title"
+				aria-describedby="processing-subtitle"
+			>
+				<div class="processing-content bg-white dark:bg-gray-800 rounded-3xl p-12 max-w-[450px] w-[90%] text-center shadow-2xl animate-scale-in">
+					<div class="spinner-container mb-7"><div class="spinner w-[70px] h-[70px] mx-auto border-[5px] border-gray-200 dark:border-gray-700 border-t-green-500 rounded-full animate-spin" role="status"></div></div>
+					<h3 class="processing-title text-2xl font-black text-gray-800 dark:text-gray-100 mb-2.5" id="processing-title">جاري إرسال طلبك...</h3>
+					<p class="processing-subtitle text-base text-gray-600 dark:text-gray-400" id="processing-subtitle">الرجاء الانتظار، لا تغلق الصفحة</p>
+					<div class="processing-actions hidden mt-8 pt-7 border-t-2 border-gray-200 dark:border-gray-700" id="processingActions">
+						<div class="error-icon w-15 h-15 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4 text-red-500">
+							<svg class="icon-xl" aria-hidden="true"><use href="#alert-circle"></use></svg>
+						</div>
+						<p class="error-message text-red-500 text-base font-bold mb-2" id="errorMessage"></p>
+						<p class="error-description text-sm text-gray-600 dark:text-gray-400 mb-5" id="errorDescription"></p>
+						<div class="action-buttons flex gap-3 mb-5">
+							<button
+								class="btn-retry flex-1 py-3.5 px-5 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl text-base font-bold shadow-lg hover:from-green-600 hover:to-green-700 hover:-translate-y-1 hover:shadow-glow active:scale-98 transition-all duration-300 flex items-center justify-center gap-2"
+								id="retryBtn"
+							>
+								<svg class="icon-sm" aria-hidden="true"><use href="#refresh-cw"></use></svg><span id="retry-text">إعادة المحاولة</span>
+							</button>
+							<button
+								class="btn-cancel-send flex-1 py-3.5 px-5 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-xl text-base font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-300 flex items-center justify-center gap-2"
+								id="cancelSendBtn"
+							>
+								<svg class="icon-sm" aria-hidden="true"><use href="#x"></use></svg><span id="cancel-send-text">إلغاء</span>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div
+				class="confirmed-modal fixed inset-0 bg-gray-900/85 backdrop-blur-md flex items-center justify-center z-modal animate-fade-in overflow-y-auto p-5 hidden"
+				id="orderConfirmedModal"
+				role="dialog"
+				aria-modal="true"
+				aria-labelledby="confirmed-title"
+			>
+				<div class="confirmed-content bg-white dark:bg-gray-800 rounded-[28px] p-12 max-w-[550px] w-full text-center shadow-2xl animate-scale-in relative my-5">
+					<button
+						class="close-confirmed absolute top-5 right-5 bg-gray-100 dark:bg-gray-700 w-10 h-10 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white hover:rotate-90 transition-all duration-300 z-10"
+						id="closeConfirmedBtn"
+						aria-label="إغلاق"
+						role="button"
+					>
+						<svg class="icon-md" aria-hidden="true"><use href="#x"></use></svg>
+					</button>
+					<div class="success-animation mb-7" aria-hidden="true">
+						<div class="success-checkmark w-[90px] h-[90px] mx-auto relative">
+							<div class="check-icon w-[90px] h-[90px] relative rounded-full border-[5px] border-green-500 animate-scale-in">
+								<span class="icon-line line-tip h-1.5 bg-green-500 block rounded absolute z-10 top-12 left-4 w-7 rotate-45 opacity-0 animate-[tipInPlace_0.3s_ease-in_0.6s_forwards]"></span>
+								<span class="icon-line line-long h-1.5 bg-green-500 block rounded absolute z-10 top-[43px] right-2.5 w-[52px] -rotate-45 opacity-0 animate-[longInPlace_0.3s_ease-in_0.8s_forwards]"></span>
+								<div class="icon-circle absolute -top-[5px] -left-[5px] z-10 w-[90px] h-[90px] rounded-full border-[5px] border-green-500/20"></div>
+								<div class="icon-fix absolute top-2 w-1.5 left-7.5 z-[1] h-[95px] rotate-[-45deg] bg-white dark:bg-gray-800"></div>
+							</div>
+						</div>
+					</div>
+					<h2 class="confirmed-title text-[28px] font-black text-gray-800 dark:text-gray-100 mb-2.5 leading-snug" id="confirmed-title">تم تأكيد طلبك بنجاح! 🎉</h2>
+					<p class="confirmed-subtitle text-base text-gray-600 dark:text-gray-400 mb-8 leading-relaxed" id="confirmed-subtitle">شكراً لثقتك بنا، سنبدأ بتحضير طلبك الآن</p>
+					<div class="order-details-card bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-[20px] p-7 mb-7 border-3 border-gray-200 dark:border-gray-600 shadow-lg">
+						<div class="order-id-section mb-6">
+							<span class="label block text-xs text-gray-500 dark:text-gray-400 mb-2.5 uppercase tracking-wider font-bold">رقم الطلب</span>
+							<div class="order-id-display flex items-center justify-center gap-3 bg-white dark:bg-gray-800 py-4 px-6 rounded-2xl border-3 border-green-500 shadow-md">
+								<span class="order-id-value text-[22px] font-black text-green-500 tracking-widest font-mono" id="confirmedOrderId">ORD-123456</span>
+								<button
+									class="copy-btn bg-green-500 w-10 h-10 rounded-xl flex items-center justify-center text-white hover:bg-green-600 hover:scale-110 hover:rotate-6 active:scale-95 transition-all duration-300 shadow-md"
+									id="copyOrderIdBtn"
+									title="نسخ"
+									aria-label="نسخ رقم الطلب"
+								>
+									<svg class="icon-sm" aria-hidden="true"><use href="#copy"></use></svg>
+								</button>
+							</div>
+						</div>
+						<div class="eta-section flex items-center justify-center gap-2.5 text-[17px] text-gray-800 dark:text-gray-100 mb-5 font-bold">
+							<svg class="w-5.5 h-5.5 text-blue-500" aria-hidden="true"><use href="#clock"></use></svg><span id="confirmedEta">الوقت المتوقع: ≈ 30 دقيقة</span>
+						</div>
+						<div class="status-badge inline-flex items-center gap-2.5 bg-gradient-to-r from-green-500 to-green-600 text-white py-3 px-6 rounded-[28px] text-base font-bold shadow-lg">
+							<svg class="icon-md" aria-hidden="true"><use href="#chef-hat"></use></svg><span id="status-text">قيد التحضير</span>
+						</div>
+						<div class="selected-branch-info hidden mt-5 pt-5 border-t-2 border-dashed border-gray-300 dark:border-gray-600" id="selectedBranchInfo">
+							<div class="branch-info-header flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-2.5 uppercase tracking-wide font-bold">
+								<svg class="icon-sm" aria-hidden="true"><use href="#map-pin"></use></svg><span id="selected-branch-label">فرع الاستلام:</span>
+							</div>
+							<div class="branch-info-content bg-white dark:bg-gray-800 py-3.5 px-4.5 rounded-xl flex flex-col gap-1.5">
+								<strong class="text-base text-gray-800 dark:text-gray-100 font-bold" id="selectedBranchName"></strong><span class="text-sm text-gray-600 dark:text-gray-400" id="selectedBranchAddress"></span>
+							</div>
+						</div>
+						<div id="upgradeMessage" class="hidden mt-4"></div>
+					</div>
+					<div class="quick-actions flex gap-3 mb-6">
+						<button
+							class="action-btn whatsapp flex-1 py-4 px-5 bg-gradient-to-r from-[#25D366] to-[#128C7E] text-white rounded-2xl text-sm font-bold shadow-lg hover:from-[#20ba59] hover:to-[#0e7a6e] hover:-translate-y-1 hover:shadow-glow active:scale-98 transition-all duration-300 flex items-center justify-center gap-2.5"
+							id="shareWhatsAppBtn"
+						>
+							<svg viewBox="0 0 24 24" width="20" height="20" class="fill-current" aria-hidden="true">
+								<path
+									d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"
+								/>
+							</svg>
+							<span id="whatsapp-text">مشاركة عبر واتساب</span>
+						</button>
+						<button
+							class="action-btn track flex-1 py-4 px-5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl text-sm font-bold shadow-lg hover:from-blue-600 hover:to-blue-700 hover:-translate-y-1 hover:shadow-glow active:scale-98 transition-all duration-300 flex items-center justify-center gap-2.5"
+							id="trackOrderBtn"
+						>
+							<svg class="icon-md" aria-hidden="true"><use href="#map"></use></svg><span id="track-text">تتبع الطلب</span>
+						</button>
+					</div>
+					<button
+						class="btn-continue w-full py-4.5 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-2xl text-base font-bold hover:bg-gray-200 dark:hover:bg-gray-600 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2.5"
+						id="continueShoppingBtn"
+					>
+						<span id="continue-text">متابعة التسوق</span><svg class="icon-md" aria-hidden="true"><use href="#arrow-left"></use></svg>
+					</button>
+				</div>
+			</div>
+
+			<div class="tracking-modal fixed inset-0 bg-gray-900/85 backdrop-blur-md flex items-center justify-center z-modal animate-fade-in p-5 hidden" id="trackingModal" role="dialog" aria-modal="true" aria-labelledby="tracking-title">
+				<div class="tracking-content bg-white dark:bg-gray-800 rounded-3xl p-10 max-w-[500px] w-full shadow-2xl animate-scale-in relative">
+					<button
+						class="close-tracking absolute top-4 right-4 bg-gray-100 dark:bg-gray-700 w-10 h-10 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white hover:rotate-90 transition-all duration-300"
+						id="closeTrackingBtn"
+						aria-label="إغلاق"
+						role="button"
+					>
+						<svg class="icon-md" aria-hidden="true"><use href="#x"></use></svg>
+					</button>
+					<div class="tracking-header text-center mb-7">
+						<div class="tracking-icon w-[70px] h-[70px] bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-5 text-white">
+							<svg class="w-9 h-9" aria-hidden="true"><use href="#package-search"></use></svg>
+						</div>
+						<h3 class="tracking-title text-2xl font-black text-gray-800 dark:text-gray-100 mb-2" id="tracking-title">تتبع طلبك</h3>
+						<p class="tracking-subtitle text-sm text-gray-600 dark:text-gray-400">أدخل رقم الطلب للتحقق من حالته</p>
+					</div>
+					<div class="tracking-input-group flex gap-3 mb-6">
+						<input
+							type="text"
+							class="tracking-input flex-1 py-4 px-4.5 border-2 border-gray-300 dark:border-gray-600 rounded-xl text-base font-mono bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:shadow-lg transition-colors duration-300"
+							id="trackingInput"
+							placeholder="أدخل رقم الطلب (مثال: ORD-123456)"
+							dir="ltr"
+							aria-label="رقم الطلب"
+						/>
+						<button
+							class="btn-track py-4 px-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl text-base font-bold shadow-lg hover:from-blue-600 hover:to-blue-700 hover:-translate-y-1 hover:shadow-glow active:scale-98 transition-all duration-300 flex items-center gap-2"
+							id="checkStatusBtn"
+						>
+							<svg class="icon-md" aria-hidden="true"><use href="#search"></use></svg><span id="check-status-text">تحقق</span>
+						</button>
+					</div>
+					<div class="tracking-result hidden bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-2xl p-6 border-l-[5px] border-green-500" id="trackingResult" role="status"></div>
+				</div>
+			</div>
+		</div>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+		<script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0" defer></script>
+		<script type="module" src="js/sidebar.js"></script>
+
+		<script type="module">
+  function isInViewport(el) {
+    if (!el) return false;
+    const rect = el.getBoundingClientRect();
+    return (
+      rect.top >= 0 && rect.left >= 0 &&
+      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+  }
+
+  function optimizeImages() {
+    const images = document.querySelectorAll('img');
+    images.forEach(img => {
+      if (img.getAttribute('loading')) return;
+      if (!isInViewport(img)) {
+        img.setAttribute('loading', 'lazy');
+        img.setAttribute('decoding', 'async');
+      } else {
+        img.setAttribute('loading', 'eager');
       }
+    });
+  }
+
+  optimizeImages();
+  document.addEventListener('scroll', optimizeImages, { passive: true, once: true });
+
+  // ✅ تحميل أيقونات ثانوية
+  import('./js/icons-loader.js')
+    .then(() => console.log('✅ Secondary icons loader initialized.'))
+    .catch(err => console.error('Failed to load secondary icons:', err));
+
+  // ✅ تحميل التطبيق الأساسي ثم تحميل checkout بعده
+  document.addEventListener('DOMContentLoaded', async () => {
+    try {
+      const appModule = await import('./js/app.js');
+      if (appModule.initApp && typeof appModule.initApp === 'function') {
+        await appModule.initApp();
+        console.log('✅ Main app initialized.');
+      } else {
+        console.warn('initApp() function not found in app.js');
+      }
+
+      // ✅ تحميل checkout فقط بعد جاهزية التطبيق
+      await import('./js/checkout.js');
+      console.log('✅ Checkout module loaded successfully after app initialization.');
+
+    } catch (err) {
+      console.error('❌ Failed to load main or checkout modules:', err);
     }
-  </script>
-
-  <!-- GSAP -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  
-  <!-- Lucide Icons -->
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-  
-  <!-- Fuse.js for fuzzy search -->
-  <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>
-
-  <!-- Animate.css -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-  <!-- Fuse.js -->
-
-  <style>
-    body {
-      font-family: 'Cairo', sans-serif;
-    }
-    
-    /* Animated Background */
-    .animated-background {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      overflow: hidden;
-      pointer-events: none;
-      background: url('https://images.unsplash.com/photo-1757917725825-9d6fd4af2d32?w=300&auto=format&fit=crop&q=30&fm=webp') center/cover no-repeat;
-      opacity: 0.08;
-    }
-    
-    .animated-background::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(255, 249, 245, 0) 0%, rgba(255, 249, 245, 0.98) 100%);
-      z-index: 1;
-    }
-    .snowflake {
-    position: absolute;
-    color: #fff;
-    text-shadow: 0 0 8px rgba(0,0,0,0.4);
-    user-select: none;
-    pointer-events: none;
-    animation: snowfall linear infinite;
-    font-size: 1rem;
-  }
-
-  @keyframes snowfall {
-  0% {
-    transform: translateY(-100px) translateX(0) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(100vh) translateX(var(--x-shift)) rotate(360deg);
-    opacity: 0.2;
-  }
-}
-
-body.dark .floating-shape {
-  opacity: 0.08;
-  filter: blur(70px);
-}
-    .floating-shape {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.2;
-      animation: floatShape 25s infinite ease-in-out;
-    }
-    
-    .shape-1 {
-      width: 500px;
-      height: 500px;
-      background: radial-gradient(circle, #FF6B9D, transparent);
-      top: -10%;
-      right: -10%;
-      animation-delay: 0s;
-    }
-    
-    .shape-2 {
-      width: 450px;
-      height: 450px;
-      background: radial-gradient(circle, #C9A0DC, transparent);
-      bottom: -15%;
-      left: -10%;
-      animation-delay: 8s;
-    }
-    
-    .shape-3 {
-      width: 400px;
-      height: 400px;
-      background: radial-gradient(circle, #A8E6CF, transparent);
-      top: 40%;
-      left: 40%;
-      animation-delay: 16s;
-    }
-    
-    @keyframes floatShape {
-      0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
-      25% { transform: translate(40px, -40px) scale(1.1) rotate(90deg); }
-      50% { transform: translate(-30px, 30px) scale(0.9) rotate(180deg); }
-      75% { transform: translate(50px, 40px) scale(1.05) rotate(270deg); }
-    }
-    
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    
-    ::-webkit-scrollbar-track {
-      background: #f1f1f1;
-    }
-    
-    ::-webkit-scrollbar-thumb {
-      background: #FF6B9D;
-      border-radius: 4px;
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-      background: #E85589;
-    }
-    
-    /* Dark mode adjustments */
-    .dark .animated-background::before {
-      background: linear-gradient(180deg, rgba(26, 22, 37, 0) 0%, rgba(26, 22, 37, 0.98) 100%);
-    }
-    
-    .dark .floating-shape {
-      opacity: 0.08;
-    }
-    
-    /* Hero section gradient text */
-    .gradient-text {
-      background: linear-gradient(135deg, #FF6B9D 0%, #FF8FB3 50%, #C9A0DC 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-  
-    
-    /* Ice cream features - GSAP animations */
-    .icecream-gs-reveal {
-      visibility: hidden;
-      will-change: transform, opacity;
-      min-height: 200px;
-    }
-    
-    @keyframes tipInPlace {
-      0% { width: 0; left: 2px; top: 20px; opacity: 1; }
-      100% { width: 28px; left: 16px; top: 48px; opacity: 1; }
-    }
-    
-    @keyframes longInPlace {
-      0% { width: 0; right: 50px; top: 60px; opacity: 1; }
-      100% { width: 52px; right: 10px; top: 43px; opacity: 1; }
-    }
-    /*
-    .sidebar-toggle input:checked + .sidebar-toggle-slider {
-      background: #FF6B9D;
-    }
-    
-    .sidebar-toggle input:checked + .sidebar-toggle-slider:before {
-      transform: translateX(16px);
-    }*/
-    
-    .delivery-option.selected {
-      border-color: #4CAF50;
-      background: linear-gradient(135deg, #f1f8f4, #e8f5e9);
-      box-shadow: 0 4px 20px rgba(76, 175, 80, 0.25);
-    }
-    
-    .delivery-option.selected .selection-indicator {
-      background: #4CAF50;
-      border-color: #4CAF50;
-      color: white;
-    }
-    
-    .branch-card.selected {
-      border-color: #4CAF50;
-      background: linear-gradient(135deg, #f1f8f4, #e8f5e9);
-      box-shadow: 0 4px 16px rgba(76, 175, 80, 0.2);
-    }
-    
-    .branch-card.selected .branch-check {
-      background: #4CAF50;
-      border-color: #4CAF50;
-      color: white;
-    }
-    /*
-    .sidebar-nav-item.active {
-      background: linear-gradient(135deg, #FF6B9D 0%, #C9A0DC 100%);
-      color: white;
-      box-shadow: 0 4px 20px rgba(255, 107, 157, 0.24);
-    }
-    
-    .sidebar-nav-item.active .sidebar-nav-icon i {
-      color: white;
-    }
-    
-    .sidebar:hover .sidebar-badge-dot {
-      opacity: 0;
-    }
-    
-    .sidebar.expanded .sidebar-badge-dot {
-      opacity: 0;
-    }*/
-    /*sidebar scrollbar*/
-    /* Sidebar Variables */
-      
-    /* Sidebar width variables */
-  /* ================================================================ */
-/* SIDEBAR STYLES - FINAL PRODUCTION VERSION */
-/* ================================================================ */
-
-/* Sidebar Variables */
-:root {
-  --sidebar-width: 320px;
-}
-
-@media (max-width: 768px) {
-  :root {
-    --sidebar-width: 300px;
-  }
-}
-
-@media (max-width: 480px) {
-  :root {
-    --sidebar-width: 280px;
-  }
-}
-
-/* Page Content - No Sidebar Padding */
-.page-content {
-  padding-right: 0;
-  padding-left: 0;
-}
-
-/* Sidebar - Hidden by Default */
-.sidebar {
-  width: var(--sidebar-width);
-  transform: translateX(100%);
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: transform;
-}
-
-/* RTL Support */
-/*
-[dir="rtl"] .sidebar {
-  transform: translateX(-100%);
-}*/
-/* لما تكون RTL (عربي مثلاً) */
-[dir="rtl"] .sidebar {
-  right: auto;
-  left: 0;
-  transform: translateX(-100%);
-}
-
-
-
-/* Sidebar Visible State */
-.sidebar.show {
-  transform: translateX(0);
-}
-
-/* Sidebar Overlay */
-/* Overlay */
-.sidebar-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  z-index: 1000;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease;
-}
-
-.sidebar-overlay.show {
-  opacity: 1;
-  visibility: visible;
-}
-
-/* Sidebar Scrollbar Styling */
-.sidebar-content::-webkit-scrollbar {
-  width: 4px;
-}
-
-.sidebar-content::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.sidebar-content::-webkit-scrollbar-thumb {
-  background: #FF6B9D;
-  border-radius: 10px;
-  transition: background 0.2s ease;
-}
-
-.sidebar-content::-webkit-scrollbar-thumb:hover {
-  background: #E85589;
-}
-
-/* Dark Mode Scrollbar */
-.dark .sidebar-content::-webkit-scrollbar-thumb {
-  background: #C9A0DC;
-}
-
-.dark .sidebar-content::-webkit-scrollbar-thumb:hover {
-  background: #B088CC;
-}
-
-/* Toggle Switch Animation */
-.sidebar-toggle input:checked + .sidebar-toggle-slider {
-  background: #FF6B9D;
-}
-
-.sidebar-toggle input:checked + .sidebar-toggle-slider:before {
-  transform: translateX(20px);
-}
-
-/* Burger Menu Animation */
-.sidebar-trigger .hamburger-icon span {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.sidebar-trigger.active .hamburger-icon span:nth-child(1) {
-  transform: translateY(6.75px) rotate(45deg);
-}
-
-.sidebar-trigger.active .hamburger-icon span:nth-child(2) {
-  opacity: 0;
-}
-
-.sidebar-trigger.active .hamburger-icon span:nth-child(3) {
-  transform: translateY(-6.75px) rotate(-45deg);
-}
-
-/* Direction Fix for Contact Info */
-.direction-ltr {
-  direction: ltr;
-  text-align: left;
-}
-
-/* Sidebar Active Nav Item */
-.sidebar-nav-item.active {
-  background: linear-gradient(135deg, #FF6B9D 0%, #C9A0DC 100%);
-  color: white;
-  box-shadow: 0 4px 20px rgba(255, 107, 157, 0.24);
-}
-
-.sidebar-nav-item.active .sidebar-nav-icon {
-  background: transparent;
-  color: white;
-}
-
-/* ================================================================ */
-/* OTHER UI COMPONENTS (Keep existing) */
-/* ================================================================ */
-
-/* Hide Scrollbar Utility */
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-
-/* Categories Section */
-.categories-section.visible {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.category-tab.active {
-  background: linear-gradient(135deg, #FF6B9D, #C9A0DC);
-  color: white;
-  border-color: transparent;
-  box-shadow: 0 4px 20px rgba(255, 107, 157, 0.24);
-  transform: scale(1.05);
-}
-
-/* Tab Content */
-.tab-content {
-  display: none;
-}
-
-.tab-content.active {
-  display: block;
-  animation: fadeInUp 0.4s ease;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Search Clear Button */
-.clear-search.show {
-  display: flex;
-}
-
-/* ================================================================ */
-/* RESPONSIVE ADJUSTMENTS */
-/* ================================================================ */
-
-@media (max-width: 768px) {
-  .sidebar {
-    width: var(--sidebar-width);
-  }
-}
-
-@media (max-width: 480px) {
-  .sidebar {
-    width: var(--sidebar-width);
-  }
-  
-  .sidebar-content {
-    padding: 0.5rem;
-  }
-}
-
-/* Prevent Body Scroll when Sidebar is Open */
-body.sidebar-open {
-  overflow: hidden;
-}
-
-/* ================================================================
-   Cart Minimal CSS - Animations & Special Effects ONLY
-   Everything else uses Tailwind classes directly in HTML
-   ================================================================ */
-
-/* ============================================================
-   Modal Animations
-   ============================================================ */
-
-.cart-modal-overlay {
-  animation: fadeIn 0.3s ease;
-}
-
-.cart-modal-overlay.show {
-  display: flex !important;
-}
-
-.cart-modal-overlay.show > div {
-  animation: slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-/* ============================================================
-   Custom Scrollbar (Tailwind doesn't support this)
-   ============================================================ */
-
-#cartItemsMobile::-webkit-scrollbar,
-#cartItemsDesktop::-webkit-scrollbar {
-  width: 6px;
-}
-
-#cartItemsMobile::-webkit-scrollbar-track,
-#cartItemsDesktop::-webkit-scrollbar-track {
-  background: #f9fafb;
-  border-radius: 10px;
-}
-
-.dark #cartItemsMobile::-webkit-scrollbar-track,
-.dark #cartItemsDesktop::-webkit-scrollbar-track {
-  background: #374151;
-}
-
-#cartItemsMobile::-webkit-scrollbar-thumb,
-#cartItemsDesktop::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #ec4899, #8b5cf6);
-  border-radius: 10px;
-}
-
-#cartItemsMobile::-webkit-scrollbar-thumb:hover,
-#cartItemsDesktop::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(to bottom, #db2777, #7c3aed);
-}
-
-/* ============================================================
-   Pulse Animation for Empty State
-   ============================================================ */
-
-.cart-empty-pulse {
-  animation: gentlePulse 2s ease-in-out infinite;
-}
-
-@keyframes gentlePulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.05);
-    opacity: 0.8;
-  }
-}
-
-/* ============================================================
-   Glow Effect for Checkout Button
-   ============================================================ */
-
-.shadow-glow {
-  box-shadow: 0 10px 40px rgba(236, 72, 153, 0.4);
-}
-
-.dark .shadow-glow {
-  box-shadow: 0 10px 40px rgba(236, 72, 153, 0.3);
-}
-
-/* ============================================================
-   Ripple Effect on Button Click
-   ============================================================ */
-
-.btn-ripple {
-  position: relative;
-  overflow: hidden;
-}
-
-.btn-ripple::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
-}
-
-.btn-ripple:active::before {
-  width: 300px;
-  height: 300px;
-}
-
-/* ============================================================
-   THAT'S IT! Everything else = Tailwind classes ✅
-   ============================================================ */
-/*product card hover effect*/
-/* Product Grid - Enhanced */
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 3rem;
-}
-
-@media (max-width: 640px) {
-  .products-grid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 1rem;
-  }
-}
-
-/* Product Card - Modern Design */
-.product-card {
-  background: white;
-  border-radius: 24px;
-  overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-  border: 2px solid transparent;
-  animation: fadeInUp 0.6s ease-out backwards;
-}
-
-.dark .product-card {
-  background: #1f2937;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-}
-
-.product-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 40px rgba(255, 107, 157, 0.2);
-  border-color: #FF6B9D;
-}
-
-.product-image-container {
-  position: relative;
-  width: 100%;
-  padding-top: 100%; /* مربع 1:1 */
-  overflow: hidden;
-  background: linear-gradient(135deg, #FFF5F7 0%, #FFE4E9 100%);
-}
-
-.dark .product-image-container {
-  background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
-}
-
-.product-image {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.product-card:hover .product-image {
-  transform: scale(1.1) rotate(2deg);
-}
-
-.product-badge {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: linear-gradient(135deg, #FF6B9D, #C9A0DC);
-  color: white;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 700;
-  box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4);
-  z-index: 10;
-}
-
-.product-content {
-  padding: 1.25rem;
-}
-
-.product-name {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin-bottom: 0.5rem;
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.dark .product-name {
-  color: #f9fafb;
-}
-
-.product-description {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin-bottom: 1rem;
-  line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.dark .product-description {
-  color: #9ca3af;
-}
-
-.product-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-}
-
-.product-price {
-  font-size: 1.5rem;
-  font-weight: 900;
-  color: #FF6B9D;
-  direction: ltr;
-}
-
-.add-to-cart-btn {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #FF6B9D, #C9A0DC);
-  color: white;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
-}
-
-.add-to-cart-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(255, 107, 157, 0.5);
-}
-
-.add-to-cart-btn:active {
-  transform: scale(0.95);
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Category Header */
-.category-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 3px solid #FFE4E9;
-}
-
-.dark .category-header {
-  border-bottom-color: #374151;
-}
-
-.category-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #FF6B9D, #C9A0DC);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
-}
-
-.category-name {
-  font-size: 1.75rem;
-  font-weight: 900;
-  color: #1f2937;
-  margin: 0;
-}
-
-.dark .category-name {
-  color: #f9fafb;
-}
-/*end product card hover effect*/
-/*============================================================ */
-/*toast styles*/
-/*============================================================ */
-/* Toast Base Styles */
-.toast {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  background: white;
-  border-radius: 12px;
-  padding: 14px 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15),
-              0 0 0 1px rgba(0, 0, 0, 0.05);
-  pointer-events: auto;
-  position: relative;
-  overflow: hidden;
-  opacity: 0;
-  transform: translateY(-20px);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: pan-y;
-  width: 100%;
-}
-
-/* Desktop specific */
-@media (min-width: 768px) {
-  .toast {
-    width: auto;
-    min-width: 320px;
-    padding: 16px 18px;
-    transform: translateX(20px);
-  }
-}
-
-/* Show animation */
-.toast.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-@media (min-width: 768px) {
-  .toast.show {
-    transform: translateX(0);
-  }
-}
-
-/* Hide animation */
-.toast.hide {
-  opacity: 0;
-  transform: translateY(-20px) scale(0.95);
-}
-
-@media (min-width: 768px) {
-  .toast.hide {
-    transform: translateX(20px) scale(0.95);
-  }
-}
-
-/* Toast Types */
-.toast.success {
-  border-right: 4px solid #10b981;
-}
-
-.toast.error {
-  border-right: 4px solid #ef4444;
-}
-
-.toast.warning {
-  border-right: 4px solid #f59e0b;
-}
-
-.toast.info {
-  border-right: 4px solid #3b82f6;
-}
-
-/* RTL Support */
-[dir="rtl"] .toast.success {
-  border-right: none;
-  border-left: 4px solid #10b981;
-}
-
-[dir="rtl"] .toast.error {
-  border-right: none;
-  border-left: 4px solid #ef4444;
-}
-
-[dir="rtl"] .toast.warning {
-  border-right: none;
-  border-left: 4px solid #f59e0b;
-}
-
-[dir="rtl"] .toast.info {
-  border-right: none;
-  border-left: 4px solid #3b82f6;
-}
-
-/* Toast Icon */
-.toast-icon {
-  font-size: 22px;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.toast.success .toast-icon {
-  color: #10b981;
-}
-
-.toast.error .toast-icon {
-  color: #ef4444;
-}
-
-.toast.warning .toast-icon {
-  color: #f59e0b;
-}
-
-.toast.info .toast-icon {
-  color: #3b82f6;
-}
-
-/* Toast Content */
-.toast-content {
-  flex: 1;
-  min-width: 0;
-}
-
-.toast-title {
-  font-weight: 600;
-  font-size: 15px;
-  color: #1f2937;
-  margin-bottom: 2px;
-  line-height: 1.4;
-}
-
-.toast-message {
-  font-size: 14px;
-  color: #6b7280;
-  line-height: 1.5;
-  margin-top: 4px;
-}
-
-/* Mobile adjustments */
-@media (max-width: 767px) {
-  .toast-title {
-    font-size: 14px;
-  }
-  
-  .toast-message {
-    font-size: 13px;
-  }
-  
-  .toast-icon {
-    font-size: 20px;
-  }
-}
-
-/* Close Button */
-.toast-close {
-  background: transparent;
-  border: none;
-  color: #9ca3af;
-  cursor: pointer;
-  padding: 4px;
-  flex-shrink: 0;
-  border-radius: 6px;
-  transition: all 0.2s;
-  font-size: 16px;
-  line-height: 1;
-  margin-top: -2px;
-  margin-left: 4px;
-}
-
-.toast-close:hover {
-  background: #f3f4f6;
-  color: #6b7280;
-}
-
-.toast-close:active {
-  transform: scale(0.95);
-}
-
-/* Mobile touch target */
-@media (max-width: 767px) {
-  .toast-close {
-    padding: 8px;
-    margin-left: 0;
-  }
-}
-
-/* Progress Bar */
-.toast-progress {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  height: 3px;
-  width: 100%;
-  transform-origin: right;
-  animation: toast-progress linear forwards;
-}
-
-[dir="rtl"] .toast-progress {
-  right: auto;
-  left: 0;
-  transform-origin: left;
-}
-
-.toast.success .toast-progress {
-  background: linear-gradient(90deg, #10b981, #059669);
-}
-
-.toast.error .toast-progress {
-  background: linear-gradient(90deg, #ef4444, #dc2626);
-}
-
-.toast.warning .toast-progress {
-  background: linear-gradient(90deg, #f59e0b, #d97706);
-}
-
-.toast.info .toast-progress {
-  background: linear-gradient(90deg, #3b82f6, #2563eb);
-}
-
-@keyframes toast-progress {
-  from {
-    transform: scaleX(1);
-  }
-  to {
-    transform: scaleX(0);
-  }
-}
-
-/* Dark Mode Support (optional) */
-@media (prefers-color-scheme: dark) {
-  .toast {
-    background: #1f2937;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4),
-                0 0 0 1px rgba(255, 255, 255, 0.1);
-  }
-  
-  .toast-title {
-    color: #f9fafb;
-  }
-  
-  .toast-message {
-    color: #d1d5db;
-  }
-  
-  .toast-close {
-    color: #9ca3af;
-  }
-  
-  .toast-close:hover {
-    background: #374151;
-    color: #e5e7eb;
-  }
-}
-
-/* Accessibility */
-@media (prefers-reduced-motion: reduce) {
-  .toast,
-  .toast-progress {
-    animation: none !important;
-    transition: none !important;
-  }
-  
-  .toast.show {
-    opacity: 1;
-  }
-}
-
-/* Safe area for notched devices */
-@supports (padding: max(0px)) {
-  #toastContainer {
-    padding-right: max(1rem, env(safe-area-inset-right));
-    padding-left: max(1rem, env(safe-area-inset-left));
-    top: max(1rem, env(safe-area-inset-top));
-  }
-}
-/*end toast styles*/
-/*============================================================ */
-
-  </style>
-</head>
-
-<body class="bg-cream-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 overflow-x-hidden transition-colors duration-300">
-  
-  <!-- Animated Background -->
-  <div class="animated-background">
-    <div class="floating-shape shape-1"></div>
-    <div class="floating-shape shape-2"></div>
-    <div class="floating-shape shape-3"></div>
-  </div>
-
-  <!-- Main Page Content -->
-  <div class="page-content relative z-10 transition-[padding] duration-300">
-    
-    <!-- Toast Container -->
-    <!-- Toast Container - Responsive for Mobile & Desktop -->
-    <div id="toastContainer" class="
-      fixed z-[10000] flex flex-col gap-3 pointer-events-none
-      
-      /* Mobile - في الأعلى في المنتصف */
-      top-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-md
-      
-      /* Desktop - في الأعلى على اليمين */
-      md:top-6 md:right-6 md:left-auto md:translate-x-0 md:w-auto md:max-w-[420px]
-    "></div>
-
-    <!-- Header -->
-    <header class="header fixed top-0 left-0 right-0 z-[100] backdrop-blur-2xl bg-cream-50/90 dark:bg-gray-900/90 border-b border-pink-100 dark:border-gray-800 shadow-lg transition-all duration-300 h-[100px]" id="header">
-      <div class="header-content max-w-[1600px] mx-auto px-6 h-full flex items-center justify-between">
-        
-        <!-- Logo & Branding -->
-        <div class="header-logo flex items-center gap-4 cursor-pointer transition-transform hover:scale-105" onclick="scrollToTop()">
-          <div class="logo-icon">
-            <img 
-              src="https://i.ibb.co/C5zs6WZ6/546595638-767747059559727-9006561812810172332-n-1-1.jpg" 
-              alt="سوفت كريم" 
-              class="w-[50px] h-[50px] rounded-full object-cover ring-2 ring-pink-200 dark:ring-pink-500/30"
-            >
-          </div>
-          <div class="logo-text">
-            <h1 id="header-title" class="text-3xl font-black gradient-text leading-tight tracking-tight">سوفت كريم</h1>
-            <p id="header-subtitle" class="text-sm font-semibold text-gray-600 dark:text-gray-400">اصل الايس كريم 🍦</p>
-          </div>
-        </div>
-        
-        <!-- Header Actions -->
-        <div class="header-actions flex items-center gap-2">
-          <!-- Cart Button -->
-          <button class="header-cart-btn relative w-11 h-11 rounded-xl bg-transparent hover:bg-pink-100 dark:hover:bg-gray-800 transition-all flex items-center justify-center group" onclick="openCartModal()" aria-label="السلة">
-            <i data-lucide="shopping-cart" class="w-5 h-5 text-gray-700 dark:text-gray-300 group-hover:text-primary transition-colors"></i>
-            <span class="header-cart-badge absolute top-1.5 right-1.5 min-w-[20px] h-5 px-1.5 bg-red-500 text-white rounded-full text-[11px] font-bold hidden items-center justify-center shadow-lg animate-pulse" id="headerCartBadge">0</span>
-          </button>
-          
-          <!-- Language Toggle -->
-          <button class="lang-toggle w-11 h-11 rounded-xl bg-transparent hover:bg-pink-100 dark:hover:bg-gray-800 transition-all flex items-center justify-center text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-primary" onclick="toggleLanguage()" id="langToggle">EN</button>
-          
-          <!-- Sidebar Trigger -->
-          <button class="sidebar-trigger w-11 h-11 rounded-xl bg-transparent hover:bg-pink-100 dark:hover:bg-gray-800 transition-all flex items-center justify-center z-[999]" id="sidebarTrigger" aria-label="فتح القائمة">
-            <span class="hamburger-icon w-[22px] h-4 relative flex flex-col justify-between">
-              <span class="block h-[2.5px] w-full bg-gray-700 dark:bg-gray-300 rounded transition-all duration-300"></span>
-              <span class="block h-[2.5px] w-full bg-gray-700 dark:bg-gray-300 rounded transition-all duration-300"></span>
-              <span class="block h-[2.5px] w-full bg-gray-700 dark:bg-gray-300 rounded transition-all duration-300"></span>
-            </span>
-          </button>
-        </div>
-      </div>
-    </header>
-
-    <!-- Main Content -->
-    <div class="main-wrapper pt-[120px] pb-20 min-h-screen relative">
-      
-      <!-- Menu Tab -->
-      <div class="tab-content active" id="menu-tab">
-        
-        <!-- Ice Cream Hero Features -->
-        <div class="icecream-content max-w-[1240px] mx-auto px-4 mb-8">
-          <div class="icecream-features flex flex-col gap-8">
-            
-            <!-- Feature 1 -->
-            <div class="icecream-features__item icecream-features__item--left icecream-gs-reveal icecream-gs-reveal-fromLeft flex flex-wrap items-center gap-8 min-h-[200px] p-8 bg-gradient-to-br from-white/95 to-pink-50/95 dark:from-gray-800/95 dark:to-gray-900/95 rounded-[32px] shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 overflow-hidden relative group">
-              <div class="absolute inset-0 bg-gradient-to-r from-transparent via-pink-100/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-              
-              <div class="icecream-features__image flex-1 min-w-[200px] relative transition-transform duration-500 group-hover:scale-105">
-                <div class="icecream-features__card rounded-3xl overflow-hidden aspect-square shadow-2xl group-hover:shadow-pink-300/50 group-hover:rotate-3 transition-all duration-500">
-                  <img class="icecream-features__img w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
-                       src="https://i.ibb.co/LzP97qhB/481279444-627854640201713-219907065737357117-n-min.webp" 
-                       alt="آيس كريم فانيليا بصوص كراميل" 
-                       loading="lazy">
-                </div>
-              </div>
-              
-              <div class="icecream-features__content flex-1 min-w-[280px] px-6 text-right">
-                <h2 class="icecream-features__title text-2xl md:text-3xl font-black text-primary uppercase tracking-wider mb-4 relative inline-block">
-                  آيس كريم فانيليا بصوص كراميل
-                  <span class="absolute bottom-0 left-0 w-0 h-1 bg-gradient-to-r from-primary to-secondary group-hover:w-full transition-all duration-400"></span>
-                </h2>
-                <p class="icecream-features__description leading-relaxed text-base text-gray-600 dark:text-gray-300">
-                  آيس كريم فانيليا كريمي يخطف الأنفاس، تعلوه طبقة سلسة من صوص الكراميل الذهبي، يقدم تجربة تناغم بين نعومة الفانيليا وغنى الكراميل في كل قضمة.
-                </p>
-              </div>
-            </div>
-            
-            <!-- Feature 2 -->
-            <div class="icecream-features__item icecream-features__item--right icecream-gs-reveal icecream-gs-reveal-fromRight flex flex-wrap-reverse items-center gap-8 min-h-[200px] p-8 bg-gradient-to-br from-white/95 to-purple-50/95 dark:from-gray-800/95 dark:to-gray-900/95 rounded-[32px] shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 overflow-hidden relative group">
-              <div class="absolute inset-0 bg-gradient-to-r from-transparent via-purple-100/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-              
-              <div class="icecream-features__image flex-1 min-w-[200px] relative transition-transform duration-500 group-hover:scale-105">
-                <div class="icecream-features__card rounded-3xl overflow-hidden aspect-square shadow-2xl group-hover:shadow-purple-300/50 group-hover:-rotate-3 transition-all duration-500">
-                  <img class="icecream-features__img w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
-                       src="https://i.ibb.co/4nNL0KR6/Gemini-Generated-Image-7z63p77z63p77z63.png" 
-                       alt="آيس كريم مانجو طبيعي" 
-                       loading="lazy">
-                </div>
-              </div>
-              
-              <div class="icecream-features__content flex-1 min-w-[280px] px-6 text-left">
-                <h2 class="icecream-features__title text-2xl md:text-3xl font-black text-primary uppercase tracking-wider mb-4 relative inline-block">
-                  سوفت مانجو طبيعي
-                  <span class="absolute bottom-0 left-0 w-0 h-1 bg-gradient-to-r from-primary to-secondary group-hover:w-full transition-all duration-400"></span>
-                </h2>
-                <p class="icecream-features__description leading-relaxed text-base text-gray-600 dark:text-gray-300">
-                  سوفت مانجو يختزل جوهر الفاكهة الاستوائية في كل ملعقة. قوام حريري يذوب بلطف، بنقاء ولون طبيعي يعكس طبيعة المانجو الطازج دون أي إضافات صناعية.
-                </p>
-              </div>
-            </div>
-            
-            <!-- Feature 3 -->
-            <div class="icecream-features__item icecream-features__item--left icecream-gs-reveal icecream-gs-reveal-fromLeft flex flex-wrap items-center gap-8 min-h-[200px] p-8 bg-gradient-to-br from-white/95 to-amber-50/95 dark:from-gray-800/95 dark:to-gray-900/95 rounded-[32px] shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 overflow-hidden relative group">
-              <div class="absolute inset-0 bg-gradient-to-r from-transparent via-amber-100/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-              
-              <div class="icecream-features__image flex-1 min-w-[200px] relative transition-transform duration-500 group-hover:scale-105">
-                <div class="icecream-features__card rounded-3xl overflow-hidden aspect-square shadow-2xl group-hover:shadow-amber-300/50 group-hover:rotate-3 transition-all duration-500">
-                  <img class="icecream-features__img w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
-                       src="https://i.ibb.co/3YspR2nn/489627654-645413408459760-7730691560634138295-n-min.jpg" 
-                       alt="فانيليا بقطع براوني" 
-                       loading="lazy">
-                </div>
-              </div>
-              
-              <div class="icecream-features__content flex-1 min-w-[280px] px-6 text-right">
-                <h2 class="icecream-features__title text-2xl md:text-3xl font-black text-primary uppercase tracking-wider mb-4 relative inline-block">
-                  فانيليا بقطع براوني
-                  <span class="absolute bottom-0 left-0 w-0 h-1 bg-gradient-to-r from-primary to-secondary group-hover:w-full transition-all duration-400"></span>
-                </h2>
-                <p class="icecream-features__description leading-relaxed text-base text-gray-600 dark:text-gray-300">
-                  فانيليا كريمية فاخرة تتخللها قطع غنية من البراوني الشوكولاتي، تخلق تناقضاً رائعاً بين نعومة الآيس كريم وقرمشة الشوكولاتة في تجربة لا تقاوم.
-                </p>
-              </div>
-            </div>
-            
-            <!-- Feature 4 -->
-            <div class="icecream-features__item icecream-features__item--right icecream-gs-reveal icecream-gs-reveal-fromRight flex flex-wrap-reverse items-center gap-8 min-h-[200px] p-8 bg-gradient-to-br from-white/95 to-green-50/95 dark:from-gray-800/95 dark:to-gray-900/95 rounded-[32px] shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 overflow-hidden relative group">
-              <div class="absolute inset-0 bg-gradient-to-r from-transparent via-green-100/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-              
-              <div class="icecream-features__image flex-1 min-w-[200px] relative transition-transform duration-500 group-hover:scale-105">
-                <div class="icecream-features__card rounded-3xl overflow-hidden aspect-square shadow-2xl group-hover:shadow-green-300/50 group-hover:-rotate-3 transition-all duration-500">
-                  <img class="icecream-features__img w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
-                       src="https://i.ibb.co/67cV4CJc/484157834-622859394048495-6880924063204865717-n-min.webp" 
-                       alt="نقاء السوفت آيس كريم" 
-                       loading="lazy">
-                </div>
-              </div>
-              
-              <div class="icecream-features__content flex-1 min-w-[280px] px-6 text-left">
-                <h2 class="icecream-features__title text-2xl md:text-3xl font-black text-primary uppercase tracking-wider mb-4 relative inline-block">
-                  نقاء السوفت آيس كريم
-                  <span class="absolute bottom-0 left-0 w-0 h-1 bg-gradient-to-r from-primary to-secondary group-hover:w-full transition-all duration-400"></span>
-                </h2>
-                <p class="icecream-features__description leading-relaxed text-base text-gray-600 dark:text-gray-300">
-                  تجسيد للنقاء والطبيعة في كل حبة، حيث يبرز السوفت آيس كريم بمكوناته الطبيعية الخالصة، خالي من الألوان الاصطناعية، ليقدم لك جوهر المتعة الحقيقية.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Search Section -->
-        <div class="search-section px-4 mb-8">
-          <div class="search-container relative max-w-[700px] mx-auto">
-            <i data-lucide="search" class="search-icon absolute right-7 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"></i>
-            <input 
-              type="text" 
-              id="searchInput" 
-              class="search-input w-full h-[60px] pr-16 pl-6 text-base font-cairo border-2 border-pink-100 dark:border-gray-700 rounded-full bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder:text-gray-400 transition-all duration-300 focus:outline-none focus:border-primary focus:shadow-glow focus:-translate-y-1 shadow-md hover:shadow-lg" 
-              placeholder="ابحث عن منتج..."
-              oninput="handleSearch()"
-            >
-            <button class="clear-search absolute left-5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-pink-100 dark:bg-gray-700 text-primary hover:bg-pink-200 dark:hover:bg-gray-600 transition-all duration-200 items-center justify-center hover:scale-110 active:scale-95 hidden" id="clearSearch" onclick="clearSearch()">
-              <i data-lucide="x" class="w-4 h-4"></i>
-            </button>
-          </div>
-        </div>
-
-        <!-- Categories Section (Sticky) -->
-        <div class="categories-section fixed top-[100px] left-0 right-0 z-[80] backdrop-blur-2xl bg-cream-50/95 dark:bg-gray-900/95 py-4 border-b border-pink-100 dark:border-gray-800 shadow-md opacity-0 pointer-events-none transition-all duration-300" id="categoriesSection">
-          <div class="categories-scroll relative flex gap-3 overflow-x-auto px-4 scroll-smooth scrollbar-hide" id="categoriesScroll"></div>
-        </div>
-
-        <!-- Products Container -->
-        <div class="products-container px-4 pb-8" id="productsContainer"></div>
-      </div>
-
-    <!-- Sidebar -->
-   <!-- Sidebar Overlay -->
-<!-- Sidebar Overlay -->
- 
-<div class="sidebar-overlay fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[1000]" id="sidebarOverlay" onclick="closeSidebar()"></div>
-
-<!-- Sidebar -->
-<aside class="sidebar fixed top-0 right-0 w-[320px] h-screen bg-white dark:bg-gray-800 shadow-2xl border-l border-pink-100 dark:border-gray-700 flex flex-col z-[1001] overflow-hidden" id="mainSidebar">
-  
-  <!-- Sidebar Header -->
-  <div class="sidebar-header flex items-center justify-between p-4 min-h-[70px] bg-gradient-to-br from-primary to-secondary text-white border-b border-white/20">
-    <div class="sidebar-logo flex items-center gap-3">
-      <img 
-        src="https://i.ibb.co/C5zs6WZ6/546595638-767747059559727-9006561812810172332-n-1-1.jpg" 
-        alt="سوفت كريم"
-        class="sidebar-logo-img w-12 h-12 rounded-full object-cover border-2 border-white/30 shadow-lg"
-      >
-      <div class="sidebar-brand">
-        <h3 class="sidebar-brand-title text-lg font-bold m-0">سوفت كريم</h3>
-        <p class="sidebar-brand-subtitle text-xs m-0 opacity-90">أطيب آيس كريم 🍦</p>
-      </div>
-    </div>
-    <!-- Close Button -->
-    <button class="sidebar-close w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all hover:rotate-90 duration-300" onclick="closeSidebar()">
-      <i data-lucide="x" class="w-5 h-5"></i>
-    </button>
-  </div>
-
-  <!-- Sidebar Content -->
-  <div class="sidebar-content flex-1 overflow-y-auto overflow-x-hidden py-3 px-2">
-    
-    <!-- Profile Section -->
-    <div class="sidebar-section mb-3">
-      <div class="sidebar-profile flex items-center gap-3 p-3 bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-xl cursor-pointer hover:from-pink-100 hover:to-purple-100 dark:hover:from-gray-600 dark:hover:to-gray-500 transition-all duration-300 border border-pink-100 dark:border-gray-600">
-        <div class="sidebar-profile-avatar w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white shadow-lg">
-          <i data-lucide="user" class="w-6 h-6"></i>
-        </div>
-        <div class="sidebar-profile-info">
-          <div class="sidebar-profile-name text-sm font-semibold text-gray-800 dark:text-gray-100 mb-0.5" id="sidebarProfileName">مرحباً بك! 👋</div>
-          <div class="sidebar-profile-status text-xs text-gray-500 dark:text-gray-400" id="sidebarProfileStatus">زائر</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Main Navigation -->
-    <div class="sidebar-section mb-3">
-      <nav class="sidebar-nav flex flex-col gap-1">
-        
-        <a href="#" class="sidebar-nav-item flex items-center gap-3 p-3 rounded-xl text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 active border border-transparent hover:border-pink-100 dark:hover:border-gray-600" onclick="switchTab('menu'); closeSidebar();">
-          <div class="sidebar-nav-icon w-10 h-10 flex items-center justify-center rounded-lg bg-gradient-to-br from-primary to-secondary text-white shadow-md">
-            <i data-lucide="home" class="w-5 h-5"></i>
-          </div>
-          <span class="sidebar-nav-text flex-1">الرئيسية</span>
-        </a>
-
-        <a href="#" class="sidebar-nav-item flex items-center gap-3 p-3 rounded-xl text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 border border-transparent hover:border-pink-100 dark:hover:border-gray-600" onclick="switchTab('menu'); closeSidebar();">
-          <div class="sidebar-nav-icon w-10 h-10 flex items-center justify-center rounded-lg bg-pink-50 dark:bg-gray-700 border border-pink-100 dark:border-gray-600">
-            <i data-lucide="utensils" class="w-5 h-5 text-primary"></i>
-          </div>
-          <span class="sidebar-nav-text flex-1">المنيو</span>
-        </a>
-
-        <a href="#" class="sidebar-nav-item flex items-center gap-3 p-3 rounded-xl text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 border border-transparent hover:border-pink-100 dark:hover:border-gray-600" onclick="openCartModal(); closeSidebar();">
-          <div class="sidebar-nav-icon w-10 h-10 flex items-center justify-center rounded-lg bg-pink-50 dark:bg-gray-700 relative border border-pink-100 dark:border-gray-600">
-            <i data-lucide="shopping-cart" class="w-5 h-5 text-primary"></i>
-            <span class="sidebar-badge-dot absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-gray-700 animate-pulse"></span>
-          </div>
-          <span class="sidebar-nav-text flex-1">السلة</span>
-          <span class="sidebar-badge min-w-[22px] h-5 px-2 bg-gradient-to-r from-primary to-secondary text-white rounded-full text-xs font-bold flex items-center justify-center shadow-sm" id="sidebarCartBadge">0</span>
-        </a>
-
-        <a href="#" class="sidebar-nav-item flex items-center gap-3 p-3 rounded-xl text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200 border border-transparent hover:border-pink-100 dark:hover:border-gray-600" onclick="openOrdersPage(); closeSidebar();">
-          <div class="sidebar-nav-icon w-10 h-10 flex items-center justify-center rounded-lg bg-pink-50 dark:bg-gray-700 border border-pink-100 dark:border-gray-600">
-            <i data-lucide="package" class="w-5 h-5 text-primary"></i>
-          </div>
-          <span class="sidebar-nav-text flex-1">طلباتي</span>
-          <span class="sidebar-badge sidebar-badge-danger min-w-[22px] h-5 px-2 bg-red-500 text-white rounded-full text-xs font-bold items-center justify-center hidden" id="sidebarOrdersBadge">0</span>
-        </a>
-      </nav>
-    </div>
-
-    <!-- Divider -->
-    <div class="sidebar-divider h-px bg-gradient-to-r from-transparent via-pink-200 to-transparent dark:via-gray-600 my-3"></div>
-
-    <!-- ✨ About Us Section - ENHANCED -->
-    <div class="sidebar-section mb-3">
-      <div class="sidebar-section-title text-xs font-bold uppercase tracking-wider text-primary mb-2 px-2 flex items-center gap-2">
-        <i data-lucide="sparkles" class="w-3 h-3"></i>
-        <span>قصتنا</span>
-      </div>
-      
-      <div class="sidebar-about-card bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-800 rounded-xl p-4 border border-pink-100 dark:border-gray-600 shadow-sm">
-        <p class="text-xs text-gray-600 dark:text-gray-300 leading-relaxed mb-3">
-          نحن متخصصون في تقديم أفخر أنواع السوفت آيس كريم والديسرت المميز. منذ تأسيسنا ونحن نسعى لتقديم تجربة استثنائية لعملائنا.
-        </p>
-        
-        <!-- Features -->
-        <div class="space-y-2">
-          <div class="flex items-start gap-2">
-            <span class="text-primary text-sm mt-0.5">✓</span>
-            <span class="text-xs text-gray-700 dark:text-gray-300 font-medium">مكونات طبيعية 100%</span>
-          </div>
-          <div class="flex items-start gap-2">
-            <span class="text-primary text-sm mt-0.5">✓</span>
-            <span class="text-xs text-gray-700 dark:text-gray-300 font-medium">توصيل سريع خلال 30 دقيقة</span>
-          </div>
-          <div class="flex items-start gap-2">
-            <span class="text-primary text-sm mt-0.5">✓</span>
-            <span class="text-xs text-gray-700 dark:text-gray-300 font-medium">نكهات حصرية ومتجددة</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ⏰ Working Hours Section - ENHANCED -->
-    <div class="sidebar-section mb-3">
-      <div class="sidebar-section-title text-xs font-bold uppercase tracking-wider text-primary mb-2 px-2 flex items-center gap-2">
-        <i data-lucide="clock" class="w-3 h-3"></i>
-        <span>ساعات العمل</span>
-      </div>
-      
-      <div class="sidebar-hours-card bg-gradient-to-br from-green-50 to-blue-50 dark:from-gray-700 dark:to-gray-800 rounded-xl p-4 border border-green-100 dark:border-gray-600 shadow-sm">
-        <div class="space-y-2.5">
-          <div class="flex justify-between items-center">
-            <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">السبت - الخميس</span>
-            <span class="text-xs font-bold text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded-lg">10:00 ص - 12:00 م</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">الجمعة</span>
-            <span class="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded-lg">2:00 م - 12:00 م</span>
-          </div>
-        </div>
-        
-        <!-- Current Status -->
-        <div class="mt-3 pt-3 border-t border-green-200 dark:border-gray-600">
-          <div class="flex items-center gap-2">
-            <span class="relative flex h-2 w-2">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-            </span>
-            <span class="text-xs font-bold text-green-600 dark:text-green-400">مفتوح الآن</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Divider -->
-    <div class="sidebar-divider h-px bg-gradient-to-r from-transparent via-pink-200 to-transparent dark:via-gray-600 my-3"></div>
-
-    <!-- 📞 Contact Section - ENHANCED -->
-    <div class="sidebar-section mb-3">
-      <div class="sidebar-section-title text-xs font-bold uppercase tracking-wider text-primary mb-2 px-2 flex items-center gap-2">
-        <i data-lucide="phone" class="w-3 h-3"></i>
-        <span>تواصل معنا</span>
-      </div>
-      
-      <div class="sidebar-contact-card bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-800 rounded-xl p-4 border border-blue-100 dark:border-gray-600 shadow-sm space-y-3">
-        
-        <!-- Phone -->
-        <a href="tel:+201234567890" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white dark:hover:bg-gray-700 transition-all group">
-          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition-transform">
-            <i data-lucide="phone" class="w-4 h-4"></i>
-          </div>
-          <div class="flex-1">
-            <div class="text-[10px] text-gray-500 dark:text-gray-400 font-medium">الهاتف</div>
-            <div class="text-xs font-bold text-gray-800 dark:text-gray-100 direction-ltr">+20 123 456 7890</div>
-          </div>
-        </a>
-
-        <!-- Email -->
-        <a href="mailto:info@softcream.com" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white dark:hover:bg-gray-700 transition-all group">
-          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition-transform">
-            <i data-lucide="mail" class="w-4 h-4"></i>
-          </div>
-          <div class="flex-1">
-            <div class="text-[10px] text-gray-500 dark:text-gray-400 font-medium">البريد</div>
-            <div class="text-xs font-bold text-gray-800 dark:text-gray-100">info@softcream.com</div>
-          </div>
-        </a>
-
-        <!-- Address -->
-        <div class="flex items-start gap-3 p-2">
-          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white shadow-sm flex-shrink-0">
-            <i data-lucide="map-pin" class="w-4 h-4"></i>
-          </div>
-          <div class="flex-1">
-            <div class="text-[10px] text-gray-500 dark:text-gray-400 font-medium mb-1">العنوان</div>
-            <div class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">شارع الجيزة، أمام المول الكبير، الجيزة، مصر</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Divider -->
-    <div class="sidebar-divider h-px bg-gradient-to-r from-transparent via-pink-200 to-transparent dark:via-gray-600 my-3"></div>
-
-    <!-- Settings Section -->
-    <div class="sidebar-section mb-3">
-      <div class="sidebar-section-title text-xs font-bold uppercase tracking-wider text-gray-400 mb-2 px-2">التفضيلات</div>
-      
-      <!-- Theme Toggle -->
-      <div class="sidebar-setting-item flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 mb-2 border border-pink-100 dark:border-gray-600">
-        <div class="sidebar-setting-label flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-          <i data-lucide="moon" class="w-5 h-5 text-primary"></i>
-          <span>الوضع الليلي</span>
-        </div>
-        <label class="sidebar-toggle relative w-11 h-6 inline-block cursor-pointer">
-          <input type="checkbox" id="sidebarThemeToggle" class="opacity-0 w-0 h-0" onchange="toggleTheme()">
-          <span class="sidebar-toggle-slider absolute inset-0 bg-gray-300 dark:bg-gray-600 rounded-full transition-all duration-300 before:absolute before:content-[''] before:h-4 before:w-4 before:left-1 before:bottom-1 before:bg-white before:rounded-full before:transition-all before:duration-300"></span>
-        </label>
-      </div>
-
-      <!-- Language Toggle -->
-      <div class="sidebar-setting-item flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 border border-pink-100 dark:border-gray-600">
-        <div class="sidebar-setting-label flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-          <i data-lucide="globe" class="w-5 h-5 text-primary"></i>
-          <span>اللغة</span>
-        </div>
-        <button class="sidebar-lang-btn py-1.5 px-3 bg-white dark:bg-gray-600 border border-pink-200 dark:border-gray-500 rounded-lg text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-pink-100 dark:hover:bg-gray-500 transition-all duration-300 shadow-sm" id="sidebarLangToggle" onclick="toggleLanguage()">
-          <span class="lang-option" data-lang="ar">🇪🇬 العربية</span>
-          <span class="lang-option hidden" data-lang="en">🇬🇧 English</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Divider -->
-    <div class="sidebar-divider h-px bg-gradient-to-r from-transparent via-pink-200 to-transparent dark:via-gray-600 my-3"></div>
-
-    <!-- Social Section -->
-    <div class="sidebar-section mb-3">
-      <div class="sidebar-section-title text-xs font-bold uppercase tracking-wider text-primary mb-2 px-2 flex items-center gap-2">
-        <i data-lucide="share-2" class="w-3 h-3"></i>
-        <span>تابعنا</span>
-      </div>
-      <div class="sidebar-social grid grid-cols-4 gap-2">
-        <a href="https://facebook.com" target="_blank" class="sidebar-social-link w-full aspect-square flex items-center justify-center bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:from-primary hover:to-secondary hover:text-white hover:-translate-y-1 hover:shadow-lg transition-all duration-200 border border-pink-100 dark:border-gray-600" aria-label="Facebook">
-          <i data-lucide="facebook" class="w-5 h-5"></i>
-        </a>
-        <a href="https://instagram.com" target="_blank" class="sidebar-social-link w-full aspect-square flex items-center justify-center bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:from-primary hover:to-secondary hover:text-white hover:-translate-y-1 hover:shadow-lg transition-all duration-200 border border-pink-100 dark:border-gray-600" aria-label="Instagram">
-          <i data-lucide="instagram" class="w-5 h-5"></i>
-        </a>
-        <a href="https://twitter.com" target="_blank" class="sidebar-social-link w-full aspect-square flex items-center justify-center bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:from-primary hover:to-secondary hover:text-white hover:-translate-y-1 hover:shadow-lg transition-all duration-200 border border-pink-100 dark:border-gray-600" aria-label="Twitter">
-          <i data-lucide="twitter" class="w-5 h-5"></i>
-        </a>
-        <a href="https://wa.me/201234567890" target="_blank" class="sidebar-social-link w-full aspect-square flex items-center justify-center bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:from-primary hover:to-secondary hover:text-white hover:-translate-y-1 hover:shadow-lg transition-all duration-200 border border-pink-100 dark:border-gray-600" aria-label="WhatsApp">
-          <i data-lucide="message-circle" class="w-5 h-5"></i>
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <!-- Sidebar Footer -->
-  <div class="sidebar-footer py-3 px-4 border-t border-pink-100 dark:border-gray-700 bg-gradient-to-r from-pink-50 to-purple-50 dark:from-gray-800 dark:to-gray-700">
-    <div class="flex items-center justify-between text-xs">
-      <span class="text-gray-600 dark:text-gray-400 font-medium">© 2025 سوفت كريم</span>
-      <span class="px-2 py-1 bg-gradient-to-r from-primary to-secondary text-white rounded-lg font-bold shadow-sm">v1.0.0</span>
-    </div>
-  </div>
-</aside>
-
- <!-- ================================================================
-     Cart Modal - Pure Tailwind CSS (No custom classes)
-     ================================================================ -->
-
-<div class="cart-modal-overlay fixed inset-0 bg-black/75 backdrop-blur-md z-[200] hidden items-end md:items-center justify-center md:p-6" 
-     id="cartModal" 
-     onclick="closeCartModal(event)">
-  
-  <div class="bg-white dark:bg-gray-800 rounded-t-3xl md:rounded-3xl max-w-[750px] w-full max-h-[92vh] md:max-h-[85vh] overflow-hidden shadow-2xl relative" 
-       onclick="event.stopPropagation()">
-    
-    <!-- ============================================================
-         Cart Header
-         ============================================================ -->
-    <div class="flex items-center justify-between p-5 border-b border-pink-100 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10 backdrop-blur-sm">
-      
-      <!-- Title + Badge -->
-      <div class="flex items-center gap-3">
-        <div class="w-11 h-11 bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/30 dark:to-purple-900/30 rounded-xl flex items-center justify-center shadow-sm">
-          <i data-lucide="shopping-cart" class="w-5 h-5 text-primary"></i>
-        </div>
-        <span class="text-xl font-bold text-gray-800 dark:text-gray-100" id="cart-title-mobile">سلة الطلبات</span>
-        <span class="min-w-[28px] h-6 px-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-full text-sm font-bold flex items-center justify-center shadow-lg" 
-              id="cartBadgeMobile">0</span>
-      </div>
-      
-      <!-- Close Button -->
-      <button class="w-11 h-11 rounded-xl hover:bg-pink-50 dark:hover:bg-gray-700 flex items-center justify-center transition-all duration-200 hover:rotate-90 active:scale-95" 
-              onclick="closeCartModal()">
-        <i data-lucide="x" class="w-6 h-6 text-gray-700 dark:text-gray-300"></i>
-      </button>
-      
-    </div>
-
-    <!-- ============================================================
-         Cart Items Area (Scrollable)
-         ============================================================ -->
-    <div class="p-5 min-h-[350px] max-h-[calc(85vh-280px)] overflow-y-auto" 
-         id="cartItemsMobile">
-      
-      <!-- Empty State (Default) -->
-      <div class="flex flex-col items-center justify-center py-16 text-center">
-        <div class="cart-empty-pulse w-24 h-24 bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-full flex items-center justify-center mb-5">
-          <i data-lucide="shopping-basket" class="w-12 h-12 text-pink-300 dark:text-gray-500"></i>
-        </div>
-        <p class="text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2" 
-           id="cart-empty-title">سلتك فارغة حالياً</p>
-        <p class="text-sm text-gray-500 dark:text-gray-400" 
-           id="cart-empty-subtitle">أضف بعض الآيس كريم اللذيذ! 🍦</p>
-      </div>
-      
-      <!-- Cart items will be injected here by JavaScript -->
-      
-    </div>
-
-    <!-- ============================================================
-         Cart Footer (Hidden when empty)
-         ============================================================ -->
-    <div class="hidden p-5 border-t border-pink-100 dark:border-gray-700 space-y-4 sticky bottom-0 bg-gradient-to-t from-white via-white to-transparent dark:from-gray-800 dark:via-gray-800 backdrop-blur-sm" 
-         id="cartFooterMobile">
-      
-      <!-- Total Price Box -->
-      <div class="flex justify-between items-center bg-gradient-to-r from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-2xl p-4 shadow-sm border border-pink-100 dark:border-gray-600">
-        <div class="flex items-center gap-2">
-          <i data-lucide="calculator" class="w-5 h-5 text-primary"></i>
-          <span class="text-lg font-bold text-gray-700 dark:text-gray-300" 
-                id="cart-total-label">الإجمالي:</span>
-        </div>
-        <span class="text-2xl font-extrabold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent" 
-              id="cartTotalMobile">0 ج.م</span>
-      </div>
-      
-      <!-- Checkout Button -->
-      <button class="btn-ripple w-full py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-2xl font-bold text-lg flex items-center justify-center gap-3 shadow-lg transition-all hover:-translate-y-1 hover:shadow-glow active:scale-95 relative overflow-hidden group" 
-              onclick="initiateCheckout()">
-        <span class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></span>
-        <i data-lucide="check-circle-2" class="w-6 h-6 relative z-10"></i>
-        <span class="relative z-10" id="checkout-btn-text">إتمام الطلب</span>
-      </button>
-      
-      <!-- Trust Badges -->
-      <div class="flex items-center justify-center gap-4 text-xs text-gray-500 dark:text-gray-400 pt-2 border-t border-pink-100 dark:border-gray-700">
-        <div class="flex items-center gap-1.5">
-          <i data-lucide="shield-check" class="w-4 h-4 text-green-500"></i>
-          <span id="secure-payment-text">دفع آمن</span>
-        </div>
-        <div class="w-1 h-1 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
-        <div class="flex items-center gap-1.5">
-          <i data-lucide="truck" class="w-4 h-4 text-blue-500"></i>
-          <span id="fast-delivery-text">توصيل سريع</span>
-        </div>
-      </div>
-      
-    </div>
-    
-  </div>
-</div>
-
-<!-- ================================================================
-     NOTES:
-     ✅ All styling uses Tailwind classes directly
-     ✅ Only animations are in separate CSS file
-     ✅ JavaScript will inject cart items dynamically
-     ✅ IDs are used for translation updates
-     ================================================================ -->
-
-<!-- Product Modal - ENHANCED -->
-<div class="modal-overlay fixed inset-0 bg-gray-900/80 backdrop-blur-lg z-[200] hidden items-center justify-center p-4 animate-fade-in" id="productModal" onclick="closeProductModal(event)">
-  <div class="modal-content bg-white dark:bg-gray-800 rounded-3xl max-w-[850px] w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-scale-in" onclick="event.stopPropagation()">
-    
-    <!-- Close Button -->
-    <button class="modal-close absolute top-4 left-4 md:top-6 md:left-6 z-20 w-11 h-11 rounded-full bg-white/90 dark:bg-gray-700/90 backdrop-blur-sm shadow-lg hover:scale-110 hover:rotate-90 active:scale-95 transition-all duration-200 flex items-center justify-center" onclick="closeProductModal()">
-      <i data-lucide="x" class="w-5 h-5 text-gray-700 dark:text-gray-300"></i>
-    </button>
-    
-    <!-- Product Image -->
-    <div class="modal-image-container relative w-full h-64 md:h-80 overflow-hidden bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-900 dark:to-gray-800">
-      <img id="modalImage" class="modal-image w-full h-full object-cover transition-transform duration-500 hover:scale-105" src="" alt="">
-    </div>
-    
-    <!-- Modal Body -->
-    <div class="modal-body p-6 md:p-8">
-      
-      <!-- Title & Description -->
-      <div class="mb-6">
-        <h2 class="modal-title text-2xl md:text-3xl font-black mb-3 leading-tight text-gray-800 dark:text-gray-100" id="modalTitle">اسم المنتج</h2>
-        <p class="modal-description text-gray-600 dark:text-gray-400 text-sm md:text-base leading-relaxed" id="modalDescription">وصف المنتج هنا</p>
-      </div>
-      
-      <!-- Price & Quantity Section -->
-      <div class="modal-price-section bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-800 rounded-2xl p-5 md:p-6 mb-6 border-2 border-pink-100 dark:border-gray-600">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          
-          <!-- Price -->
-          <div class="flex-1">
-            <div class="modal-price-label text-xs text-gray-500 dark:text-gray-400 mb-1 font-semibold uppercase tracking-wide" id="modal-price-label">السعر</div>
-            <span class="modal-price text-3xl md:text-4xl font-black text-primary" id="modalPrice">0 ج.م</span>
-          </div>
-          
-          <!-- Quantity Controls -->
-          <div class="modal-quantity flex items-center gap-3 bg-white dark:bg-gray-900 rounded-full py-2 px-3 shadow-lg border-2 border-pink-100 dark:border-gray-600">
-            <button class="modal-quantity-btn w-10 h-10 rounded-full bg-pink-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gradient-to-br hover:from-primary hover:to-secondary hover:text-white hover:scale-110 active:scale-95 transition-all duration-200 flex items-center justify-center" onclick="updateModalQuantity(-1)">
-              <i data-lucide="minus" class="w-4 h-4"></i>
-            </button>
-            <span class="modal-quantity-value font-bold text-xl min-w-[40px] text-center text-gray-800 dark:text-gray-100" id="modalQuantity">1</span>
-            <button class="modal-quantity-btn w-10 h-10 rounded-full bg-pink-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gradient-to-br hover:from-primary hover:to-secondary hover:text-white hover:scale-110 active:scale-95 transition-all duration-200 flex items-center justify-center" onclick="updateModalQuantity(1)">
-              <i data-lucide="plus" class="w-4 h-4"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Suggestions Section -->
-      <div class="suggestions-section mb-6" id="suggestionsSection">
-        <h3 class="suggestions-title text-lg md:text-xl font-bold mb-4 flex items-center gap-2 text-gray-800 dark:text-gray-100">
-          <i data-lucide="sparkles" class="w-5 h-5 text-primary"></i>
-          <span id="suggestions-title-text">قد يعجبك أيضاً</span>
-        </h3>
-        <div class="suggestions-grid grid grid-cols-2 gap-3 md:gap-4" id="suggestionsGrid">
-          <!-- Suggestions will be injected here -->
-        </div>
-      </div>
-
-      <!-- Add to Cart Button -->
-      <div class="modal-actions">
-        <button class="modal-add-btn w-full py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-2xl font-bold text-base md:text-lg shadow-lg hover:shadow-glow hover:-translate-y-1 active:scale-98 transition-all duration-300 flex items-center justify-center gap-3 relative overflow-hidden group" onclick="addModalToCart()">
-          <div class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          <i data-lucide="shopping-cart" class="w-5 h-5 relative z-10"></i>
-          <span id="modalAddBtnText" class="relative z-10">أضف للسلة</span>
-        </button>
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-
-    <!-- Checkout Modal -->
-    <div class="checkout-modal-overlay fixed inset-0 bg-gray-900/80 backdrop-blur-md hidden items-center justify-center z-[9999] animate-fade-in overflow-y-auto p-5" id="checkoutModal" onclick="checkoutModule.closeCheckoutModal(event)" role="dialog" aria-labelledby="checkout-title">
-      <div class="checkout-content bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-[650px] w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-scale-in relative" onclick="event.stopPropagation()">
-        
-        <button class="checkout-close absolute top-4 right-4 bg-gray-100 dark:bg-gray-700 w-10 h-10 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white hover:rotate-90 transition-all duration-300 z-10" onclick="checkoutModule.closeCheckoutModal()" aria-label="إغلاق">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-        
-        <div class="checkout-header text-center mb-7">
-          <div class="checkout-icon w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4 text-white shadow-lg">
-            <i data-lucide="shopping-bag" class="w-8 h-8"></i>
-          </div>
-          <h3 class="checkout-title text-[26px] font-black text-gray-800 dark:text-gray-100 mb-2" id="checkout-title">تأكيد الطلب</h3>
-          <p class="checkout-subtitle text-base text-gray-600 dark:text-gray-400" id="checkout-subtitle">اختر طريقة الاستلام وأكمل بياناتك</p>
-        </div>
-
-        <!-- Order Summary -->
-        <div class="order-summary bg-gray-50 dark:bg-gray-700 rounded-2xl p-5 mb-6 border-2 border-gray-200 dark:border-gray-600" id="orderSummary">
-          <div class="order-summary-title flex items-center gap-2.5 text-base font-bold text-gray-800 dark:text-gray-100 mb-4 pb-3 border-b-2 border-gray-300 dark:border-gray-600">
-            <i data-lucide="receipt" class="w-5 h-5"></i>
-            <span id="order-summary-title">ملخص الطلب</span>
-          </div>
-          <div id="orderItems"></div>
-        </div>
-
-        <!-- Delivery Options -->
-        <div class="delivery-options mb-6">
-          <div class="delivery-option flex items-center gap-4 p-4.5 border-2 border-gray-300 dark:border-gray-600 rounded-2xl mb-3 cursor-pointer hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 hover:-translate-x-1 hover:shadow-lg transition-all duration-300 bg-white dark:bg-gray-800 relative" id="pickupOption" onclick="checkoutModule.selectDeliveryMethod('pickup')">
-            <div class="delivery-option-icon w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center text-white">
-              <i data-lucide="store" class="w-6 h-6"></i>
-            </div>
-            <div class="delivery-option-content flex-1">
-              <div class="delivery-option-title text-base font-bold text-gray-800 dark:text-gray-100 mb-1" id="pickup-title">الاستلام من الفرع</div>
-              <div class="delivery-option-desc text-sm text-gray-600 dark:text-gray-400" id="pickup-desc">مجاناً - جاهز خلال 15 دقيقة</div>
-            </div>
-            <div class="selection-indicator w-7 h-7 rounded-full border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center text-transparent transition-all duration-300">
-              <i data-lucide="check-circle" class="w-5 h-5"></i>
-            </div>
-          </div>
-
-          <div class="branch-selection hidden bg-gray-50 dark:bg-gray-700 rounded-2xl p-5 my-4 border-2 border-gray-200 dark:border-gray-600 animate-slide-up" id="branchSelection">
-            <label class="branch-label flex items-center gap-2 text-base font-bold text-gray-800 dark:text-gray-100 mb-4">
-              <i data-lucide="map-pin" class="w-5 h-5"></i>
-              <span id="branch-label">اختر الفرع المناسب:</span>
-            </label>
-            <div class="branches-grid grid gap-3"></div>
-          </div>
-<div id="deliveryEstimatedNotice" style="display: none;"></div>
-          <div class="delivery-option flex items-center gap-4 p-4.5 border-2 border-gray-300 dark:border-gray-600 rounded-2xl cursor-pointer hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 hover:-translate-x-1 hover:shadow-lg transition-all duration-300 bg-white dark:bg-gray-800 relative" id="deliveryOption" onclick="checkoutModule.selectDeliveryMethod('delivery')">
-            <div class="delivery-option-icon w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center text-white">
-              <i data-lucide="truck" class="w-6 h-6"></i>
-            </div>
-            <div class="delivery-option-content flex-1">
-              <div class="delivery-option-title text-base font-bold text-gray-800 dark:text-gray-100 mb-1" id="delivery-title">التوصيل</div>
-              <div class="delivery-option-desc text-sm text-gray-600 dark:text-gray-400" id="delivery-desc">15 ج.م - خلال 30 دقيقة</div>
-            </div>
-            <div class="selection-indicator w-7 h-7 rounded-full border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center text-transparent transition-all duration-300">
-              <i data-lucide="check-circle" class="w-5 h-5"></i>
-            </div>
-          </div>
-        </div>
-
-        <!-- Customer Form -->
-        <div class="checkout-form mb-6" id="checkoutForm">
-          <div class="form-group mb-5">
-            <label class="form-label flex items-center gap-2 text-sm font-semibold text-gray-800 dark:text-gray-100 mb-2" id="name-label">
-              <i data-lucide="user" class="w-4.5 h-4.5 text-green-500"></i>
-              <span>الاسم الكامل *</span>
-            </label>
-            <input type="text" class="form-input w-full py-3.5 px-4 border-2 border-gray-300 dark:border-gray-600 rounded-xl text-base bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:border-green-500 focus:shadow-lg transition-all duration-300" id="customerName" placeholder="أدخل اسمك الكامل" required>
-          </div>
-          
-          <div class="form-group mb-5">
-            <label class="form-label flex items-center gap-2 text-sm font-semibold text-gray-800 dark:text-gray-100 mb-2" id="phone-label">
-              <i data-lucide="phone" class="w-4.5 h-4.5 text-green-500"></i>
-              <span>رقم الهاتف *</span>
-            </label>
-            <input type="tel" class="form-input w-full py-3.5 px-4 border-2 border-gray-300 dark:border-gray-600 rounded-xl text-base bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:border-green-500 focus:shadow-lg transition-all duration-300" id="customerPhone" placeholder="01234567890" required dir="ltr">
-            <small class="form-hint block mt-1.5 text-xs text-gray-500 dark:text-gray-400" id="phone-hint">مثال: 01012345678</small>
-          </div>
-
-          <div class="form-group mb-5 hidden" id="addressGroup">
-            <label class="form-label flex items-center gap-2 text-sm font-semibold text-gray-800 dark:text-gray-100 mb-2" id="address-label">
-              <i data-lucide="map-pin" class="w-4.5 h-4.5 text-green-500"></i>
-              <span>العنوان التفصيلي *</span>
-            </label>
-            <textarea class="form-textarea w-full py-3.5 px-4 border-2 border-gray-300 dark:border-gray-600 rounded-xl text-base bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder:text-gray-400 resize-vertical min-h-[80px] focus:outline-none focus:border-green-500 focus:shadow-lg transition-all duration-300" id="customerAddress" rows="3" placeholder="الشارع، المنطقة، المدينة، معالم قريبة..."></textarea>
-            <button type="button" class="location-btn w-full mt-3 py-3.5 px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl text-sm font-semibold hover:from-blue-600 hover:to-blue-700 hover:-translate-y-1 hover:shadow-lg active:scale-98 transition-all duration-300 flex items-center justify-center gap-2" id="locationBtn" onclick="checkoutModule.requestLocation()">
-              <i data-lucide="navigation" class="w-4 h-4"></i>
-              <span id="location-btn-text">استخدام الموقع الحالي</span>
-            </button>
-          </div>
-
-          <div class="form-group mb-5">
-            <label class="form-label flex items-center gap-2 text-sm font-semibold text-gray-800 dark:text-gray-100 mb-2" id="notes-label">
-              <i data-lucide="message-square" class="w-4.5 h-4.5 text-green-500"></i>
-              <span>ملاحظات إضافية</span>
-            </label>
-            <textarea class="form-textarea w-full py-3.5 px-4 border-2 border-gray-300 dark:border-gray-600 rounded-xl text-base bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder:text-gray-400 resize-vertical min-h-[60px] focus:outline-none focus:border-green-500 focus:shadow-lg transition-all duration-300" id="orderNotes" rows="2" placeholder="أي طلبات خاصة (اختياري)"></textarea>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label flex items-center gap-2 text-sm font-semibold text-gray-800 dark:text-gray-100 mb-2">
-              <i data-lucide="tag" class="w-4.5 h-4.5 text-green-500"></i>
-              <span id="coupon-label">كود الخصم (اختياري)</span>
-            </label>
-            <div class="coupon-input-group flex gap-2">
-              <input 
-                type="text" 
-                class="form-input flex-1 py-3.5 px-4 border-2 border-gray-300 dark:border-gray-600 rounded-xl text-base bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:border-green-500 focus:shadow-lg transition-all duration-300" 
-                id="couponCodeInput" 
-                placeholder="أدخل كود الخصم"
-                dir="ltr"
-              >
-              <button type="button" class="apply-coupon-btn py-3.5 px-6 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl text-sm font-bold hover:from-green-600 hover:to-green-700 hover:-translate-y-1 hover:shadow-lg active:scale-98 transition-all duration-300" id="applyPromoBtn" onclick="window.applyCoupon?.() || alert('Loading...')">
-                <span id="apply-coupon-text">تطبيق</span>
-              </button>
-            </div>
-            <div id="couponStatus" class="hidden mt-2"></div>
-          </div>
-        </div>
-
-        <div class="checkout-actions flex gap-3">
-          <button class="checkout-action-btn secondary flex-1 py-4 px-6 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-2xl text-base font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-300 flex items-center justify-center gap-2.5" onclick="checkoutModule.closeCheckoutModal()" id="cancel-btn">
-            <i data-lucide="x" class="w-5 h-5"></i>
-            <span id="cancel-btn-text">إلغاء</span>
-          </button>
-          <button class="checkout-action-btn primary flex-1 py-4 px-6 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-2xl text-base font-bold shadow-lg hover:from-green-600 hover:to-green-700 hover:-translate-y-1 hover:shadow-glow active:scale-98 transition-all duration-300 flex items-center justify-center gap-2.5" onclick="checkoutModule.confirmOrder()" id="confirm-btn">
-            <i data-lucide="check-circle-2" class="w-5 h-5"></i>
-            <span id="confirm-btn-text">تأكيد الطلب</span>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Permission Modal -->
-    <div class="permission-modal fixed inset-0 bg-gray-900/80 backdrop-blur-md hidden items-center justify-center z-[10001] animate-fade-in p-5" id="permissionModal">
-      <div class="permission-content bg-white dark:bg-gray-800 rounded-3xl p-10 max-w-[480px] w-full text-center shadow-2xl animate-scale-in">
-        <div class="permission-icon w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white animate-pulse-glow">
-          <i data-lucide="map-pin" class="w-10 h-10"></i>
-        </div>
-        <h3 class="permission-title text-2xl font-black text-gray-800 dark:text-gray-100 mb-3" id="permission-title">نحتاج موقعك للتوصيل الدقيق</h3>
-        <p class="permission-text text-base text-gray-600 dark:text-gray-400 mb-6 leading-relaxed" id="permission-text">
-          لنتمكن من توصيل طلبك في أسرع وقت وبأفضل دقة، نحتاج إلى معرفة موقعك الحالي.
-        </p>
-        <div class="permission-features flex justify-center gap-5 mb-7 flex-wrap">
-          <div class="permission-feature flex items-center gap-1.5 text-sm text-green-500 font-semibold">
-            <i data-lucide="zap" class="w-4.5 h-4.5"></i>
-            <span>توصيل أسرع</span>
-          </div>
-          <div class="permission-feature flex items-center gap-1.5 text-sm text-green-500 font-semibold">
-            <i data-lucide="check-circle" class="w-4.5 h-4.5"></i>
-            <span>دقة أعلى</span>
-          </div>
-          <div class="permission-feature flex items-center gap-1.5 text-sm text-green-500 font-semibold">
-            <i data-lucide="shield" class="w-4.5 h-4.5"></i>
-            <span>آمن ومحمي</span>
-          </div>
-        </div>
-        <div class="permission-actions flex flex-col gap-3">
-          <button class="permission-btn primary py-4 px-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl text-base font-bold shadow-lg hover:from-blue-600 hover:to-blue-700 hover:-translate-y-1 hover:shadow-glow active:scale-98 transition-all duration-300 flex items-center justify-center gap-2.5" onclick="checkoutModule.allowLocation()" id="permission-allow">
-            <i data-lucide="map-pin" class="w-5 h-5"></i>
-            <span>السماح بالوصول للموقع</span>
-          </button>
-          <button class="permission-btn secondary bg-transparent text-gray-600 dark:text-gray-400 underline hover:text-gray-800 dark:hover:text-gray-200 transition-colors duration-300" onclick="checkoutModule.closePermissionModal()" id="permission-cancel">
-            <span>سأكتب العنوان يدوياً</span>
-          </button>
-        </div>
-      </div>
-    </div>
-      <!-- Processing Modal -->
-    <div class="processing-modal fixed inset-0 bg-gray-900/85 backdrop-blur-md hidden items-center justify-center z-[10002] animate-fade-in" id="processingModal" style="display: none;">
-      <div class="processing-content bg-white dark:bg-gray-800 rounded-3xl p-12 max-w-[450px] w-[90%] text-center shadow-2xl animate-scale-in">
-        <div class="spinner-container mb-7">
-          <div class="spinner w-[70px] h-[70px] mx-auto border-[5px] border-gray-200 dark:border-gray-700 border-t-green-500 rounded-full animate-spin"></div>
-        </div>
-        <h3 class="processing-title text-2xl font-black text-gray-800 dark:text-gray-100 mb-2.5" id="processing-title">جاري إرسال طلبك...</h3>
-        <p class="processing-subtitle text-base text-gray-600 dark:text-gray-400" id="processing-subtitle">الرجاء الانتظار، لا تغلق الصفحة</p>
-        
-        <div class="processing-actions hidden mt-8 pt-7 border-t-2 border-gray-200 dark:border-gray-700" id="processingActions">
-          <div class="error-icon w-15 h-15 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4 text-red-500">
-            <i data-lucide="alert-circle" class="w-8 h-8"></i>
-          </div>
-          <p class="error-message text-red-500 text-base font-bold mb-2" id="errorMessage"></p>
-          <p class="error-description text-sm text-gray-600 dark:text-gray-400 mb-5" id="errorDescription"></p>
-          <div class="action-buttons flex gap-3 mb-5">
-            <button class="btn-retry flex-1 py-3.5 px-5 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl text-base font-bold shadow-lg hover:from-green-600 hover:to-green-700 hover:-translate-y-1 hover:shadow-glow active:scale-98 transition-all duration-300 flex items-center justify-center gap-2" id="retryBtn">
-              <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-              <span id="retry-text">إعادة المحاولة</span>
-            </button>
-            <button class="btn-cancel-send flex-1 py-3.5 px-5 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-xl text-base font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-300 flex items-center justify-center gap-2" id="cancelSendBtn">
-              <i data-lucide="x" class="w-4 h-4"></i>
-              <span id="cancel-send-text">إلغاء</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-
-    <!-- Order Confirmed Modal -->
-    <div class="confirmed-modal fixed inset-0 bg-gray-900/85 backdrop-blur-md flex items-center justify-center z-[10002] animate-fade-in overflow-y-auto p-5 hidden" id="orderConfirmedModal">
-      <div class="confirmed-content bg-white dark:bg-gray-800 rounded-[28px] p-12 max-w-[550px] w-full text-center shadow-2xl animate-scale-in relative my-5">
-        
-        <button class="close-confirmed absolute top-5 right-5 bg-gray-100 dark:bg-gray-700 w-10 h-10 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white hover:rotate-90 transition-all duration-300 z-10" id="closeConfirmedBtn">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-        
-        <div class="success-animation mb-7">
-          <div class="success-checkmark w-[90px] h-[90px] mx-auto relative">
-            <div class="check-icon w-[90px] h-[90px] relative rounded-full border-[5px] border-green-500 animate-scale-in">
-              <span class="icon-line line-tip h-1.5 bg-green-500 block rounded absolute z-10 top-12 left-4 w-7 rotate-45 opacity-0 animate-[tipInPlace_0.3s_ease-in_0.6s_forwards]"></span>
-              <span class="icon-line line-long h-1.5 bg-green-500 block rounded absolute z-10 top-[43px] right-2.5 w-[52px] -rotate-45 opacity-0 animate-[longInPlace_0.3s_ease-in_0.8s_forwards]"></span>
-              <div class="icon-circle absolute -top-[5px] -left-[5px] z-10 w-[90px] h-[90px] rounded-full border-[5px] border-green-500/20"></div>
-              <div class="icon-fix absolute top-2 w-1.5 left-7.5 z-[1] h-[95px] rotate-[-45deg] bg-white dark:bg-gray-800"></div>
-            </div>
-          </div>
-        </div>
-        
-        <h2 class="confirmed-title text-[28px] font-black text-gray-800 dark:text-gray-100 mb-2.5 leading-snug" id="confirmed-title">تم تأكيد طلبك بنجاح! 🎉</h2>
-        <p class="confirmed-subtitle text-base text-gray-600 dark:text-gray-400 mb-8 leading-relaxed" id="confirmed-subtitle">شكراً لثقتك بنا، سنبدأ بتحضير طلبك الآن</p>
-        
-        <div class="order-details-card bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-[20px] p-7 mb-7 border-3 border-gray-200 dark:border-gray-600 shadow-lg">
-          <div class="order-id-section mb-6">
-            <span class="label block text-xs text-gray-500 dark:text-gray-400 mb-2.5 uppercase tracking-wider font-bold">رقم الطلب</span>
-            <div class="order-id-display flex items-center justify-center gap-3 bg-white dark:bg-gray-800 py-4 px-6 rounded-2xl border-3 border-green-500 shadow-md">
-              <span class="order-id-value text-[22px] font-black text-green-500 tracking-widest font-mono" id="confirmedOrderId">ORD-123456</span>
-              <button class="copy-btn bg-green-500 w-10 h-10 rounded-xl flex items-center justify-center text-white hover:bg-green-600 hover:scale-110 hover:rotate-6 active:scale-95 transition-all duration-300 shadow-md" id="copyOrderIdBtn" title="نسخ">
-                <i data-lucide="copy" class="w-4 h-4"></i>
-              </button>
-            </div>
-          </div>
-          
-          <div class="eta-section flex items-center justify-center gap-2.5 text-[17px] text-gray-800 dark:text-gray-100 mb-5 font-bold">
-            <i data-lucide="clock" class="w-5.5 h-5.5 text-blue-500"></i>
-            <span id="confirmedEta">الوقت المتوقع: ≈ 30 دقيقة</span>
-          </div>
-          
-          <div class="status-badge inline-flex items-center gap-2.5 bg-gradient-to-r from-green-500 to-green-600 text-white py-3 px-6 rounded-[28px] text-base font-bold shadow-lg">
-            <i data-lucide="chef-hat" class="w-5 h-5"></i>
-            <span id="status-text">قيد التحضير</span>
-          </div>
-
-          <div class="selected-branch-info hidden mt-5 pt-5 border-t-2 border-dashed border-gray-300 dark:border-gray-600" id="selectedBranchInfo">
-            <div class="branch-info-header flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-2.5 uppercase tracking-wide font-bold">
-              <i data-lucide="map-pin" class="w-4 h-4"></i>
-              <span id="selected-branch-label">فرع الاستلام:</span>
-            </div>
-            <div class="branch-info-content bg-white dark:bg-gray-800 py-3.5 px-4.5 rounded-xl flex flex-col gap-1.5">
-              <strong class="text-base text-gray-800 dark:text-gray-100 font-bold" id="selectedBranchName"></strong>
-              <span class="text-sm text-gray-600 dark:text-gray-400" id="selectedBranchAddress"></span>
-            </div>
-          </div>
-
-          <div id="upgradeMessage" class="hidden mt-4"></div>
-        </div>
-        
-        <div class="quick-actions flex gap-3 mb-6">
-          <button class="action-btn whatsapp flex-1 py-4 px-5 bg-gradient-to-r from-[#25D366] to-[#128C7E] text-white rounded-2xl text-sm font-bold shadow-lg hover:from-[#20ba59] hover:to-[#0e7a6e] hover:-translate-y-1 hover:shadow-glow active:scale-98 transition-all duration-300 flex items-center justify-center gap-2.5" id="shareWhatsAppBtn">
-            <svg viewBox="0 0 24 24" width="20" height="20" class="fill-current">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-            </svg>
-            <span id="whatsapp-text">مشاركة عبر واتساب</span>
-          </button>
-          
-          <button class="action-btn track flex-1 py-4 px-5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl text-sm font-bold shadow-lg hover:from-blue-600 hover:to-blue-700 hover:-translate-y-1 hover:shadow-glow active:scale-98 transition-all duration-300 flex items-center justify-center gap-2.5" id="trackOrderBtn">
-            <i data-lucide="map" class="w-5 h-5"></i>
-            <span id="track-text">تتبع الطلب</span>
-          </button>
-        </div>
-        
-        <button class="btn-continue w-full py-4.5 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-2xl text-base font-bold hover:bg-gray-200 dark:hover:bg-gray-600 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2.5" id="continueShoppingBtn">
-          <span id="continue-text">متابعة التسوق</span>
-          <i data-lucide="arrow-left" class="w-5 h-5"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- Order Tracking Modal -->
-    <div class="tracking-modal fixed inset-0 bg-gray-900/85 backdrop-blur-md flex items-center justify-center z-[10003] animate-fade-in p-5 hidden" id="trackingModal" role="dialog">
-      <div class="tracking-content bg-white dark:bg-gray-800 rounded-3xl p-10 max-w-[500px] w-full shadow-2xl animate-scale-in relative">
-        
-        <button class="close-tracking absolute top-4 right-4 bg-gray-100 dark:bg-gray-700 w-10 h-10 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white hover:rotate-90 transition-all duration-300" id="closeTrackingBtn" aria-label="إغلاق">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-        
-        <div class="tracking-header text-center mb-7">
-          <div class="tracking-icon w-[70px] h-[70px] bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-5 text-white">
-            <i data-lucide="package-search" class="w-9 h-9"></i>
-          </div>
-          <h3 class="tracking-title text-2xl font-black text-gray-800 dark:text-gray-100 mb-2" id="tracking-title">تتبع طلبك</h3>
-          <p class="tracking-subtitle text-sm text-gray-600 dark:text-gray-400">أدخل رقم الطلب للتحقق من حالته</p>
-        </div>
-        
-        <div class="tracking-input-group flex gap-3 mb-6">
-          <input 
-            type="text" 
-            class="tracking-input flex-1 py-4 px-4.5 border-2 border-gray-300 dark:border-gray-600 rounded-xl text-base font-mono bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:shadow-lg transition-all duration-300" 
-            id="trackingInput" 
-            placeholder="أدخل رقم الطلب (مثال: ORD-123456)"
-            dir="ltr"
-          >
-          <button class="btn-track py-4 px-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl text-base font-bold shadow-lg hover:from-blue-600 hover:to-blue-700 hover:-translate-y-1 hover:shadow-glow active:scale-98 transition-all duration-300 flex items-center gap-2" id="checkStatusBtn">
-            <i data-lucide="search" class="w-5 h-5"></i>
-            <span id="check-status-text">تحقق</span>
-          </button>
-        </div>
-        
-        <div class="tracking-result hidden bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-2xl p-6 border-l-[5px] border-green-500" id="trackingResult"></div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ==================== EXTERNAL LIBRARIES ==================== -->
-  <!-- Search and Icons -->
-  <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js"></script>
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-
-  <script type="module" src="js/animations.js"></script>
-  <script src="js/translations-data.js"></script>
-  <script type="module" src="js/translations.js"></script>
-  <script type="module" src="js/storage.js"></script>
-  <script type="module" src="js/utils.js"></script>
-  <script type="module" src="js/api.js"></script>
-  <script type="module" src="js/products.js"></script>
-  <script type="module" src="js/categories.js"></script>
-  <script type="module" src="js/cart.js"></script>
-  <script type="module" src="js/ui.js"></script>
-  <script type="module" src="js/sidebar.js"></script>
-  <script type="module" src="js/checkout.js"></script>
-  <script type="module" src="js/app.js"></script>
-
-  </body>
+  });
+</script>
+
+
+		<script>
+			function initCarousel() {
+			  let currentSlide = 0;
+			  const slides = document.querySelectorAll('.carousel-item');
+			  const indicators = document.querySelectorAll('.carousel-container .absolute.bottom-2 button, .carousel-container .absolute.bottom-4 button');
+			  const progressBar = document.querySelector('.carousel-container .progress-bar');
+			  const carousel = document.querySelector('.carousel-track');
+			  let autoAdvanceTimer; let touchStartX = 0; let touchEndX = 0;
+			  if (!slides || slides.length === 0) { console.warn('Carousel: No slides found.'); return; }
+			  if (!indicators || indicators.length !== slides.length) { console.warn('Carousel: Indicators count mismatch or not found.'); }
+			  if (!progressBar) { console.warn('Carousel: Progress bar not found.'); }
+			  if (!carousel) { console.warn('Carousel: Track not found.'); return; }
+			  carousel.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+			  carousel.addEventListener('touchend', e => { touchEndX = e.changedTouches[0].screenX; handleSwipe(); }, { passive: true });
+			  function handleSwipe() { const swipeThreshold = 50; const diff = touchStartX - touchEndX; if (Math.abs(diff) > swipeThreshold) { if (diff > 0) { nextSlide(); } else { prevSlide(); } } }
+			  function updateSlides() {
+			    slides.forEach((slide, index) => { slide.className = 'carousel-item absolute top-0 left-0 w-full h-full'; if (index === currentSlide) { slide.classList.add('active'); } else if (index === (currentSlide + 1) % slides.length) { slide.classList.add('next'); } else if (index === (currentSlide - 1 + slides.length) % slides.length) { slide.classList.add('prev'); } else { slide.classList.add('hidden'); } });
+			    if (indicators && indicators.length === slides.length) { indicators.forEach((indicator, index) => { indicator.className = `w-8 sm:w-12 h-1 sm:h-1.5 rounded-full transition-colors ${ index === currentSlide ? 'bg-white/40' : 'bg-white/20' } hover:bg-white/60`; }); }
+			    if (progressBar) { requestAnimationFrame(() => { progressBar.style.width = `${((currentSlide + 1) / slides.length) * 100}%`; }); }
+			  }
+			  function resetAutoAdvance() { clearInterval(autoAdvanceTimer); if (slides.length > 1) { autoAdvanceTimer = setInterval(nextSlide, 5000); } }
+			  window.nextSlide = function() { currentSlide = (currentSlide + 1) % slides.length; updateSlides(); resetAutoAdvance(); }
+			  window.prevSlide = function() { currentSlide = (currentSlide - 1 + slides.length) % slides.length; updateSlides(); resetAutoAdvance(); }
+			  if (indicators && indicators.length === slides.length) { indicators.forEach((indicator, index) => { indicator.addEventListener('click', () => { if (index === currentSlide) return; currentSlide = index; updateSlides(); resetAutoAdvance(); }); }); }
+			  updateSlides(); resetAutoAdvance();
+			}
+			document.addEventListener('DOMContentLoaded', initCarousel);
+		</script>
+	</body>
 </html>
