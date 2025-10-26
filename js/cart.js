@@ -1,5 +1,5 @@
 // ================================================================
-// cart.js - FIXED VERSION with proper exports
+// cart.js - FIXED VERSION with SVG Sprites (No Lucide)
 // ================================================================
 
 import { productsManager } from './products.js';
@@ -193,18 +193,17 @@ export async function updateCartUI() {
   
   // ✅ Update ALL badges (including header and sidebar)
   const badges = [
-    'navCartBadge',          // Bottom Nav (if exists)
-    'cartBadgeDesktop',      // Desktop Cart Sidebar
-    'cartBadgeMobile',       // Mobile Cart Modal
-    'headerCartBadge',       // ✅ Header Badge (NEW)
-    'sidebarCartBadge'       // ✅ Sidebar Badge (NEW)
+    'navCartBadge',
+    'cartBadgeDesktop',
+    'cartBadgeMobile',
+    'headerCartBadge',
+    'sidebarCartBadge'
   ];
   
   badges.forEach(badgeId => {
     const badge = document.getElementById(badgeId);
     if (badge) {
       badge.textContent = totalItems;
-      // Show/hide based on count
       if (totalItems > 0) {
         badge.style.display = 'inline-flex';
       } else {
@@ -216,108 +215,10 @@ export async function updateCartUI() {
   // Update cart displays
   await updateSingleCartUI('cartItemsDesktop', 'cartTotalDesktop', 'cartFooterDesktop', total, t);
   await updateSingleCartUI('cartItemsMobile', 'cartTotalMobile', 'cartFooterMobile', total, t);
-  
-  // ✅ Update Desktop Cart Sidebar (if exists)
- // await updateDesktopCartSidebar(total, t);
 }
 
 // ================================================================
-// Update Desktop Cart Sidebar (NEW)
-// ================================================================
-/*
-async function updateDesktopCartSidebar(total, translations) {
-  const desktopCartItems = document.querySelector('.cart-sidebar-desktop .cart-items');
-  const desktopCartTotal = document.querySelector('.cart-sidebar-desktop .cart-total-price');
-  const desktopCartFooter = document.querySelector('.cart-sidebar-desktop .cart-footer');
-  
-  if (!desktopCartItems) return; // Desktop cart doesn't exist
-  
-  const currentLang = window.currentLang || 'ar';
-  const currency = translations.currency || 'ج.م';
-  
-  if (desktopCartTotal) {
-    desktopCartTotal.textContent = `${total.toFixed(2)} ${currency}`;
-  }
-  
-  if (cartItems.length === 0) {
-    const emptyText = currentLang === 'ar' ? 'سلتك فارغة حالياً' : 'Your cart is empty';
-    const emptySubtext = currentLang === 'ar' ? 'أضف بعض الآيس كريم اللذيذ! 🍦' : 'Add some delicious ice cream! 🍦';
-    
-    desktopCartItems.innerHTML = `
-      <div class="cart-empty">
-        <div class="cart-empty-icon">
-          <i data-lucide="shopping-basket"></i>
-        </div>
-        <p class="cart-empty-title">${emptyText}</p>
-        <p class="cart-empty-subtitle">${emptySubtext}</p>
-      </div>
-    `;
-    
-    if (desktopCartFooter) {
-      desktopCartFooter.classList.add('hidden');
-    }
-    
-    if (typeof lucide !== 'undefined') {
-      lucide.createIcons();
-    }
-    return;
-  }
-  
-  if (desktopCartFooter) {
-    desktopCartFooter.classList.remove('hidden');
-  }
-  
-  let html = '';
-  
-  for (const item of cartItems) {
-    try {
-      const product = await productsManager.getProduct(item.productId);
-      
-      if (!product) {
-        console.warn('Product not found in cart:', item.productId);
-        continue;
-      }
-      
-      const name = currentLang === 'ar' ? product.name : (product.nameEn || product.name);
-      const price = product.price || 0;
-      const itemTotal = price * item.quantity;
-      const imageUrl = product.image || 'path/to/default-image.png';
-      
-      html += `
-        <div class="cart-item">
-          <img src="${imageUrl}" alt="${name}" class="cart-item-image">
-          <div class="cart-item-details">
-            <div class="cart-item-name">${name}</div>
-            <div class="cart-item-price">${price.toFixed(2)} ${currency}</div>
-            <div class="cart-item-quantity">
-              <button onclick="window.cartModule.updateQuantity('${item.productId}', -1)">
-                <i data-lucide="minus"></i>
-              </button>
-              <span>${item.quantity}</span>
-              <button onclick="window.cartModule.updateQuantity('${item.productId}', 1)">
-                <i data-lucide="plus"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      `;
-    } catch (error) {
-      console.error('Error rendering cart item:', error);
-    }
-  }
-  
-  desktopCartItems.innerHTML = html;
-  
-  if (typeof lucide !== 'undefined') {
-    lucide.createIcons();
-  }
-}*/
-
-// ================================================================
-// Update Single Cart UI (Mobile/Desktop Modal)
-// ================================================================
-// ================================================================
-// Update Single Cart UI (Mobile/Desktop Modal)
+// Update Single Cart UI (Mobile/Desktop Modal) - SVG SPRITES
 // ================================================================
 async function updateSingleCartUI(itemsId, totalId, footerId, total, translations) {
   const cartItemsEl = document.getElementById(itemsId);
@@ -333,26 +234,25 @@ async function updateSingleCartUI(itemsId, totalId, footerId, total, translation
     cartTotal.textContent = `${total.toFixed(2)} ${currency}`;
   }
   
+  // ✅ Empty Cart - Using SVG Sprites
   if (cartItems.length === 0) {
     const emptyText = currentLang === 'ar' ? 'سلتك فارغة حالياً' : 'Your cart is empty';
     const emptySubtext = currentLang === 'ar' ? 'أضف بعض الآيس كريم اللذيذ! 🍦' : 'Add some delicious ice cream! 🍦';
     
     cartItemsEl.innerHTML = `
-      <div class="cart-empty">
-        <div class="cart-empty-icon">
-          <i data-lucide="shopping-basket"></i>
+      <div class="flex flex-col items-center justify-center py-16 text-center">
+        <div class="cart-empty-pulse w-24 h-24 bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-full flex items-center justify-center mb-5">
+          <svg class="w-12 h-12 text-pink-300 dark:text-gray-500" aria-hidden="true">
+            <use href="#shopping-basket"></use>
+          </svg>
         </div>
-        <p style="font-size: 1.125rem; margin-bottom: 0.5rem;">${emptyText}</p>
-        <p style="font-size: 0.875rem;">${emptySubtext}</p>
+        <p class="text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2">${emptyText}</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">${emptySubtext}</p>
       </div>
     `;
     
     if (cartFooter) {
       cartFooter.classList.add('hidden');
-    }
-    
-    if (typeof lucide !== 'undefined') {
-      lucide.createIcons();
     }
     return;
   }
@@ -361,6 +261,7 @@ async function updateSingleCartUI(itemsId, totalId, footerId, total, translation
     cartFooter.classList.remove('hidden');
   }
   
+  // ✅ Cart Items - Using SVG Sprites
   let html = '';
   
   for (const item of cartItems) {
@@ -397,8 +298,11 @@ async function updateSingleCartUI(itemsId, totalId, footerId, total, translation
             <div class="flex items-start justify-between gap-2 mb-3">
               <h4 class="text-base font-bold text-gray-800 dark:text-gray-100 leading-tight">${name}</h4>
               <button onclick="window.cartModule.removeFromCart('${item.productId}')" 
-                      class="flex-shrink-0 w-8 h-8 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center justify-center transition-colors group">
-                <i data-lucide="trash-2" class="w-4 h-4 text-gray-400 group-hover:text-red-500 transition-colors"></i>
+                      class="flex-shrink-0 w-8 h-8 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center justify-center transition-colors group"
+                      aria-label="Remove ${name}">
+                <svg class="w-4 h-4 text-gray-400 group-hover:text-red-500 transition-colors" aria-hidden="true">
+                  <use href="#trash-2"></use>
+                </svg>
               </button>
             </div>
             
@@ -408,13 +312,19 @@ async function updateSingleCartUI(itemsId, totalId, footerId, total, translation
               <!-- Quantity Controls -->
               <div class="flex items-center gap-2 bg-white dark:bg-gray-700 rounded-xl shadow-sm p-1">
                 <button onclick="window.cartModule.updateQuantity('${item.productId}', -1)" 
-                        class="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/30 dark:to-purple-900/30 hover:from-primary hover:to-secondary hover:text-white flex items-center justify-center transition-all duration-200 active:scale-95">
-                  <i data-lucide="minus" class="w-4 h-4"></i>
+                        class="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/30 dark:to-purple-900/30 hover:from-primary hover:to-secondary hover:text-white flex items-center justify-center transition-all duration-200 active:scale-95"
+                        aria-label="Decrease quantity">
+                  <svg class="w-4 h-4" aria-hidden="true">
+                    <use href="#minus"></use>
+                  </svg>
                 </button>
                 <span class="min-w-[32px] text-center font-bold text-gray-800 dark:text-gray-100">${item.quantity}</span>
                 <button onclick="window.cartModule.updateQuantity('${item.productId}', 1)" 
-                        class="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/30 dark:to-purple-900/30 hover:from-primary hover:to-secondary hover:text-white flex items-center justify-center transition-all duration-200 active:scale-95">
-                  <i data-lucide="plus" class="w-4 h-4"></i>
+                        class="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/30 dark:to-purple-900/30 hover:from-primary hover:to-secondary hover:text-white flex items-center justify-center transition-all duration-200 active:scale-95"
+                        aria-label="Increase quantity">
+                  <svg class="w-4 h-4" aria-hidden="true">
+                    <use href="#plus"></use>
+                  </svg>
                 </button>
               </div>
               
@@ -438,10 +348,6 @@ async function updateSingleCartUI(itemsId, totalId, footerId, total, translation
   }
   
   cartItemsEl.innerHTML = html;
-  
-  if (typeof lucide !== 'undefined') {
-    lucide.createIcons();
-  }
 }
 
 // ================================================================
@@ -476,7 +382,7 @@ export async function clearCart() {
 }
 
 // ================================================================
-// Modal Functions - FIXED
+// Modal Functions
 // ================================================================
 export function openCartModal() {
   console.log('🛒 Opening cart modal...');
@@ -514,7 +420,7 @@ export function closeCartModal(event) {
 loadCart();
 
 // ================================================================
-// Window Exports - CRITICAL FIX
+// Window Exports
 // ================================================================
 if (typeof window !== 'undefined') {
   window.cartModule = {
@@ -531,14 +437,13 @@ if (typeof window !== 'undefined') {
     closeCartModal
   };
   
-  // ✅ CRITICAL: Make functions globally accessible
   window.openCartModal = openCartModal;
   window.closeCartModal = closeCartModal;
   window.addToCart = addToCart;
   window.updateQuantity = updateQuantity;
   window.removeFromCart = removeFromCart;
   
-  console.log('✅ Cart module initialized with global functions');
+  console.log('✅ Cart module initialized with SVG sprites');
 }
 
 console.log('✅ Cart module loaded');

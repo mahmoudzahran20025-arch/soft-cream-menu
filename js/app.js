@@ -44,7 +44,7 @@ import { renderCategories } from './categories.js';
 import { initFuse, renderProducts, updateLanguage, currentLang } from './ui.js';
 import { storage } from './storage.js';
 import { i18n } from './translations.js';
-import { initGSAPAnimations } from './animations.js';
+//import { initGSAPAnimations } from './animations.js';
 
 // ================================================================
 // ===== متغيرات عامة =====
@@ -210,7 +210,7 @@ async function initApp() {
   try {
     console.log('🚀 Initializing Soft Cream Menu App...');
             // تهيئة الأنيميشن أولاً
-    await initGSAPAnimations();
+    //await initGSAPAnimations();
 
     // أضف في بداية initApp()
     const translationsData = window.i18n.tData;

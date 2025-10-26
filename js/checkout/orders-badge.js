@@ -1,5 +1,5 @@
 // ================================================================
-// orders-badge.js - Orders Badge Manager
+// orders-badge.js - Orders Badge Manager (SVG Sprites Version)
 // ================================================================
 
 import { storage } from '../storage.js';
@@ -79,7 +79,7 @@ export function openOrdersPage() {
 }
 
 // ================================================================
-// Show Orders Modal
+// Show Orders Modal - SVG Sprites Version
 // ================================================================
 function showOrdersModal(orders) {
   const lang = window.currentLang || 'ar';
@@ -166,18 +166,30 @@ function showOrdersModal(orders) {
     `;
   }).join('');
   
+  // ✅ Modal with SVG Sprites
   modal.innerHTML = `
     <div style="background: white; border-radius: 16px; max-width: 600px; width: 100%; max-height: 80vh; overflow: hidden; display: flex; flex-direction: column;">
+      
+      <!-- Header -->
       <div style="padding: 20px; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
         <div style="display: flex; align-items: center; gap: 12px;">
-          <i data-lucide="package" style="width: 24px; height: 24px; color: white;"></i>
+          <svg style="width: 24px; height: 24px; color: white; stroke: currentColor; fill: none;" aria-hidden="true">
+            <use href="#package"></use>
+          </svg>
           <h2 style="margin: 0; color: white; font-size: 20px;">${lang === 'ar' ? 'طلباتي' : 'My Orders'}</h2>
         </div>
-        <button onclick="closeOrdersModal()" style="background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
-          <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+        <button 
+          onclick="closeOrdersModal()" 
+          style="background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center;"
+          aria-label="Close modal"
+        >
+          <svg style="width: 20px; height: 20px; stroke: currentColor; fill: none;" aria-hidden="true">
+            <use href="#x"></use>
+          </svg>
         </button>
       </div>
       
+      <!-- Content -->
       <div style="padding: 20px; overflow-y: auto; flex: 1;">
         <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
           <div style="font-size: 14px; color: #666;">
@@ -190,16 +202,12 @@ function showOrdersModal(orders) {
         
         ${ordersHtml}
       </div>
+      
     </div>
   `;
   
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
-  
-  // Refresh icons
-  if (typeof lucide !== 'undefined') {
-    lucide.createIcons();
-  }
 }
 
 // ================================================================
@@ -297,4 +305,4 @@ import('../utils.js').then(module => {
 window.openOrdersPage = openOrdersPage;
 window.closeOrdersModal = closeOrdersModal;
 
-console.log('✅ Orders badge manager loaded');
+console.log('✅ Orders badge manager loaded (SVG Sprites)');
