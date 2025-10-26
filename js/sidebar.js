@@ -36,6 +36,9 @@ function initSidebarElements() {
 // ================================================================
 // ===== Open Sidebar =====
 // ================================================================
+// ================================================================
+// ===== Open Sidebar =====
+// ================================================================
 function openSidebar() {
   if (!sidebarElements.sidebar) {
     console.warn('⚠️ Sidebar not initialized');
@@ -46,7 +49,6 @@ function openSidebar() {
   
   sidebarState.isOpen = true;
   
-  // ✅ تغيير من 'active' إلى 'show'
   sidebarElements.sidebar.classList.add('show');
   sidebarElements.overlay.classList.add('show');
   sidebarElements.trigger?.classList.add('active');
@@ -57,14 +59,8 @@ function openSidebar() {
   // Update badges
   updateSidebarBadges();
   
-  // Re-create Lucide icons
-  if (typeof lucide !== 'undefined') {
-    lucide.createIcons();
-  }
-  
   console.log('✅ Sidebar opened');
 }
-
 // ================================================================
 // ===== Close Sidebar =====
 // ================================================================

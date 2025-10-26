@@ -155,6 +155,78 @@ const secondaryIconsHTML = `
     <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
   </symbol>
 </svg>
+<!-- Categories Icons -->
+  <symbol id="ice-cream" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M7 11v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-8"/>
+    <path d="M12 3v8"/>
+    <circle cx="8.5" cy="7" r="3.5"/>
+    <circle cx="15.5" cy="7" r="3.5"/>
+    <circle cx="12" cy="7" r="3.5"/>
+    <path d="M8.5 11 12 19l3.5-8"/>
+  </symbol>
+  
+  <symbol id="coffee" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M17 8h1a4 4 0 1 1 0 8h-1"/>
+    <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/>
+    <line x1="6" x2="6" y1="2" y2="4"/>
+    <line x1="10" x2="10" y1="2" y2="4"/>
+    <line x1="14" x2="14" y1="2" y2="4"/>
+  </symbol>
+  
+  <symbol id="cake" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20 21v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8"/>
+    <path d="M4 16s.5-1 2-1 2.5 2 4 2 2.5-2 4-2 2.5 2 4 2 2-1 2-1"/>
+    <path d="M2 21h20"/>
+    <path d="M7 8v3"/>
+    <path d="M12 8v3"/>
+    <path d="M17 8v3"/>
+    <path d="M7 4h.01"/>
+    <path d="M12 4h.01"/>
+    <path d="M17 4h.01"/>
+  </symbol>
+  
+  <symbol id="cookie" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/>
+    <path d="M8.5 8.5v.01"/>
+    <path d="M16 15.5v.01"/>
+    <path d="M12 12v.01"/>
+    <path d="M11 17v.01"/>
+    <path d="M7 14v.01"/>
+  </symbol>
+  
+  <symbol id="candy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m9.5 7.5-2 2a4.95 4.95 0 1 0 7 7l2-2a4.95 4.95 0 1 0-7-7Z"/>
+    <path d="M14 6.5v10"/>
+    <path d="M10 7.5v10"/>
+    <path d="m16 7 1-5 1.37.68A3 3 0 0 0 19.7 3H21v1.3c0 .46.1.92.32 1.33L22 7l-5 1"/>
+    <path d="m8 17-1 5-1.37-.68A3 3 0 0 0 4.3 21H3v-1.3a3 3 0 0 0-.32-1.33L2 17l5-1"/>
+  </symbol>
+  
+  <symbol id="star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+  </symbol>
+  
+  <symbol id="flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+  </symbol>
+  
+  <symbol id="apple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"/>
+    <path d="M10 2c1 .5 2 2 2 5"/>
+  </symbol>
+  
+  <symbol id="milk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M8 2h8"/>
+    <path d="M9 2v2.789a4 4 0 0 1-.672 2.219l-.656.984A4 4 0 0 0 7 10.212V20a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-9.789a4 4 0 0 0-.672-2.219l-.656-.984A4 4 0 0 1 15 4.788V2"/>
+    <path d="M7 15a6.472 6.472 0 0 1 5 0 6.47 6.47 0 0 0 5 0"/>
+  </symbol>
+  
+  <symbol id="gift" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="8" width="18" height="4" rx="1"/>
+    <path d="M12 8v13"/>
+    <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/>
+    <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/>
+  </symbol>
 `;
 
 let iconsLoaded = false;

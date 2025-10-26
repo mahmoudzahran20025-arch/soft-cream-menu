@@ -78,7 +78,7 @@ function loadSavedData() {
     
     const langBtn = document.getElementById('langToggle');
     if (langBtn) {
-      langBtn.textContent = savedLang === 'ar' ? 'EN' : 'ع';
+      langBtn.textContent = savedLang === 'ar' ? 'EN' : 'AR';
     }
   }
   

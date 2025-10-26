@@ -1,5 +1,5 @@
 // ================================================================
-// ui.js - إدارة واجهة المستخدم
+// ui.js - إدارة واجهة المستخدم (SVG Icons)
 // ================================================================
 
 import { productsManager } from './products.js';
@@ -22,7 +22,7 @@ export let modalQuantity = 1;
 // ================================================================
 export function toggleLanguage() {
   currentLang = currentLang === 'ar' ? 'en' : 'ar';
-  storage.setLang(currentLang); // ✅ بدل localStorage
+  storage.setLang(currentLang);
   
   document.documentElement.setAttribute('lang', currentLang);
   document.documentElement.setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
@@ -105,39 +105,25 @@ function updateCheckoutModal(t) {
 // ================================================================
 // ===== تبديل الثيم =====
 // ================================================================
-  export function toggleTheme() {
-    document.body.classList.toggle('dark');
-    const isDark = document.body.classList.contains('dark');
-    const icon = document.getElementById('theme-icon');
-    if (icon) {
-      icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
-      if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
-      }
+export function toggleTheme() {
+  document.body.classList.toggle('dark');
+  const isDark = document.body.classList.contains('dark');
+  
+  // ✅ تحديث الأيقونة باستخدام SVG
+  const themeIcon = document.querySelector('[data-theme-icon]');
+  if (themeIcon) {
+    const useElement = themeIcon.querySelector('use');
+    if (useElement) {
+      useElement.setAttribute('href', isDark ? '#sun' : '#moon');
     }
-    storage.setTheme(isDark ? 'dark' : 'light'); // ✅ بدل localStorage
   }
+  
+  storage.setTheme(isDark ? 'dark' : 'light');
+}
 
 // ================================================================
-// ===== تبديل التابات =====
-// ================================================================
-/*
-export function switchTab(tab) {
-  currentTab = tab;
-  
-  document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-  if (event?.currentTarget) {
-    event.currentTarget.classList.add('active');
-  }
-  
-  document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-  const tabContent = document.getElementById(`${tab}-tab`);
-  if (tabContent) {
-    tabContent.classList.add('active');
-  }
-  
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}*/
+// ===== تبديل التبويب =====
+// ================================================================ 
 
 export function switchTab(tabName) {
   console.log('📑 Switching to tab:', tabName);
@@ -164,7 +150,6 @@ export function switchTab(tabName) {
   
   console.log('✅ Tab switched to:', tabName);
 }
-
 
 // ================================================================
 // ===== Update Sidebar Active Navigation =====
@@ -249,142 +234,7 @@ export function clearSearch() {
 
 // ================================================================
 // ===== عرض المنتجات =====
-// ================================================================
-/*
-export async function renderProducts() {
-  const container = document.getElementById('productsContainer');
-  if (!container) return;
-  
-  // ✅ الحصول على المنتجات من productsManager
-  let filteredProducts = productsManager.getAllProducts();
-  
-  // ✅ إذا لم تكن المنتجات محملة بعد، حملها من API
-  if (filteredProducts.length === 0) {
-    // عرض Loading
-    container.innerHTML = `
-      <div class="loading-container">
-        <div class="loading-spinner"></div>
-        <p class="loading-text">${currentLang === 'ar' ? 'جاري التحميل...' : 'Loading...'}</p>
-      </div>
-    `;
-    
-    try {
-      await productsManager.loadProducts();
-      filteredProducts = productsManager.getAllProducts();
-    } catch (error) {
-      console.error('Failed to load products:', error);
-      
-      // عرض رسالة خطأ
-      const errorTitle = currentLang === 'ar' ? 'حدث خطأ' : 'Error';
-      const errorMsg = currentLang === 'ar' 
-        ? 'فشل تحميل المنتجات. الرجاء المحاولة مرة أخرى.' 
-        : 'Failed to load products. Please try again.';
-      const retryBtn = currentLang === 'ar' ? 'إعادة المحاولة' : 'Retry';
-      
-      container.innerHTML = `
-        <div class="no-results">
-          <div class="no-results-icon">⚠️</div>
-          <h3 class="no-results-title">${errorTitle}</h3>
-          <p class="no-results-text">${errorMsg}</p>
-          <button onclick="window.uiModule.renderProducts()" class="retry-btn">
-            ${retryBtn}
-          </button>
-        </div>
-      `;
-      return;
-    }
-  }
-  
-  // تطبيق البحث
-  if (searchQuery.trim() && fuse) {
-    const searchResults = fuse.search(searchQuery);
-    const searchIds = new Set(searchResults.map(r => r.item.id));
-    filteredProducts = filteredProducts.filter(p => searchIds.has(p.id));
-  }
-  
-  // لا توجد نتائج
-  if (filteredProducts.length === 0) {
-    const noResultsText = currentLang === 'ar' 
-      ? 'لا توجد منتجات مطابقة' 
-      : 'No matching products';
-    const tryAgainText = currentLang === 'ar'
-      ? 'جرب كلمات بحث أخرى'
-      : 'Try different search terms';
-    
-    container.innerHTML = `
-      <div class="no-results">
-        <div class="no-results-icon">🔍</div>
-        <h3 class="no-results-title">${noResultsText}</h3>
-        <p class="no-results-text">${tryAgainText}</p>
-      </div>
-    `;
-    return;
-  }
-  
-  // تجميع المنتجات حسب الفئة
-  const groupedProducts = {};
-  filteredProducts.forEach(product => {
-    if (!groupedProducts[product.category]) {
-      groupedProducts[product.category] = [];
-    }
-    groupedProducts[product.category].push(product);
-  });
-  
-  let html = '';
-  Object.keys(groupedProducts).forEach(category => {
-    const categoryName = getCategoryName(category, currentLang);
-    const icon = getCategoryIcon(category);
-    
-    html += `
-      <div class="category-group" id="category-${category}">
-        <div class="category-header">
-          <div class="category-icon">
-            <i data-lucide="${icon}"></i>
-          </div>
-          <h3 class="category-name">${categoryName}</h3>
-        </div>
-        <div class="products-grid">
-    `;
-    
-    groupedProducts[category].forEach((product, index) => {
-      const name = currentLang === 'ar' ? product.name : product.nameEn;
-      const description = currentLang === 'ar' ? product.description : product.descriptionEn;
-      const badge = product.badge ? `<div class="product-badge">${product.badge}</div>` : '';
-      const currency = window.i18n.t[currentLang]?.currency || 'ج.م';
-      
-      html += `
-        <div class="product-card" style="animation-delay: ${index * 0.05}s;" onclick="window.uiModule.openProductModal('${product.id}')">
-          <div class="product-image-container">
-            <img src="${product.image}" alt="${name}" class="product-image" loading="lazy">
-            ${badge}
-          </div>
-          <div class="product-content">
-            <h3 class="product-name">${name}</h3>
-            <p class="product-description">${description}</p>
-            <div class="product-footer">
-              <div class="product-price">${product.price} ${currency}</div>
-              <button class="add-to-cart-btn" onclick="window.cartModule.addToCart(event, '${product.id}')">
-                <i data-lucide="shopping-cart"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      `;
-    });
-    
-    html += `
-        </div>
-      </div>
-    `;
-  });
-  
-  container.innerHTML = html;
-  
-  if (typeof lucide !== 'undefined') {
-    lucide.createIcons();
-  }
-}*/
-// ✅ الكود الصحيح - استبدل renderProducts بالكود ده:
+// ================================================================ 
 
 export async function renderProducts() {
   const container = document.getElementById('productsContainer');
@@ -469,7 +319,7 @@ export async function renderProducts() {
         <div class="category-group" id="category-${category}">
           <div class="category-header">
             <div class="category-icon">
-              <i data-lucide="${icon}"></i>
+              <svg class="w-6 h-6" aria-hidden="true"><use href="#${icon}"></use></svg>
             </div>
             <h3 class="category-name">${categoryName}</h3>
           </div>
@@ -507,7 +357,7 @@ export async function renderProducts() {
               <div class="product-footer">
                 <div class="product-price">${price} ${currency}</div>
                 <button class="add-to-cart-btn" onclick="window.cartModule.addToCart(event, '${product.id}')">
-                  <i data-lucide="shopping-cart"></i>
+                  <svg class="w-5 h-5" aria-hidden="true"><use href="#shopping-cart"></use></svg>
                 </button>
               </div>
             </div>
@@ -533,60 +383,8 @@ export async function renderProducts() {
   }
   
   container.innerHTML = html;
-  
-  if (typeof lucide !== 'undefined') {
-    lucide.createIcons();
-  }
 }
-// ================================================================
-// ===== نافذة المنتج =====
-// ================================================================
-/*
-export async function openProductModal(productId) {
-  // ✅ الحصول على المنتج من productsManager
-  let product;
-  try {
-    product = await productsManager.getProduct(productId);
-  } catch (error) {
-    console.error('Failed to load product:', error);
-    // يمكن عرض رسالة خطأ للمستخدم هنا
-    return;
-  }
-  
-  if (!product) return;
-  
-  currentProduct = product;
-  modalQuantity = 1;
-  
-  const name = currentLang === 'ar' ? product.name : product.nameEn;
-  const description = currentLang === 'ar' ? product.description : product.descriptionEn;
-  const currency = window.i18n.t[currentLang]?.currency || 'ج.م';
-  
-  updateElement('modalTitle', name);
-  updateElement('modalDescription', description);
-  updateElement('modalPrice', `${product.price} ${currency}`);
-  updateElement('modalQuantity', '1');
-  
-  const modalImage = document.getElementById('modalImage');
-  if (modalImage) {
-    modalImage.src = product.image;
-  }
-  
-  updateModalAddButton();
-  
-  // عرض الاقتراحات
-  renderSuggestions(productId, product.category);
-  
-  const modal = document.getElementById('productModal');
-  if (modal) {
-    modal.classList.add('show');
-    document.body.style.overflow = 'hidden';
-  }
-  
-  if (typeof lucide !== 'undefined') {
-    lucide.createIcons();
-  }
-}*/
+
 // ================================================================
 // ===== نافذة المنتج - FIXED for Tailwind =====
 // ================================================================
@@ -640,10 +438,6 @@ export async function openProductModal(productId) {
     modal.classList.remove('hidden');  // شيل hidden
     modal.classList.add('flex');       // حط flex علشان يظهر
     document.body.style.overflow = 'hidden';
-  }
-  
-  if (typeof lucide !== 'undefined') {
-    lucide.createIcons();
   }
 }
 
@@ -715,48 +509,6 @@ function renderSuggestions(productId, category) {
   
   suggestionsGrid.innerHTML = html;
 }
-// في دالة renderSuggestions - استبدل بالكود الصحيح:
-/*
-function renderSuggestions(productId, category) {
-  // ✅ الحصول على المنتجات من productsManager
-  const allProducts = productsManager.getAllProducts();
-  
-  const suggestions = allProducts
-    .filter(p => p.id !== productId && p.category === category)
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 4);
-  
-  const suggestionsGrid = document.getElementById('suggestionsGrid');
-  if (!suggestionsGrid) return;
-  
-  const currency = window.i18n.t[currentLang]?.currency || 'ج.م';
-  
-  let html = '';
-  suggestions.forEach(sug => {
-    // ✅ الحل: تفادي undefined/null في الاقتراحات
-    const sugName = currentLang === 'ar' 
-      ? (sug.name || 'بدون اسم')
-      : (sug.nameEn || sug.name || 'No name');
-    
-    // ✅ التحقق من وجود الصورة
-    const sugImage = sug.image || 'path/to/default-image.png';
-    
-    // ✅ التحقق من السعر
-    const sugPrice = sug.price || 0;
-    
-    html += `
-      <div class="suggestion-card" onclick="window.uiModule.openProductModal('${sug.id}')">
-        <img src="${sugImage}" alt="${sugName}" class="suggestion-image" loading="lazy">
-        <div class="suggestion-info">
-          <p class="suggestion-name">${sugName}</p>
-          <p class="suggestion-price">${sugPrice} ${currency}</p>
-        </div>
-      </div>
-    `;
-  });
-  
-  suggestionsGrid.innerHTML = html;
-}*/
 
 // ================================================================
 // ===== تهيئة Fuse.js للبحث =====
@@ -797,4 +549,4 @@ if (typeof window !== 'undefined') {
   window.currentLang = currentLang;
 }
 
-console.log('✅ UI module loaded');
+console.log('✅ UI module loaded (SVG Icons)');

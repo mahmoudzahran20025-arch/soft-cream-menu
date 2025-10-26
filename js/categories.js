@@ -59,7 +59,7 @@ return config.icon;
 
 
 // ================================================================
-// categories.js - إدارة التصنيفات (محسّن مع ألوان)
+// categories.js - إدارة التصنيفات (محسّن مع ألوان + SVG Icons)
 // ================================================================
 
 import { productsManager } from './products.js';
@@ -69,7 +69,7 @@ import { productsManager } from './products.js';
 // ================================================================
 const categoryConfig = {
   'كلاسيك': {
-    icon: 'ice-cream-cone',
+    icon: 'ice-cream',
     color: 'from-pink-500 to-rose-500',
     iconColor: 'text-pink-600 dark:text-pink-400'
   },
@@ -84,7 +84,7 @@ const categoryConfig = {
     iconColor: 'text-yellow-600 dark:text-yellow-400'
   },
   'فاخر': {
-    icon: 'crown',
+    icon: 'sparkles',
     color: 'from-purple-500 to-violet-500',
     iconColor: 'text-purple-600 dark:text-purple-400'
   },
@@ -93,8 +93,44 @@ const categoryConfig = {
     color: 'from-cyan-500 to-blue-500',
     iconColor: 'text-cyan-600 dark:text-cyan-400'
   },
+  'حلويات': {
+    icon: 'cake',
+    color: 'from-orange-500 to-amber-500',
+    iconColor: 'text-orange-600 dark:text-orange-400'
+  },
+  'مشروبات': {
+    icon: 'coffee',
+    color: 'from-brown-500 to-amber-700',
+    iconColor: 'text-brown-600 dark:text-brown-400'
+  },
+  'بسكويت': {
+    icon: 'cookie',
+    color: 'from-amber-500 to-yellow-500',
+    iconColor: 'text-amber-600 dark:text-amber-400'
+  },
+  'حار': {
+    icon: 'flame',
+    color: 'from-red-500 to-orange-500',
+    iconColor: 'text-red-600 dark:text-red-400'
+  },
+  'عروض': {
+    icon: 'gift',
+    color: 'from-indigo-500 to-purple-500',
+    iconColor: 'text-indigo-600 dark:text-indigo-400'
+  },
+  'ميلك شيك': {
+    icon: 'milk',
+    color: 'from-blue-400 to-cyan-400',
+    iconColor: 'text-blue-500 dark:text-blue-400'
+  },
+  'حلوى': {
+    icon: 'candy',
+    color: 'from-pink-400 to-rose-400',
+    iconColor: 'text-pink-500 dark:text-pink-400'
+  },
+  // English versions
   'classic': {
-    icon: 'ice-cream-cone',
+    icon: 'ice-cream',
     color: 'from-pink-500 to-rose-500',
     iconColor: 'text-pink-600 dark:text-pink-400'
   },
@@ -109,7 +145,7 @@ const categoryConfig = {
     iconColor: 'text-yellow-600 dark:text-yellow-400'
   },
   'luxury': {
-    icon: 'crown',
+    icon: 'sparkles',
     color: 'from-purple-500 to-violet-500',
     iconColor: 'text-purple-600 dark:text-purple-400'
   },
@@ -117,6 +153,41 @@ const categoryConfig = {
     icon: 'ice-cream',
     color: 'from-cyan-500 to-blue-500',
     iconColor: 'text-cyan-600 dark:text-cyan-400'
+  },
+  'desserts': {
+    icon: 'cake',
+    color: 'from-orange-500 to-amber-500',
+    iconColor: 'text-orange-600 dark:text-orange-400'
+  },
+  'drinks': {
+    icon: 'coffee',
+    color: 'from-brown-500 to-amber-700',
+    iconColor: 'text-brown-600 dark:text-brown-400'
+  },
+  'cookies': {
+    icon: 'cookie',
+    color: 'from-amber-500 to-yellow-500',
+    iconColor: 'text-amber-600 dark:text-amber-400'
+  },
+  'hot': {
+    icon: 'flame',
+    color: 'from-red-500 to-orange-500',
+    iconColor: 'text-red-600 dark:text-red-400'
+  },
+  'offers': {
+    icon: 'gift',
+    color: 'from-indigo-500 to-purple-500',
+    iconColor: 'text-indigo-600 dark:text-indigo-400'
+  },
+  'milkshakes': {
+    icon: 'milk',
+    color: 'from-blue-400 to-cyan-400',
+    iconColor: 'text-blue-500 dark:text-blue-400'
+  },
+  'candy': {
+    icon: 'candy',
+    color: 'from-pink-400 to-rose-400',
+    iconColor: 'text-pink-500 dark:text-pink-400'
   }
 };
 
@@ -157,7 +228,7 @@ export function renderCategories() {
               data-category="all" 
               onclick="window.categoriesModule.selectCategory('all', this)">
         <div class="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-          <i data-lucide="grid-3x3" class="w-4 h-4"></i>
+          <svg class="w-4 h-4" aria-hidden="true"><use href="#utensils"></use></svg>
         </div>
         <span class="font-bold text-sm whitespace-nowrap">${currentLang === 'ar' ? 'الكل' : 'All'}</span>
       </button>
@@ -174,7 +245,7 @@ export function renderCategories() {
                 data-category="${cat}" 
                 onclick="window.categoriesModule.selectCategory('${cat}', this)">
           <div class="w-8 h-8 rounded-full bg-gradient-to-br ${config.color} flex items-center justify-center shadow-sm">
-            <i data-lucide="${config.icon}" class="w-4 h-4 text-white"></i>
+            <svg class="w-4 h-4 text-white" aria-hidden="true"><use href="#${config.icon}"></use></svg>
           </div>
           <span class="font-semibold text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap group-hover:text-gray-900 dark:group-hover:text-white">${catName}</span>
         </button>
@@ -182,10 +253,6 @@ export function renderCategories() {
     });
     
     container.innerHTML = html;
-    
-    if (typeof lucide !== 'undefined') {
-      lucide.createIcons();
-    }
     
     console.log('✅ Categories rendered:', uniqueCategories.length);
     
@@ -256,7 +323,7 @@ export function selectCategory(category, element) {
 function getCategoryConfig(category) {
   if (!category) {
     return {
-      icon: 'ice-cream-cone',
+      icon: 'ice-cream',
       color: 'from-gray-500 to-gray-600',
       iconColor: 'text-gray-600 dark:text-gray-400'
     };
@@ -265,7 +332,7 @@ function getCategoryConfig(category) {
   const normalized = category.toLowerCase().trim();
   
   return categoryConfig[normalized] || categoryConfig[category] || {
-    icon: 'ice-cream-cone',
+    icon: 'ice-cream',
     color: 'from-pink-500 to-rose-500',
     iconColor: 'text-pink-600 dark:text-pink-400'
   };
@@ -324,4 +391,4 @@ if (typeof window !== 'undefined') {
   };
 }
 
-console.log('✅ Categories module loaded (Enhanced with colors)');
+console.log('✅ Categories module loaded (Enhanced with SVG icons)');

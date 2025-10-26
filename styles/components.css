@@ -489,16 +489,27 @@
   }
 
   /* === 📂 Sidebar System === */
-  .sidebar-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: var(--z-sidebar-overlay);
-    @apply bg-black/60;
-    backdrop-filter: blur(4px);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-  }
+/*
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-sidebar-overlay);
+  @apply bg-black/60;
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}*/
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-sidebar-overlay);
+  @apply bg-primary/50; /* ✅ 1. تم التغيير للون البراند كما طلبت */
+  /* backdrop-filter: blur(4px); */ /* 👈 2. تم إلغاء هذا السطر لحل مشكلة الأداء */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
   
   .sidebar-overlay.show {
     opacity: 1;
@@ -1141,6 +1152,7 @@
    ======================================== */
 @media (max-width: 768px) {
   /* على الموبايل، الـ sidebar يأخذ كامل الشاشة */
+  /*
   [dir="rtl"] .sidebar,
   [dir="rtl"] aside.sidebar {
     width: 100%;
@@ -1149,7 +1161,7 @@
   [dir="ltr"] .sidebar,
   [dir="ltr"] aside.sidebar {
     width: 100%;
-  }
+  }*/
   
   /* الـ Categories تلتصق تحت الهيدر مباشرة */
   .categories-section {
