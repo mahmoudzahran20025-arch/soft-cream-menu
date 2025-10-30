@@ -953,6 +953,75 @@
 .debug-swiper #featured-swiper .swiper-slide-active {
   outline: 2px solid green;
 }
+
+/* ========================================
+ * 🔧 CHECKOUT & DARK MODE FIXES
+ * ======================================== */
+
+/* Fix: SVG icons in checkout should be visible */
+#checkoutModal svg,
+#permissionModal svg,
+#processingModal svg,
+#orderConfirmedModal svg {
+  fill: currentColor;
+  color: inherit;
+}
+
+/* Fix: Icons in buttons should inherit button color */
+button svg,
+.btn svg,
+.icon-btn svg {
+  fill: currentColor;
+  color: inherit;
+}
+
+/* Fix: Dark mode - ensure text and icons are visible */
+[data-theme="dark"] .category-tab,
+[data-theme="dark"] .category-item {
+  color: #fff !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+[data-theme="dark"] .category-tab.active,
+[data-theme="dark"] .category-item.active {
+  background: var(--color-primary) !important;
+  color: #fff !important;
+}
+
+/* Fix: Close button (X) visibility in dark mode */
+[data-theme="dark"] .modal-close-btn,
+[data-theme="dark"] .close-btn,
+[data-theme="dark"] button[aria-label*="close"],
+[data-theme="dark"] button[aria-label*="إغلاق"] {
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .modal-close-btn:hover,
+[data-theme="dark"] .close-btn:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Fix: React cart close button */
+[data-theme="dark"] #react-shopping-app-root button svg {
+  color: currentColor !important;
+}
+
+/* Fix: Mobile - Add button always visible on product cards */
+@media (max-width: 768px) {
+  .product-card .add-to-cart-btn {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    position: relative !important;
+    margin-top: 0.5rem;
+  }
+  
+  /* Prevent overlap with nutrition info */
+  .product-card .nutrition-info {
+    margin-bottom: 3rem;
+  }
+}
+
 /* ========================================
  * ✅ END OF STYLESHEET v4.1 (Cleaned)
  * ======================================== */

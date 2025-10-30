@@ -1532,8 +1532,16 @@
     console.log('✅ Cart module preloaded for React');
   });
   
-  import('./js/checkout.js').then(() => {
+  import('./js/checkout.js').then((module) => {
     console.log('✅ Checkout module preloaded for React');
+    
+    // Wait for checkout to be ready
+    if (!window.checkoutModule) {
+      console.log('⏳ Waiting for checkoutModule to initialize...');
+      window.addEventListener('checkoutReady', () => {
+        console.log('✅ checkoutModule ready for React');
+      }, { once: true });
+    }
   });
 </script>
 
