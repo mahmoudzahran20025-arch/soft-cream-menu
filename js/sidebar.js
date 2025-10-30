@@ -22,6 +22,7 @@ function initSidebarElements() {
     trigger: document.getElementById('sidebarTrigger'),
     sidebar: document.getElementById('mainSidebar'),
     overlay: document.getElementById('sidebarOverlay'),
+    closeButton: document.querySelector('.sidebar-close'),
     cartBadge: document.getElementById('sidebarCartBadge'),
     ordersBadge: document.getElementById('sidebarOrdersBadge'),
     themeToggle: document.getElementById('sidebarThemeToggle'),
@@ -209,6 +210,15 @@ function setupSidebarEventListeners() {
   if (sidebarElements.trigger) {
     sidebarElements.trigger.removeEventListener('click', toggleSidebar); // Remove old
     sidebarElements.trigger.addEventListener('click', toggleSidebar);
+  }
+  
+  // Close button (X)
+  if (sidebarElements.closeButton) {
+    sidebarElements.closeButton.removeEventListener('click', closeSidebar); // Remove old
+    sidebarElements.closeButton.addEventListener('click', closeSidebar);
+    console.log('✅ Close button listener attached');
+  } else {
+    console.warn('⚠️ Close button not found');
   }
   
   // Overlay click

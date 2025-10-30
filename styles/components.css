@@ -8,6 +8,8 @@
  * ===================================================================
  */
 
+@config "../tailwind.config.js";
+
 /* 1. Tailwind Directives */
 @import "tailwindcss";
 
@@ -54,9 +56,9 @@
     }
   }
 
-  /* Body Base Styles */
+  /* Body Base Styles - Font moved to HTML <body> tag */
   body {
-    @apply font-cairo bg-cream-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 overflow-x-hidden transition-colors duration-300;
+    @apply bg-cream-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 overflow-x-hidden transition-colors duration-300;
   }
 
   /* ... (كل أكواد Accessibility و Scrollbars و Keyframes كما هي) ... */
@@ -114,7 +116,7 @@
   /* ========================================
    * 🎨 BACKGROUND SYSTEM
    * ======================================== */
-  .animated-background { @apply fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none; z-index: var(--z-base); background-color: var(--color-cream-50); background-image: radial-gradient(at 90% 10%, hsla(339, 100%, 71%, 0.1) 0px, transparent 50%), radial-gradient(at 10% 90%, hsla(271, 91%, 65%, 0.1) 0px, transparent 50%); }
+  .animated-background { @apply fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none bg-cream-50; z-index: var(--z-base); background-image: radial-gradient(at 90% 10%, hsla(339, 100%, 71%, 0.1) 0px, transparent 50%), radial-gradient(at 10% 90%, hsla(271, 91%, 65%, 0.1) 0px, transparent 50%); }
   .animated-background::before { content: ''; @apply absolute inset-0; z-index: 1; background: linear-gradient(180deg, rgba(255, 249, 245, 0) 0%, rgba(255, 249, 245, 0.98) 100%); }
   .dark .animated-background { background-color: theme('colors.gray.900'); background-image: radial-gradient(at 90% 10%, hsla(339, 100%, 71%, 0.06) 0px, transparent 50%), radial-gradient(at 10% 90%, hsla(271, 91%, 65%, 0.06) 0px, transparent 50%); }
   .dark .animated-background::before { background: linear-gradient(180deg, rgba(26, 22, 37, 0) 0%, rgba(26, 22, 37, 0.98) 100%); }
@@ -369,7 +371,7 @@
   width: 8px !important;
   height: 8px !important;
   border-radius: 50%;
-  background-color: var(--color-primary) !important;
+  @apply !bg-primary;
   opacity: 0.25 !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
@@ -386,7 +388,7 @@
   width: 28px !important;
   height: 8px !important;
   opacity: 1 !important;
-  background-color: var(--color-primary) !important;
+  @apply !bg-primary;
   border-radius: 4px;
 }
 
@@ -447,15 +449,11 @@
 /* Hover States */
 #featured-swiper .swiper-button-prev:hover,
 #featured-swiper .swiper-button-next:hover {
-  background: linear-gradient(
-    135deg,
-    var(--color-primary) 0%,
-    var(--color-primary-dark) 100%
-  ) !important;
+  background: linear-gradient(135deg, #FF6B9D, #E85589) !important;
   color: white !important;
   transform: scale(1.08);
   opacity: 1 !important;
-  border-color: var(--color-primary);
+  @apply border-primary;
   box-shadow: 
     0 8px 32px rgba(255, 107, 157, 0.35),
     0 4px 16px rgba(0, 0, 0, 0.15);
@@ -521,12 +519,8 @@
 
 .dark #featured-swiper .swiper-button-prev:hover,
 .dark #featured-swiper .swiper-button-next:hover {
-  background: linear-gradient(
-    135deg,
-    var(--color-primary) 0%,
-    var(--color-primary-dark) 100%
-  ) !important;
-  border-color: var(--color-primary);
+  background: linear-gradient(135deg, #FF6B9D, #E85589) !important;
+  @apply border-primary;
   box-shadow: 
     0 8px 32px rgba(255, 107, 157, 0.45),
     0 4px 16px rgba(0, 0, 0, 0.3);
@@ -544,12 +538,7 @@
   margin: 1.5rem 0;
   overflow: hidden;
   border-radius: 0.875rem;
-  background: linear-gradient(
-    135deg, 
-    var(--color-primary) 0%,
-    var(--color-primary-dark) 50%,
-    var(--color-secondary) 100%
-  );
+  @apply bg-gradient-to-br from-primary via-primary-dark to-secondary;
   box-shadow: 
     0 4px 16px rgba(255, 107, 157, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
@@ -766,19 +755,19 @@
  * ♿ ACCESSIBILITY
  * ======================================== */
 #featured-swiper .swiper-slide:focus-visible {
-  outline: 3px solid var(--color-primary);
+  @apply outline-primary;
   outline-offset: 4px;
   border-radius: 1rem;
 }
 
 #featured-swiper .swiper-pagination-bullet:focus-visible {
-  outline: 2px solid var(--color-primary);
+  @apply outline-2 outline-primary;
   outline-offset: 2px;
 }
 
 #featured-swiper .swiper-button-prev:focus-visible,
 #featured-swiper .swiper-button-next:focus-visible {
-  outline: 2px solid var(--color-primary);
+  @apply outline-2 outline-primary;
   outline-offset: 2px;
 }
 
@@ -801,7 +790,7 @@
   /* ... (كل الأكواد هنا كما هي) ... */
   .categories-section { position: sticky; top: 100px; z-index: var(--z-sticky-categories); opacity: 0; pointer-events: none; transform: translateY(-10px); transition: opacity 0.3s ease, transform 0.3s ease; }
   .categories-section.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
-  .category-tab.active { @apply text-white border-transparent scale-105; background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); box-shadow: 0 4px 20px rgba(255, 107, 157, 0.24); }
+  .category-tab.active { @apply text-white border-transparent scale-105 bg-gradient-to-br from-primary to-secondary; box-shadow: 0 4px 20px rgba(255, 107, 157, 0.24); }
 
   /* ========================================
    * 🏠 HEADER
@@ -824,7 +813,7 @@
   .sidebar-trigger.active .hamburger-icon span:nth-child(1) { transform: translateY(6.75px) rotate(45deg); }
   .sidebar-trigger.active .hamburger-icon span:nth-child(2) { opacity: 0; }
   .sidebar-trigger.active .hamburger-icon span:nth-child(3) { transform: translateY(-6.75px) rotate(-45deg); }
-  .sidebar-nav-item.active { @apply text-white; background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%); box-shadow: 0 4px 20px rgba(255, 107, 157, 0.24); }
+  .sidebar-nav-item.active { @apply text-white bg-gradient-to-br from-primary to-secondary; box-shadow: 0 4px 20px rgba(255, 107, 157, 0.24); }
   .sidebar-nav-item.active .sidebar-nav-icon { @apply bg-transparent text-white; }
   .sidebar-toggle input:checked + .sidebar-toggle-slider { @apply bg-primary; }
   .sidebar-toggle input:checked + .sidebar-toggle-slider:before { transform: translateX(20px); }
@@ -887,7 +876,7 @@
   .form-label { @apply flex items-center gap-2 text-sm font-semibold text-gray-800 dark:text-gray-100 mb-2; }
   .form-input { @apply w-full py-3.5 px-4 border-2 border-gray-300 dark:border-gray-600 rounded-xl text-base bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:border-green-500 focus:shadow-lg transition-all duration-300; }
   .form-textarea { @apply w-full py-3.5 px-4 border-2 border-gray-300 dark:border-gray-600 rounded-xl text-base bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:border-green-500 focus:shadow-lg transition-all duration-300 resize-y min-h-[80px]; }
-  .gradient-text { background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 50%, var(--color-secondary) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+  .gradient-text { @apply bg-gradient-to-br from-primary via-primary-light to-secondary bg-clip-text text-transparent; }
   .delivery-option.selected { @apply border-green-500 shadow-lg; background: linear-gradient(135deg, #f1f8f4, #e8f5e9); box-shadow: 0 4px 20px rgba(76, 175, 80, 0.25); }
   .delivery-option.selected .selection-indicator { @apply bg-green-500 border-green-500 text-white; }
   .branch-card.selected { @apply border-green-500; background: linear-gradient(135deg, #f1f8f4, #e8f5e9); box-shadow: 0 4px 16px rgba(76, 175, 80, 0.2); }
@@ -915,18 +904,18 @@
   .dark .product-image-container { background: linear-gradient(135deg, #374151 0%, #1f2937 100%); }
   .product-image { @apply absolute top-0 left-0 w-full h-full object-cover; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
   .product-card:hover .product-image { transform: scale(1.1) rotate(2deg); }
-  .product-badge { @apply absolute top-3 right-3 text-white px-3.5 py-1.5 rounded-full text-xs font-bold; z-index: 10; background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4); }
+  .product-badge { @apply absolute top-3 right-3 text-white px-3.5 py-1.5 rounded-full text-xs font-bold bg-gradient-to-br from-primary to-secondary; z-index: 10; box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4); }
   .product-content { @apply p-5; }
   .product-name { @apply text-lg font-bold text-gray-800 dark:text-gray-50 mb-2 leading-snug overflow-hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-clamp: 2; }
   .product-description { @apply text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed overflow-hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-clamp: 2; }
   .product-footer { @apply flex justify-between items-center gap-4; }
   .product-price { @apply text-2xl font-black text-primary; direction: ltr; }
-  .add-to-cart-btn { @apply w-11 h-11 rounded-full text-white border-none cursor-pointer flex items-center justify-center transition-[transform,box-shadow] duration-300; background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3); }
+  .add-to-cart-btn { @apply w-11 h-11 rounded-full text-white border-none cursor-pointer flex items-center justify-center transition-[transform,box-shadow] duration-300 bg-gradient-to-br from-primary to-secondary; box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3); }
   .add-to-cart-btn:hover { @apply scale-110; box-shadow: 0 6px 20px rgba(255, 107, 157, 0.5); }
   .add-to-cart-btn:active { @apply scale-95; }
-  .category-header { @apply flex items-center gap-4 mb-6 pb-4; border-bottom: 3px solid var(--color-cream-200); }
+  .category-header { @apply flex items-center gap-4 mb-6 pb-4 border-b-3 border-cream-200; }
   .dark .category-header { @apply border-gray-700; }
-  .category-icon { @apply w-12 h-12 rounded-2xl flex items-center justify-center text-white; background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3); }
+  .category-icon { @apply w-12 h-12 rounded-2xl flex items-center justify-center text-white bg-gradient-to-br from-primary to-secondary; box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3); }
   .category-name { @apply text-2xl font-black text-gray-800 dark:text-gray-50 m-0; }
 
 } /* End @layer components */

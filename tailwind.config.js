@@ -5,13 +5,14 @@ export default {
     "./js/**/*.js",
     "./styles/**/*.css",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       // ================================================================
-      // 🎨 COLORS - Migrated from components.css
+      // 🎨 COLORS - Single Source of Truth (HEX Values)
       // ================================================================
       colors: {
-        // Primary Colors (Pink) - من components.css
+        // Primary Colors (Pink)
         primary: {
           DEFAULT: '#FF6B9D',
           dark: '#E85589',
@@ -27,7 +28,7 @@ export default {
           800: '#BA2B61',
           900: '#A3164D',
         },
-        // Secondary Color (Purple) - من components.css
+        // Secondary Color (Purple)
         secondary: {
           DEFAULT: '#C9A0DC',
           50: '#F5EFFA',
@@ -41,7 +42,7 @@ export default {
           800: '#5E2971',
           900: '#421C52',
         },
-        // Accent Color (Mint) - من components.css
+        // Accent Color (Mint)
         accent: {
           DEFAULT: '#A8E6CF',
           50: '#F0FAF5',
@@ -55,7 +56,7 @@ export default {
           800: '#30A57F',
           900: '#24805F',
         },
-        // Cream Colors - من components.css
+        // Cream Colors
         cream: {
           50: '#FFF9F5',
           100: '#FFF5EE',
@@ -70,14 +71,14 @@ export default {
         },
         // Energy Colors (للمنتجات)
         energy: {
-          mental: '#8b5cf6',    // Purple for mental energy
-          physical: '#f59e0b',  // Orange for physical energy
-          balanced: '#10b981',  // Green for balanced
+          mental: '#8b5cf6',
+          physical: '#f59e0b',
+          balanced: '#10b981',
         }
       },
       
       // ================================================================
-      // 🔤 FONTS - Migrated from components.css
+      // 🔤 FONTS
       // ================================================================
       fontFamily: {
         cairo: ['Cairo', 'sans-serif'],
@@ -87,90 +88,63 @@ export default {
       },
       
       // ================================================================
-      // 📏 Z-INDEX HIERARCHY - Migrated from components.css
+      // 🔢 Z-INDEX
       // ================================================================
       zIndex: {
-        'base': '0',
-        'content': '10',
-        'carousel': '5',
-        'carousel-controls': '10',
-        'products': '2',
-        'product-hover': '3',
-        'sticky-categories': '90',
-        'dropdown': '50',
-        'header': '100',
-        'header-elements': '101',
-        'sidebar-overlay': '900',
-        'sidebar': '1000',
-        'modal-overlay': '1900',
-        'modal-base': '2000',
-        'modal-nested': '2100',
-        'modal-processing': '2200',
-        'modal-close-btn': '2300',
-        'toast': '5000',
+        'base': 0,
+        'content': 10,
+        'dropdown': 100,
+        'sticky-categories': 200,
+        'sticky': 300,
+        'header': 500,
+        'header-elements': 510,
+        'sidebar-overlay': 800,
+        'sidebar': 900,
+        'modal-overlay': 1000,
+        'modal': 1100,
+        'toast': 5000,
+        'product-hover': 15,
       },
       
       // ================================================================
-      // 🎬 ANIMATIONS - Enhanced from components.css
+      // 🎬 ANIMATIONS & KEYFRAMES
       // ================================================================
       animation: {
+        'fadeIn': 'fadeIn 0.3s ease-in-out',
+        'fadeOut': 'fadeOut 0.3s ease-in-out',
+        'fadeInUp': 'fadeInUp 0.6s ease-out',
+        'slideInLeft': 'slideInLeft 0.4s ease-out',
+        'slideInRight': 'slideInRight 0.4s ease-out',
+        'slideInLeftSidebar': 'slideInLeftSidebar 0.35s ease',
+        'slideInRightSidebar': 'slideInRightSidebar 0.35s ease',
+        'fadeInOverlay': 'fadeInOverlay 0.3s ease',
+        'bounce-gentle': 'bounce-gentle 2s infinite',
+        'pulse-slow': 'pulse-slow 3s ease-in-out infinite',
+        'shimmer': 'shimmer 2s linear infinite',
+        'gentlePulse': 'gentlePulse 2s ease-in-out infinite',
+        'spin-slow': 'spin-slow 3s linear infinite',
         'fade-in': 'fadeIn 0.3s ease-in-out',
-        'slide-up': 'slideUp 0.4s ease-out',
-        'scale-in': 'scaleIn 0.2s ease-out',
-        'float': 'float 3s ease-in-out infinite',
-        'slide-in-right': 'slideInRight 0.3s ease-out',
-        'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
-        'fade-in-up': 'fadeInUp 0.5s ease-out',
-        'gentle-pulse': 'gentlePulse 2s ease-in-out infinite',
-        'shimmer': 'shimmer 2s infinite',
-        'slide-in-right-sidebar': 'slideInRightSidebar 0.3s ease-out',
-        'slide-in-left-sidebar': 'slideInLeftSidebar 0.3s ease-out',
-        'fade-in-overlay': 'fadeInOverlay 0.3s ease-out',
         'scale-in-modal': 'scaleInModal 0.3s ease-out',
-        'skeleton-pulse': 'skeleton-pulse 2s ease-in-out infinite',
+        'skeleton-pulse': 'skeleton-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
-      
-      // ================================================================
-      // 🎨 KEYFRAMES - Migrated from components.css
-      // ================================================================
       keyframes: {
         fadeIn: {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
+          'from': { opacity: '0' },
+          'to': { opacity: '1' },
         },
-        slideUp: {
-          '0%': { transform: 'translateY(20px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
-        },
-        scaleIn: {
-          '0%': { transform: 'scale(0.95)', opacity: '0' },
-          '100%': { transform: 'scale(1)', opacity: '1' },
-        },
-        float: {
-          '0%, 100%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-20px)' },
-        },
-        slideInRight: {
-          '0%': { transform: 'translateX(50px)', opacity: '0' },
-          '100%': { transform: 'translateX(0)', opacity: '1' },
-        },
-        pulseGlow: {
-          '0%, 100%': { boxShadow: '0 0 15px rgba(255, 107, 157, 0.3)' },
-          '50%': { boxShadow: '0 0 30px rgba(255, 107, 157, 0.6)' },
+        fadeOut: {
+          'from': { opacity: '1' },
+          'to': { opacity: '0' },
         },
         fadeInUp: {
-          'from': { opacity: '0', transform: 'translateY(30px)' },
+          'from': { opacity: '0', transform: 'translateY(20px)' },
           'to': { opacity: '1', transform: 'translateY(0)' },
         },
-        gentlePulse: {
-          '0%, 100%': { transform: 'scale(1)', opacity: '1' },
-          '50%': { transform: 'scale(1.05)', opacity: '0.8' },
+        slideInLeft: {
+          'from': { transform: 'translateX(-100%)' },
+          'to': { transform: 'translateX(0)' },
         },
-        shimmer: {
-          '0%': { transform: 'translateX(-100%)' },
-          '100%': { transform: 'translateX(100%)' },
-        },
-        slideInRightSidebar: {
+        slideInRight: {
           'from': { transform: 'translateX(100%)' },
           'to': { transform: 'translateX(0)' },
         },
@@ -178,9 +152,33 @@ export default {
           'from': { transform: 'translateX(-100%)' },
           'to': { transform: 'translateX(0)' },
         },
+        slideInRightSidebar: {
+          'from': { transform: 'translateX(100%)' },
+          'to': { transform: 'translateX(0)' },
+        },
         fadeInOverlay: {
           'from': { opacity: '0' },
           'to': { opacity: '1' },
+        },
+        'bounce-gentle': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
+        'pulse-slow': {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.7' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-1000px 0' },
+          '100%': { backgroundPosition: '1000px 0' },
+        },
+        gentlePulse: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.8' },
+        },
+        'spin-slow': {
+          'from': { transform: 'rotate(0deg)' },
+          'to': { transform: 'rotate(360deg)' },
         },
         scaleInModal: {
           'from': { transform: 'scale(0.9)', opacity: '0' },
