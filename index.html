@@ -1527,21 +1527,34 @@
      🛒 PRELOAD CART & CHECKOUT (Before React)
      ================================================================ -->
 <script type="module">
-  // ✅ Load cart.js and checkout.js BEFORE React
+  // ✅ CRITICAL: Import and initialize checkout.js
+  console.log('🔄 Importing checkout module...');
+  
+  // Import cart first
   import('./js/cart.js').then(() => {
-    console.log('✅ Cart module preloaded for React');
+    console.log('✅ Cart module loaded');
   });
   
+  // Import checkout and let it auto-initialize
+  // checkout.js will run its initialization code automatically
   import('./js/checkout.js').then((module) => {
-    console.log('✅ Checkout module preloaded for React');
+    console.log('✅ Checkout module imported');
+    console.log('📦 Exported from checkout:', Object.keys(module));
     
-    // Wait for checkout to be ready
-    if (!window.checkoutModule) {
+    // The module should have already called initializeCheckout()
+    // and created window.checkoutModule via setupGlobalCheckoutModule()
+    
+    // Wait for it to be ready
+    if (window.checkoutModule) {
+      console.log('✅ checkoutModule is available immediately');
+    } else {
       console.log('⏳ Waiting for checkoutModule to initialize...');
       window.addEventListener('checkoutReady', () => {
-        console.log('✅ checkoutModule ready for React');
+        console.log('✅ checkoutModule ready');
       }, { once: true });
     }
+  }).catch(err => {
+    console.error('❌ Failed to import checkout:', err);
   });
 </script>
 
