@@ -22,11 +22,16 @@ const ProductCard = ({ product, onAddToCart }) => {
     e.stopPropagation(); // Prevent modal from opening
     onAddToCart(product);
     
-    // Visual feedback
-    e.currentTarget.classList.add('scale-90');
-    setTimeout(() => {
-      e.currentTarget.classList.remove('scale-90');
-    }, 150);
+    // Visual feedback - save reference before setTimeout
+    const button = e.currentTarget;
+    if (button) {
+      button.classList.add('scale-90');
+      setTimeout(() => {
+        if (button) {
+          button.classList.remove('scale-90');
+        }
+      }, 150);
+    }
   };
 
   const handleCardClick = () => {

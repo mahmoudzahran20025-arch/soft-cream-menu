@@ -144,33 +144,32 @@ const NutritionSummary = ({ cart, onUpdateQuantity, onRemove, onClose }) => {
       </div>
 
       {/* Nutrition Summary */}
-      {nutritionData && !loading && (
-        <div className="border-t bg-gradient-to-br from-purple-50 to-blue-50 p-4 space-y-4">
-          <h3 className="font-bold text-gray-900 flex items-center gap-2">
+      {nutritionData && nutritionData.totalCalories !== undefined && (
+        <div className="p-4 bg-gradient-to-br from-gray-50 to-gray-100 border-t border-b">
+          <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
             <Flame className="w-5 h-5 text-orange-500" />
             ملخص التغذية
           </h3>
-
-          {/* Macros Grid */}
-          <div className="grid grid-cols-2 gap-2">
+          
+          <div className="grid grid-cols-4 gap-2">
             <div className="bg-white rounded-lg p-3 text-center">
               <Flame className="w-5 h-5 text-orange-500 mx-auto mb-1" />
-              <div className="text-lg font-bold text-gray-900">{nutritionData.totalCalories}</div>
-              <div className="text-xs text-gray-600">سعرة</div>
+              <div className="text-lg font-bold text-gray-900">{nutritionData.totalCalories || 0}</div>
+              <div className="text-xs text-gray-600">سعرات</div>
             </div>
             <div className="bg-white rounded-lg p-3 text-center">
               <Droplets className="w-5 h-5 text-blue-500 mx-auto mb-1" />
-              <div className="text-lg font-bold text-gray-900">{nutritionData.totalProtein.toFixed(1)}g</div>
+              <div className="text-lg font-bold text-gray-900">{(nutritionData.totalProtein || 0).toFixed(1)}g</div>
               <div className="text-xs text-gray-600">بروتين</div>
             </div>
             <div className="bg-white rounded-lg p-3 text-center">
               <Wheat className="w-5 h-5 text-yellow-600 mx-auto mb-1" />
-              <div className="text-lg font-bold text-gray-900">{nutritionData.totalCarbs.toFixed(1)}g</div>
+              <div className="text-lg font-bold text-gray-900">{(nutritionData.totalCarbs || 0).toFixed(1)}g</div>
               <div className="text-xs text-gray-600">كربوهيدرات</div>
             </div>
             <div className="bg-white rounded-lg p-3 text-center">
               <Activity className="w-5 h-5 text-red-500 mx-auto mb-1" />
-              <div className="text-lg font-bold text-gray-900">{nutritionData.totalFat.toFixed(1)}g</div>
+              <div className="text-lg font-bold text-gray-900">{(nutritionData.totalFat || 0).toFixed(1)}g</div>
               <div className="text-xs text-gray-600">دهون</div>
             </div>
           </div>
