@@ -11,61 +11,35 @@
 /* 1. Tailwind Directives */
 @import "tailwindcss";
 
-/* 2. Theme Configuration (Tailwind v4) */
-@theme {
-  /* ... (كل الأكواد هنا كما هي) ... */
-  --font-family-cairo: "Cairo", sans-serif;
-  --font-family-tajawal: "Tajawal", sans-serif;
-  --color-primary: #FF6B9D;
-  --color-primary-dark: #E85589;
-  --color-primary-light: #FF8FB3;
-  --color-secondary: #C9A0DC;
-  --color-accent: #A8E6CF;
-  --color-cream-50: #FFF9F5;
-  --color-cream-100: #FFF5EE;
-  --color-cream-200: #FFE4E1;
-  --z-base: 0;
-  --z-content: 10;
-  --z-carousel: 5;
-  --z-carousel-controls: 10;
-  --z-products: 2;
-  --z-product-hover: 3;
-  --z-sticky-categories: 90;
-  --z-dropdown: 50;
-  --z-header: 100;
-  --z-header-elements: 101;
-  --z-sidebar-overlay: 900;
-  --z-sidebar: 1000;
-  --z-modal-overlay: 1900;
-  --z-modal-base: 2000;
-  --z-modal-nested: 2100;
-  --z-modal-processing: 2200;
-  --z-modal-close-btn: 2300;
-  --z-toast: 5000;
-}
+/* 2. Theme Configuration - Moved to tailwind.config.js ✅ */
 
 /* ========================================
- * 3. BASE LAYER
+ * 2. BASE LAYER
  * ======================================== */
 @layer base {
   :root {
-    /* Legacy CSS Variables */
-    --color-primary: #FF6B9D;
-    --color-primary-dark: #E85589;
-    --color-primary-light: #FF8FB3;
-    --color-secondary: #C9A0DC;
-    --color-accent: #A8E6CF;
-    --color-cream-50: #FFF9F5;
-    --color-cream-100: #FFF5EE;
-    --color-cream-200: #FFE4E1;
-    
-    /* Layout */
+    /* Layout Variables (فقط) */
     --sidebar-width: 320px;
     
-    /* ✅ (تم التعديل) 
-      أبعاد الكارسول الجديد لمنع CLS 
-    */
-    
+    /* Z-Index Variables (للتوافق مع الكود القديم) */
+    --z-base: 0;
+    --z-content: 10;
+    --z-carousel: 5;
+    --z-carousel-controls: 10;
+    --z-products: 2;
+    --z-product-hover: 3;
+    --z-sticky-categories: 90;
+    --z-dropdown: 50;
+    --z-header: 100;
+    --z-header-elements: 101;
+    --z-sidebar-overlay: 900;
+    --z-sidebar: 1000;
+    --z-modal-overlay: 1900;
+    --z-modal-base: 2000;
+    --z-modal-nested: 2100;
+    --z-modal-processing: 2200;
+    --z-modal-close-btn: 2300;
+    --z-toast: 5000;
   }
 
   @media (max-width: 768px) {
@@ -82,8 +56,7 @@
 
   /* Body Base Styles */
   body {
-    font-family: 'Cairo', sans-serif;
-    @apply bg-cream-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 overflow-x-hidden transition-colors duration-300;
+    @apply font-cairo bg-cream-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 overflow-x-hidden transition-colors duration-300;
   }
 
   /* ... (كل أكواد Accessibility و Scrollbars و Keyframes كما هي) ... */
