@@ -54,7 +54,7 @@ const NutritionSummary = ({ cart, onUpdateQuantity, onRemove, onClose }) => {
   const handleCheckout = () => {
     console.log('🛒 React: Checkout button clicked', { cart, subtotal });
     
-    // ✅ CRITICAL: Sync React cart to Vanilla JS localStorage
+    // ✅ CRITICAL: Sync React cart to Vanilla JS sessionStorage
     try {
       // Convert React cart format to Vanilla JS format
       const vanillaCart = cart.map(item => ({
@@ -66,13 +66,15 @@ const NutritionSummary = ({ cart, onUpdateQuantity, onRemove, onClose }) => {
         calories: item.calories
       }));
       
-      console.log('🔄 Syncing cart to localStorage:', vanillaCart);
+      console.log('🔄 Syncing cart to sessionStorage:', vanillaCart);
       
-      // Save to localStorage (same key as Vanilla JS)
-      localStorage.setItem('cart', JSON.stringify(vanillaCart));
+      // ✅ CRITICAL: Vanilla JS uses sessionStorage, not localStorage!
+      sessionStorage.setItem('cart', JSON.stringify(vanillaCart));
       
       // Also trigger cart-updated event for Vanilla JS
       window.dispatchEvent(new CustomEvent('cart-updated'));
+      
+      console.log('✅ Cart synced successfully');
       
     } catch (error) {
       console.error('❌ Failed to sync cart:', error);
