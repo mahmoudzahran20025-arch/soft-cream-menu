@@ -237,6 +237,20 @@
       try {
         console.log(`🔄 Calling ${moduleName}.${functionName}`, args);
         
+        // Wait for initialization if not ready
+        if (!isInitialized) {
+          console.log('⏳ Waiting for checkout initialization...');
+          await new Promise(resolve => {
+            if (isInitialized) {
+              resolve();
+            } else {
+              window.addEventListener('checkoutReady', resolve, { once: true });
+              // Timeout after 5 seconds
+              setTimeout(resolve, 5000);
+            }
+          });
+        }
+        
         if (!checkoutModules[moduleName]) {
           console.log(`🔄 ${moduleName} not loaded, loading now...`);
           await loadCheckoutModules();
@@ -410,9 +424,6 @@
     console.log('🔄 Initializing checkout system...');
     
     try {
-      // Setup global module first
-      setupGlobalCheckoutModule();
-      
       // Pre-load modules
       const loaded = await loadCheckoutModules();
       if (!loaded) {
@@ -451,6 +462,12 @@
     }
   }
 
+
+  // ================================================================
+  // ✅ CRITICAL: Setup global module IMMEDIATELY
+  // ================================================================
+  setupGlobalCheckoutModule();
+  console.log('✅ checkoutModule available globally (functions will wait for init)');
 
   // ================================================================
   // ✅ Enhanced Loading Strategy
