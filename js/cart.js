@@ -391,11 +391,20 @@ export function openCartModal() {
     loadCart();
   }
   
+  // Check if React Mini-App is handling the cart
+  const reactRoot = document.getElementById('react-shopping-app-root');
+  if (reactRoot && reactRoot.children.length > 0) {
+    console.log('🆕 Dispatching event to React Mini-App...');
+    window.dispatchEvent(new CustomEvent('open-react-cart'));
+    return;
+  }
+  
+  // Fallback to vanilla modal
   const modal = document.getElementById('cartModal');
   if (modal) {
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
-    console.log('✅ Cart modal opened');
+    console.log('✅ Cart modal opened (vanilla)');
   } else {
     console.warn('⚠️ Cart modal not found');
   }
@@ -418,6 +427,37 @@ export function closeCartModal(event) {
 // Initialize Cart on Module Load
 // ================================================================
 loadCart();
+
+// ================================================================
+// 🔗 Listen for React Cart Updates
+// ================================================================
+if (typeof window !== 'undefined') {
+  window.addEventListener('react-cart-updated', (event) => {
+    const { count } = event.detail || {};
+    console.log('🆕 Vanilla received: react-cart-updated', { count });
+    
+    // Update all header badges
+    const badges = [
+      'headerCartBadge',
+      'sidebarCartBadge',
+      'navCartBadge',
+      'cartBadgeDesktop',
+      'cartBadgeMobile'
+    ];
+    
+    badges.forEach(badgeId => {
+      const badge = document.getElementById(badgeId);
+      if (badge) {
+        badge.textContent = count || 0;
+        if (count > 0) {
+          badge.style.display = 'inline-flex';
+        } else {
+          badge.style.display = 'none';
+        }
+      }
+    });
+  });
+}
 
 // ================================================================
 // Window Exports

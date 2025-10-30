@@ -7,15 +7,31 @@
 		<meta name="description" content="استمتع بألذ أنواع الآيس كريم والسوفت كريم. منيو رقمي تفاعلي مع توصيل سريع" />
 		<meta name="theme-color" content="#FF6B9D" />
 		<link rel="icon" href="favicon.ico" type="image/x-icon" />
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link rel="preconnect" href="https://i.ibb.co" />
-		<link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
+		<link rel="icon" href="favicon.ico" type="image/x-icon" />
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link rel="preconnect" href="https://i.ibb.co" />
+	<link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
+	
+	<!-- ✅ Swiper CSS (Required for Hero Section) -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+	
+	<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&family=Tajawal:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
 
-		<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&family=Tajawal:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-
-		<link rel="stylesheet" href="./dist/output.css" />
-
+	<link rel="stylesheet" href="./dist/output.css" />
+	
+	<!-- ✅ Modulepreload للـ Performance (تم إضافة swiper-marquee.js) -->
+	<link rel="modulepreload" href="./js/swiper-featured.js">
+	<link rel="modulepreload" href="./js/swiper-marquee.js">
+	<link rel="modulepreload" href="./js/sidebar.js">
+	<link rel="modulepreload" href="./js/app.bootstrap.js">
+	
+	<!-- External Libraries (deferred) -->
+	<!-- ⚠️ ملاحظة: GSAP غير مطلوب لـ Hero Section V3 (يمكن إزالته إذا لم يُستخدم في أماكن أخرى) -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+	<script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0" defer></script>
+	
 		<script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -236,230 +252,234 @@
 </svg>
 
 <div class="animated-background" aria-hidden="true">
-	<div class="floating-shape shape-1"></div>
-	<div class="floating-shape shape-2"></div>
-	<div class="floating-shape shape-3"></div>
-</div>
-
+    </div>
 <div class="page-content relative z-10">
 	<div
 		id="toastContainer"
 		class="fixed z-toast flex flex-col gap-3 pointer-events-none top-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-md md:top-6 md:right-6 md:left-auto md:translate-x-0 md:w-auto md:max-w-[420px]"
 	></div>
-
-	<header
-		class="header fixed top-0 left-0 right-0 z-header backdrop-blur-2xl bg-cream-50/90 dark:bg-gray-900/90 border-b border-pink-100 dark:border-gray-800 shadow-lg transition-[height,background-color,box-shadow] duration-300 h-[100px]"
-		id="header"
-	>
-	<div class="header-content max-w-[1600px] mx-auto px-6 h-full flex items-center justify-between">
-		<div class="header-logo flex items-center gap-4 cursor-pointer transition-transform hover:scale-105" onclick="scrollToTop()">
-			<div class="logo-icon">
-				<img
-					src="https://i.ibb.co/C5zs6WZ6/546595638-767747059559727-9006561812810172332-n-1-1.jpg"
-					alt="سوفت كريم"
-					class="w-[50px] h-[50px] rounded-full object-cover ring-2 ring-pink-200 dark:ring-pink-500/30"
-					loading="eager"
-					width="50"
-					height="50"
-				/>
-			</div>
-			<div class="logo-text">
-				<h1 id="header-title" class="text-3xl font-black gradient-text leading-tight tracking-tight">سوفت كريم</h1>
-				<p id="header-subtitle" class="text-sm font-semibold text-gray-600 dark:text-gray-400">اصل الايس كريم 🍦</p>
-			</div>
-		</div>
-		<div class="header-actions flex items-center gap-2">
-			<button class="header-cart-btn icon-btn icon-btn-ghost group relative" onclick="openCartModal()" aria-label="فتح سلة التسوق" role="button">
-				<svg class="icon-md text-gray-700 dark:text-gray-300 group-hover:text-primary transition-colors" aria-hidden="true"><use href="#shopping-cart"></use></svg>
-				<span
-					class="header-cart-badge absolute top-1.5 right-1.5 min-w-[20px] h-5 px-1.5 bg-red-500 text-white rounded-full text-[11px] font-bold hidden items-center justify-center shadow-lg animate-pulse"
-					id="headerCartBadge"
-				>
-					0
-				</span>
-			</button>
-			<button class="lang-toggle icon-btn icon-btn-ghost text-sm font-semibold" onclick="toggleLanguage()" id="langToggle" aria-label="تغيير اللغة" role="button">EN</button>
-			<button class="sidebar-trigger icon-btn icon-btn-ghost z-sidebar" id="sidebarTrigger" aria-label="فتح القائمة" role="button">
-				<span class="hamburger-icon w-[22px] h-4 relative flex flex-col justify-between">
-					<span class="block h-[2.5px] w-full bg-gray-700 dark:bg-gray-300 rounded transition-all duration-300"></span>
-					<span class="block h-[2.5px] w-full bg-gray-700 dark:bg-gray-300 rounded transition-all duration-300"></span>
-					<span class="block h-[2.5px] w-full bg-gray-700 dark:bg-gray-300 rounded transition-all duration-300"></span>
-				</span>
-			</button>
-		</div>
-	</div>
+<header
+    class="header fixed top-0 left-0 right-0 z-header backdrop-blur-2xl bg-cream-50/90 dark:bg-gray-900/90 border-b border-pink-100 dark:border-gray-800 shadow-lg transition-[height,background-color,box-shadow] duration-300 h-[100px] [.scrolled_&]:h-[72px]"
+    id="header"
+>
+    <div class="header-content max-w-[1600px] mx-auto px-6 h-full flex items-center justify-between">
+        <div class="header-logo flex items-center gap-4 cursor-pointer transition-transform hover:scale-105" onclick="scrollToTop()">
+            <div class="logo-icon">
+                <img
+                    src="https://i.ibb.co/C5zs6WZ6/546595638-767747059559727-9006561812810172332-n-1-1.jpg"
+                    alt="سوفت كريم"
+                    class="w-[50px] h-[50px] rounded-full object-cover ring-2 ring-pink-200 dark:ring-pink-500/30 transition-all duration-300 [.scrolled_&]:w-[40px] [.scrolled_&]:h-[40px]"
+                    loading="eager"
+                    width="50"
+                    height="50"
+                />
+            </div>
+            <div class="logo-text">
+                <h1 id="header-title" class="text-3xl font-black gradient-text leading-tight tracking-tight transition-all duration-300 [.scrolled_&]:text-2xl">سوفت كريم</h1>
+                <p id="header-subtitle" class="text-sm font-semibold text-gray-600 dark:text-gray-400 transition-all duration-300 [.scrolled_&]:text-xs">اصل الايس كريم 🍦</p>
+            </div>
+        </div>
+        <div class="header-actions flex items-center gap-2">
+			 <!-- زر طلباتي -->
+    <button
+        class="header-orders-btn icon-btn icon-btn-ghost group relative"
+        onclick="openOrdersPage()"
+        aria-label="عرض الطلبات"
+        role="button"
+    >
+        <svg class="icon-md text-gray-700 dark:text-gray-300 group-hover:text-primary transition-colors" aria-hidden="true">
+            <use href="#package"></use>
+        </svg>
+        <span
+            class="header-orders-badge absolute top-1.5 right-1.5 min-w-[20px] h-5 px-1.5 bg-red-500 text-white rounded-full text-[11px] font-bold hidden items-center justify-center shadow-lg shadow-red-500/50 animate-pulse transition-all duration-300 [.scrolled_&]:h-4 [.scrolled_&]:min-w-[16px] [.scrolled_&]:text-[10px] [.scrolled_&]:top-1 [.scrolled_&]:right-1"
+            id="headerOrdersBadge"
+        >
+            0
+        </span>
+    </button>
+            <button class="header-cart-btn icon-btn icon-btn-ghost group relative" onclick="openCartModal()" aria-label="فتح سلة التسوق" role="button">
+                <svg class="icon-md text-gray-700 dark:text-gray-300 group-hover:text-primary transition-colors" aria-hidden="true"><use href="#shopping-cart"></use></svg>
+                <span
+                    class="header-cart-badge absolute top-1.5 right-1.5 min-w-[20px] h-5 px-1.5 bg-red-500 text-white rounded-full text-[11px] font-bold hidden items-center justify-center shadow-lg shadow-red-500/50 animate-pulse transition-all duration-300 [.scrolled_&]:h-4 [.scrolled_&]:min-w-[16px] [.scrolled_&]:text-[10px] [.scrolled_&]:top-1 [.scrolled_&]:right-1"
+                    id="headerCartBadge"
+                >
+                    0
+                </span>
+            </button>
+            <button class="lang-toggle icon-btn icon-btn-ghost text-sm font-semibold" onclick="toggleLanguage()" id="langToggle" aria-label="تغيير اللغة" role="button">EN</button>
+            <button class="sidebar-trigger icon-btn icon-btn-ghost z-sidebar" id="sidebarTrigger" aria-label="فتح القائمة" role="button">
+                <span class="hamburger-icon w-[22px] h-4 relative flex flex-col justify-between">
+                    <span class="block h-[2.5px] w-full bg-gray-700 dark:bg-gray-300 rounded transition-all duration-300"></span>
+                    <span class="block h-[2.5px] w-full bg-gray-700 dark:bg-gray-300 rounded transition-all duration-300"></span>
+                    <span class="block h-[2.5px] w-full bg-gray-700 dark:bg-gray-300 rounded transition-all duration-300"></span>
+                </span>
+            </button>
+        </div>
+    </div>
 </header>
-
+<div id="consent-banner" class="consent-banner hidden">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex-1">
+            <h3 class="text-lg font-bold mb-1">🍪 خصوصيتك تهمنا!</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+                نود استخدام بيانات تحليلية **مجهولة المصدر** (مثل نوع الجهاز ونمط الاستخدام) لفهم كيفية استخدامك للتطبيق وتحسينه باستمرار. لا يتم جمع أي معلومات شخصية تحدد هويتك. هل تسمح بذلك؟ يمكنك معرفة المزيد في
+                <a href="/privacy-policy" target="_blank" class="text-pink-600 hover:underline">سياسة الخصوصية</a>.
+            </p>
+        </div>
+        <div class="flex gap-3 flex-shrink-0">
+            <button id="consent-deny" class="px-5 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm font-medium">
+                رفض
+            </button>
+            <button id="consent-accept" class="px-5 py-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-shadow text-sm font-medium">
+                الموافقة
+            </button>
+        </div>
+    </div>
+</div>
+<!-- ========================================
+ 🎯 Hero Section V7 - CLS Optimized (< 0.05)
+ ✅ Skeleton Slides 3-8 محجوزة مسبقاً
+ ✅ أبعاد ثابتة لـ Text Marquee & Trust Banner
+ ✅ Progressive loading strategy
+======================================== -->
 <main id="main-content">
-	<div class="tab-content active" id="menu-tab">
-		<div class="w-full max-w-6xl mx-auto pt-[120px]">
-			<div class="carousel-container relative mb-8">
-				<div class="absolute top-0 left-0 right-0 h-1 bg-white/10 rounded-full overflow-hidden z-20">
-					<div class="progress-bar absolute top-0 left-0 h-full w-1/4 bg-gradient-to-r from-pink-500 via-purple-500 to-amber-500"></div>
-				</div>
-				<button
-					class="nav-button absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center z-20 text-white touch-manipulation"
-					onclick="prevSlide()"
-					title="السابق"
-					aria-label="الشريحة السابقة"
-					role="button"
-				>
-					<svg class="icon-md sm:icon-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-				</button>
-				<button
-					class="nav-button absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center z-20 text-white touch-manipulation"
-					onclick="nextSlide()"
-					title="التالي"
-					aria-label="الشريحة التالية"
-					role="button"
-				>
-					<svg class="icon-md sm:icon-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-				</button>
-				<div class="carousel-track relative h-[500px] sm:h-[550px] md:h-[600px] overflow-hidden">
-					<div class="carousel-item active absolute top-0 left-0 w-full h-full">
-						<div class="w-full h-full p-4 sm:p-8">
-							<div class="w-full h-full rounded-xl sm:rounded-2xl overflow-hidden relative group bg-gradient-to-br from-pink-50/95 to-white/95 dark:from-gray-800/95 dark:to-gray-900/95">
-								<div class="shimmer"></div>
-								<div class="carousel-content absolute inset-0 flex flex-col-reverse md:flex-row items-center gap-4 md:gap-6 p-4 sm:p-8 md:p-12">
-									<div class="w-full md:w-1/2 h-64 md:h-full flex items-center justify-center">
-										<div class="relative w-full max-w-sm aspect-square">
-											<img
-												src="https://i.ibb.co/LzP97qhB/481279444-627854640201713-219907065737357117-n-min.webp"
-												alt="آيس كريم فانيليا بصوص كراميل"
-												class="w-full h-full object-cover rounded-3xl shadow-2xl transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
-												loading="eager"
-												decoding="async"
-												width="400"
-												height="400"
-											/>
-											<div class="absolute inset-0 bg-gradient-to-br from-pink-500/20 to-amber-500/20 rounded-3xl"></div>
-										</div>
-									</div>
-									<div class="w-full md:w-1/2 text-right space-y-4">
-										<h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-pink-600 mb-4 tracking-wide">آيس كريم فانيليا بصوص كراميل</h2>
-										<p class="text-lg sm:text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
-											آيس كريم فانيليا كريمي يخطف الأنفاس، تعلوه طبقة سلسة من صوص الكراميل الذهبي، يقدم تجربة تناغم بين نعومة الفانيليا وغنى الكراميل في كل قضمة.
-										</p>
-										<div class="pt-4">
-											<span class="inline-block px-6 py-3 bg-gradient-to-r from-pink-500 to-amber-500 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
-												اطلب الآن
-											</span>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="carousel-item next absolute top-0 left-0 w-full h-full">
-						<div class="w-full h-full p-4 sm:p-8">
-							<div class="w-full h-full rounded-xl sm:rounded-2xl overflow-hidden relative group bg-gradient-to-br from-purple-50/95 to-white/95 dark:from-gray-700/95 dark:to-gray-800/95">
-								<div class="shimmer"></div>
-								<div class="carousel-content absolute inset-0 flex flex-col md:flex-row-reverse items-center gap-6 p-6 sm:p-12">
-									<div class="w-full md:w-1/2 h-64 md:h-full flex items-center justify-center">
-										<div class="relative w-full max-w-sm aspect-square">
-											<img
-												src="https://i.ibb.co/4nNL0KR6/Gemini-Generated-Image-7z63p77z63p77z63.png"
-												alt="سوفت مانجو طبيعي"
-												class="w-full h-full object-cover rounded-3xl shadow-2xl transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-3"
-												loading="eager"
-												decoding="async"
-												width="400"
-												height="400"
-											/>
-											<div class="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-3xl"></div>
-										</div>
-									</div>
-									<div class="w-full md:w-1/2 text-left space-y-4">
-										<h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-purple-600 mb-4 tracking-wide">سوفت مانجو طبيعي</h2>
-										<p class="text-lg sm:text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
-											سوفت مانجو يختزل جوهر الفاكهة الاستوائية في كل ملعقة. قوام حريري يذوب بلطف، بنقاء ولون طبيعي يعكس طبيعة المانجو الطازج دون أي إضافات صناعية.
-										</p>
-										<div class="pt-4">
-											<span class="inline-block px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
-												اطلب الآن
-											</span>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="carousel-item hidden absolute top-0 left-0 w-full h-full">
-						<div class="w-full h-full p-4 sm:p-8">
-							<div class="w-full h-full rounded-xl sm:rounded-2xl overflow-hidden relative group bg-gradient-to-br from-amber-50/95 to-white/95 dark:from-gray-600/95 dark:to-gray-700/95">
-								<div class="shimmer"></div>
-								<div class="carousel-content absolute inset-0 flex flex-col md:flex-row items-center gap-6 p-6 sm:p-12">
-									<div class="w-full md:w-1/2 h-64 md:h-full flex items-center justify-center">
-										<div class="relative w-full max-w-sm aspect-square">
-											<img
-												src="https://i.ibb.co/3YspR2nn/489627654-645413408459760-7730691560634138295-n-min.jpg"
-												alt="فانيليا بقطع براوني"
-												class="w-full h-full object-cover rounded-3xl shadow-2xl transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
-												loading="eager"
-												decoding="async"
-												width="400"
-												height="400"
-											/>
-											<div class="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-3xl"></div>
-										</div>
-									</div>
-									<div class="w-full md:w-1/2 text-right space-y-4">
-										<h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-amber-600 mb-4 tracking-wide">فانيليا بقطع براوني</h2>
-										<p class="text-lg sm:text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
-											فانيليا كريمية فاخرة تتخللها قطع غنية من البراوني الشوكولاتي، تخلق تناقضاً رائعاً بين نعومة الآيس كريم وقرمشة الشوكولاتة في تجربة لا تقاوم.
-										</p>
-										<div class="pt-4">
-											<span class="inline-block px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
-												اطلب الآن
-											</span>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="carousel-item hidden absolute top-0 left-0 w-full h-full">
-						<div class="w-full h-full p-4 sm:p-8">
-							<div class="w-full h-full rounded-xl sm:rounded-2xl overflow-hidden relative group bg-gradient-to-br from-green-50/95 to-white/95 dark:from-gray-800/95 dark:to-gray-900/95">
-								<div class="shimmer"></div>
-								<div class="carousel-content absolute inset-0 flex flex-col md:flex-row-reverse items-center gap-6 p-6 sm:p-12">
-									<div class="w-full md:w-1/2 h-64 md:h-full flex items-center justify-center">
-										<div class="relative w-full max-w-sm aspect-square">
-											<img
-												src="https://i.ibb.co/67cV4CJc/484157834-622859394048495-6880924063204865717-n-min.webp"
-												alt="نقاء السوفت آيس كريم"
-												class="w-full h-full object-cover rounded-3xl shadow-2xl transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-3"
-												loading="eager"
-												decoding="async"
-												width="400"
-												height="400"
-											/>
-											<div class="absolute inset-0 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-3xl"></div>
-										</div>
-									</div>
-									<div class="w-full md:w-1/2 text-left space-y-4">
-										<h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-green-600 mb-4 tracking-wide">نقاء السوفت آيس كريم</h2>
-										<p class="text-lg sm:text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
-											تجسيد للنقاء والطبيعة في كل حبة، حيث يبرز السوفت آيس كريم بمكوناته الطبيعية الخالصة، خالي من الألوان الاصطناعية، ليقدم لك جوهر المتعة الحقيقية.
-										</p>
-										<div class="pt-4">
-											<span class="inline-block px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
-												اطلب الآن
-											</span>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-1 sm:gap-2 z-20">
-					<button class="w-8 sm:w-12 h-1 sm:h-1.5 rounded-full bg-white/40 hover:bg-white/60 transition-colors" title="الشريحة 1" aria-label="الانتقال إلى الشريحة 1"></button>
-					<button class="w-8 sm:w-12 h-1 sm:h-1.5 rounded-full bg-white/20 hover:bg-white/60 transition-colors" title="الشريحة 2" aria-label="الانتقال إلى الشريحة 2"></button>
-					<button class="w-8 sm:w-12 h-1 sm:h-1.5 rounded-full bg-white/20 hover:bg-white/60 transition-colors" title="الشريحة 3" aria-label="الانتقال إلى الشريحة 3"></button>
-					<button class="w-8 sm:w-12 h-1 sm:h-1.5 rounded-full bg-white/20 hover:bg-white/60 transition-colors" title="الشريحة 4" aria-label="الانتقال إلى الشريحة 4"></button>
-				</div>
-			</div>
+  <div class="tab-content active" id="menu-tab">
+    <div class="w-full px-4 pt-24 sm:pt-24 md:pt-28 mt-10">
+      
+      <div id="carousels-container" style="min-height: 280px;">
+        
+        <!-- ========================================
+         📸 FEATURED SWIPER (Images Carousel)
+         ✅ Slides 1-2 في HTML + Skeleton 3-8
+        ======================================== -->
+        <div id="featured-swiper" class="swiper" style="min-height: 220px;">
+          
+          <div class="swiper-wrapper">
+            
+            <!-- ✅ Slide 1 (Loaded - LCP) -->
+            <div class="elementor-repeater-item-c8a489e swiper-slide loaded" 
+                 data-slide-index="1"
+                 style="aspect-ratio: 4/3; width: 100%;">
+              <div class="swiper-slide-bg" 
+                   style="background-image: url(https://i.ibb.co/LzP97qhB/481279444-627854640201713-219907065737357117-n-min.webp); background-color: #FFF5EE; position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+                <link rel="preload" 
+                      as="image" 
+                      href="https://i.ibb.co/LzP97qhB/481279444-627854640201713-219907065737357117-n-min.webp"
+                      fetchpriority="high">
+              </div>
+              <div class="swiper-slide-inner">
+                <div class="swiper-slide-contents"></div>
+              </div>
+            </div>
+            
+            <!-- ✅ Slide 2 (Loaded) -->
+            <div class="elementor-repeater-item-c8a489e swiper-slide loaded" 
+                 data-slide-index="2"
+                 style="aspect-ratio: 4/3; width: 100%;">
+              <div class="swiper-slide-bg" 
+                   style="background-image: url(https://i.ibb.co/4nNL0KR6/Gemini-Generated-Image-7z63p77z63p77z63.png); background-color: #FFF5EE; position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+              </div>
+              <div class="swiper-slide-inner">
+                <div class="swiper-slide-contents"></div>
+              </div>
+            </div>
+            
+            <!-- ✅ Skeleton Slides 3-8 (محجوزة مسبقاً لمنع CLS) -->
+            <div class="swiper-slide skeleton-slide" 
+                 data-slide-index="3" 
+                 style="aspect-ratio: 4/3; width: 100%;">
+              <div class="skeleton-shimmer"></div>
+            </div>
+            
+            <div class="swiper-slide skeleton-slide" 
+                 data-slide-index="4" 
+                 style="aspect-ratio: 4/3; width: 100%;">
+              <div class="skeleton-shimmer"></div>
+            </div>
+            
+            <div class="swiper-slide skeleton-slide" 
+                 data-slide-index="5" 
+                 style="aspect-ratio: 4/3; width: 100%;">
+              <div class="skeleton-shimmer"></div>
+            </div>
+            
+            <div class="swiper-slide skeleton-slide" 
+                 data-slide-index="6" 
+                 style="aspect-ratio: 4/3; width: 100%;">
+              <div class="skeleton-shimmer"></div>
+            </div>
+            
+            <div class="swiper-slide skeleton-slide" 
+                 data-slide-index="7" 
+                 style="aspect-ratio: 4/3; width: 100%;">
+              <div class="skeleton-shimmer"></div>
+            </div>
+            
+            <div class="swiper-slide skeleton-slide" 
+                 data-slide-index="8" 
+                 style="aspect-ratio: 4/3; width: 100%;">
+              <div class="skeleton-shimmer"></div>
+            </div>
+            
+          </div>
+          
+          <!-- Navigation Arrows -->
+          <div class="swiper-button-prev" aria-label="الشريحة السابقة"></div>
+          <div class="swiper-button-next" aria-label="الشريحة التالية"></div>
+          
+          <!-- Pagination (مع مساحة محجوزة) -->
+          <div class="swiper-pagination" style="height: 32px; margin-top: 1rem;"></div>
+          
+        </div>
+
+        <!-- ========================================
+         📢 TEXT MARQUEE SWIPER (أبعاد ثابتة)
+        ======================================== -->
+        <div id="text-marquee-swiper" 
+             class="swiper" 
+             style="height: 52px; min-height: 52px; max-height: 52px;">
+          
+          <div class="swiper-wrapper">
+            
+            <!-- Message 1 (Loaded) -->
+            <div class="swiper-slide">
+              <span class="marquee-icon">🎁</span>
+              <span class="marquee-title">عرض الكراميل:</span>
+              <span>اطلب آيس كريم فانيليا واحصل على صوص كراميل مجاناً</span>
+            </div>
+            
+            <!-- Messages 2-4 سيتم إضافتها بواسطة JavaScript -->
+            
+          </div>
+          
+        </div>
+
+        <!-- ========================================
+         🍃 TRUST BANNER (أبعاد ثابتة)
+        ======================================== -->
+        <div class="trust-banner" 
+             style="min-height: 68px; max-height: 68px;">
+          
+          <div class="trust-icon">
+            🌿
+          </div>
+          
+          <div class="trust-text">
+            <h3>منتجات طبيعية معتمدة</h3>
+            <p>جميع منتجاتنا خالية من المواد الحافظة والألوان الصناعية</p>
+          </div>
+          
+        </div>
+
+      </div>
+      
+    </div>
+  </div>
+
+<!-- ========================================
+ تحميل JavaScript (في نهاية الـ body)
+ سيتم التحميل من خلال Module Loading Strategy
+======================================== -->
 			<div class="search-section px-4 mb-8">
 				<div class="search-container relative max-w-[700px] mx-auto">
 					<svg class="search-icon absolute right-7 top-1/2 -translate-y-1/2 icon-md text-gray-400 pointer-events-none" aria-hidden="true"><use href="#search"></use></svg>
@@ -489,10 +509,18 @@
 			>
 				<div class="categories-scroll relative flex gap-3 overflow-x-auto px-4 scroll-smooth scrollbar-hide" id="categoriesScroll"></div>
 			</div>
-			<div class="products-container px-4 pb-8" id="productsContainer"></div>
+			<!-- 🆕 React Mini-App Root (replaces old productsContainer) -->
+			<div id="react-shopping-app-root" class="px-4 pb-8"></div>
 		</div>
 	</div>
 </main>
+<!-- Loading Indicator (Hidden by default) -->
+<div id="carousel-loading" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden" role="status" aria-live="polite">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-2xl">
+        <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-600 mx-auto"></div>
+        <p class="mt-4 text-gray-700 dark:text-gray-300 text-center">جاري التحميل...</p>
+    </div>
+</div>
 
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
@@ -739,7 +767,7 @@
 </aside>
 
 <div
-	class="cart-modal-overlay fixed inset-0 bg-black/75 backdrop-blur-md z-modal hidden items-end md:items-center justify-center md:p-6"
+	class="cart-modal-overlay fixed inset-0 bg-black/75 backdrop-blur-md z-modal  items-end md:items-center justify-center md:p-6"
 	id="cartModal"
 	onclick="closeCartModal(event)"
 	role="dialog"
@@ -756,7 +784,7 @@
 				<span class="min-w-[28px] h-6 px-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-full text-sm font-bold flex items-center justify-center shadow-lg" id="cartBadgeMobile">0</span>
 			</div>
 			<button
-				class="w-11 h-11 rounded-xl hover:bg-pink-50 dark:hover:bg-gray-700 flex items-center justify-center transition-[background-color,transform] duration-200 hover:rotate-90 active:scale-95"
+				class="w-11 h-11 rounded-xl hover:bg-pink-50 dark:hover:bg-gray-700 flex items-center justify-center transition-[transform,background-color] hover:rotate-90 duration-300 hover:shadow-lg active:scale-95"
 				onclick="closeCartModal()"
 				aria-label="إغلاق السلة"
 				role="button"
@@ -804,7 +832,7 @@
 </div>
 
 <div
-	class="modal-overlay fixed inset-0 bg-gray-900/80 backdrop-blur-lg z-modal hidden items-center justify-center p-4 animate-fade-in"
+	class="modal-overlay fixed inset-0 bg-gray-900/80 backdrop-blur-md z-modal hidden items-center justify-center p-4 animate-fade-in"
 	id="productModal"
 	onclick="closeProductModal(event)"
 	role="dialog"
@@ -813,7 +841,7 @@
 >
 	<div class="modal-content bg-white dark:bg-gray-800 rounded-3xl max-w-[850px] w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-scale-in" onclick="event.stopPropagation()">
 		<button
-			class="modal-close absolute top-4 left-4 md:top-6 md:left-6 z-20 w-11 h-11 rounded-full bg-white/90 dark:bg-gray-700/90 backdrop-blur-sm shadow-lg hover:scale-110 hover:rotate-90 active:scale-95 transition-[transform,background-color] duration-200 flex items-center justify-center"
+			class="modal-close absolute top-4 left-4 md:top-6 md:left-6 z-20 w-11 h-11 rounded-full bg-white/90 dark:bg-gray-700/90 backdrop-blur-sm shadow-lg hover:scale-110 hover:rotate-90 active:scale-95 transition-all duration-200 flex items-center justify-center"
 			onclick="closeProductModal()"
 			aria-label="إغلاق المنتج"
 			role="button"
@@ -1086,13 +1114,7 @@
 	</div>
 </div>
 
-<div
-	class="confirmed-modal fixed inset-0 bg-gray-900/85 backdrop-blur-md flex items-center justify-center z-modal animate-fade-in overflow-y-auto p-5 hidden"
-	id="orderConfirmedModal"
-	role="dialog"
-	aria-modal="true"
-	aria-labelledby="confirmed-title"
->
+<div class="confirmed-modal fixed inset-0 bg-gray-900/85 backdrop-blur-md flex items-center justify-center z-modal animate-fade-in overflow-y-auto p-5 hidden" id="orderConfirmedModal" role="dialog" aria-modal="true" aria-labelledby="confirmed-title">
 	<div class="confirmed-content bg-white dark:bg-gray-800 rounded-[28px] p-12 max-w-[550px] w-full text-center shadow-2xl animate-scale-in relative my-5">
 		<button
 			class="close-confirmed absolute top-5 right-5 bg-gray-100 dark:bg-gray-700 w-10 h-10 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white hover:rotate-90 transition-all duration-300 z-10"
@@ -1209,93 +1231,267 @@
 		<div class="tracking-result hidden bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-2xl p-6 border-l-[5px] border-green-500" id="trackingResult" role="status"></div>
 	</div>
 </div>
+<div id="cta-modal" 
+     class="modal-overlay fixed inset-0 bg-gray-900/80 backdrop-blur-lg z-modal hidden items-center justify-center p-4 animate-fade-in" 
+     onclick="closeModal()" role="dialog" 
+     aria-modal="true" 
+     aria-labelledby="modal-title">
+
+    <div class="modal-content-card bg-white dark:bg-gray-800 rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-scale-in p-6 md:p-8 relative" 
+         onclick="event.stopPropagation()">
+        
+        <button class="absolute top-4 right-4 w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 flex items-center justify-center transition" 
+                onclick="closeModal()" 
+                aria-label="إغلاق">
+             <svg class="icon-md text-gray-600 dark:text-gray-300" aria-hidden="true"><use href="#x"></use></svg>
+        </button>
+
+        <h2 id="modal-title" class="text-xl md:text-2xl font-bold mb-4 text-gray-800 dark:text-gray-100">عنوان المنتج هنا</h2>
+        <div id="modal-body" class="text-sm md:text-base text-gray-600 dark:text-gray-400 space-y-4 mb-6">
+            <p>جاري تحميل التفاصيل...</p> 
+        </div>
+        <div class="modal-footer border-t border-gray-200 dark:border-gray-700 pt-4">
+             <button id="modal-action" class="btn-primary w-full"> 
+                  تأكيد الطلب
+             </button>
+        </div>
+    </div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0" defer></script>
-<script type="module" src="js/sidebar.js"></script>
 
-		<script type="module">
-  function isInViewport(el) {
-    if (!el) return false;
-    const rect = el.getBoundingClientRect();
-    return (
-      rect.top >= 0 && rect.left >= 0 &&
-      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-    );
+<!-- ================================================================
+     ✨ OPTIMIZED MODULE LOADING STRATEGY
+     ================================================================ -->
+<script type="module">
+  // ================================================================
+  // 🎯 STRATEGY: Independent Module Loading
+  // ================================================================
+  // ✅ كل module يتحمل لوحده
+  // ✅ لو فشل واحد، الباقي يكمل
+  // ✅ ترتيب واضح ومضمون
+  // ================================================================
+
+  // ================================================================
+  // 🎯 STRATEGY: Independent Module Loading
+  // ================================================================
+  // ✅ كل module يتحمل لوحده
+  // ✅ لو فشل واحد، الباقي يكمل
+  // ✅ Hero Section V3: Featured Swiper + Marquee Swiper
+  // ================================================================
+
+  // ================================================================
+  // 📊 Track Loading Status
+  // ================================================================
+  const loadingStatus = {
+    featuredSwiper: false,
+    marqueeSwiper: false,
+    sidebar: false,
+    bootstrap: false,
+    checkout: false
+  };
+
+  function logStatus(module, success) {
+    loadingStatus[module] = success;
+    console.log('📊 Loading Status:', loadingStatus);
   }
 
-  function optimizeImages() {
-    const images = document.querySelectorAll('img');
-    images.forEach(img => {
-      if (img.getAttribute('loading')) return;
-      if (!isInViewport(img)) {
-        img.setAttribute('loading', 'lazy');
-        img.setAttribute('decoding', 'async');
-      } else {
-        img.setAttribute('loading', 'eager');
-      }
-    });
-  }
+  // ================================================================
+  // 🖼️ 1. Image Observer (Critical - يتحمل أولاً)
+  // ================================================================
+  (function initImageObserver() {
+    if (!('IntersectionObserver' in window)) return;
+    
+    const io = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const img = entry.target;
+        if (img.dataset.src) {
+          img.src = img.dataset.src;
+          img.removeAttribute('data-src');
+          img.classList?.remove('lazy');
+        }
+        obs.unobserve(img);
+      });
+    }, { rootMargin: '200px 0px' });
 
-  optimizeImages();
-  document.addEventListener('scroll', optimizeImages, { passive: true, once: true });
+    document.querySelectorAll('img[data-src]').forEach(i => io.observe(i));
+    console.log('✅ Image observer initialized');
+  })();
 
-  // ✅ تحميل أيقونات ثانوية
-  import('./js/icons-loader.js')
-    .then(() => console.log('✅ Secondary icons loader initialized.'))
-    .catch(err => console.error('Failed to load secondary icons:', err));
-
-  // ✅ تحميل التطبيق الأساسي ثم تحميل checkout بعده
-  document.addEventListener('DOMContentLoaded', async () => {
+  // ================================================================
+  // 🎨 2. Icons Loader (Secondary - غير critical)
+  // ================================================================
+  (async () => {
     try {
-      const appModule = await import('./js/app.js');
-      if (appModule.initApp && typeof appModule.initApp === 'function') {
-        await appModule.initApp();
-        console.log('✅ Main app initialized.');
-      } else {
-        console.warn('initApp() function not found in app.js');
-      }
-
-      // ✅ تحميل checkout فقط بعد جاهزية التطبيق
-      await import('./js/checkout.js');
-      console.log('✅ Checkout module loaded successfully after app initialization.');
-
+      await import('./js/icons-loader.js');
+      console.log('✅ Secondary icons loaded');
     } catch (err) {
-      console.error('❌ Failed to load main or checkout modules:', err);
+      console.error('⚠️ Icons loader failed:', err);
     }
-  });
+  })();
+
+  // ================================================================
+  // 🎠 3. FEATURED SWIPER (Hero Images Carousel)
+  // ================================================================
+  (async () => {
+    try {
+      console.log('🎠 Loading Featured Swiper module...');
+      
+      const swiperModule = await import('./js/swiper-featured.js');
+      
+      if (swiperModule.initFeaturedSwiper && typeof swiperModule.initFeaturedSwiper === 'function') {
+        
+        const success = swiperModule.initFeaturedSwiper();
+        
+        if (success) {
+          console.log('✅ Featured Swiper loaded INDEPENDENTLY');
+          logStatus('featuredSwiper', true);
+        } else {
+          console.error('❌ Featured Swiper failed initialization');
+          logStatus('featuredSwiper', false);
+        }
+        
+        // تصدير للـ window (للـ debugging)
+        window.featuredSwiperModule = swiperModule;
+      } else {
+        console.error('❌ initFeaturedSwiper function not found');
+        logStatus('featuredSwiper', false);
+      }
+    } catch (err) {
+      console.error('❌ Featured Swiper module failed (isolated):', err);
+      logStatus('featuredSwiper', false);
+    }
+  })();
+
+  // ================================================================
+  // 📢 4. MARQUEE SWIPER (Text Ticker)
+  // ================================================================
+  (async () => {
+    try {
+      console.log('📢 Loading Marquee Swiper module...');
+      
+      const marqueeModule = await import('./js/swiper-marquee.js');
+      
+      if (marqueeModule.initMarqueeSwiper && typeof marqueeModule.initMarqueeSwiper === 'function') {
+        
+        const success = marqueeModule.initMarqueeSwiper();
+        
+        if (success) {
+          console.log('✅ Marquee Swiper loaded INDEPENDENTLY');
+          logStatus('marqueeSwiper', true);
+        } else {
+          console.error('❌ Marquee Swiper failed initialization');
+          logStatus('marqueeSwiper', false);
+        }
+        
+        // تصدير للـ window (للـ debugging)
+        window.marqueeSwiperModule = marqueeModule;
+      } else {
+        console.error('❌ initMarqueeSwiper function not found');
+        logStatus('marqueeSwiper', false);
+      }
+    } catch (err) {
+      console.error('❌ Marquee Swiper module failed (isolated):', err);
+      logStatus('marqueeSwiper', false);
+    }
+  })();
+
+  // ================================================================
+  // 📂 5. SIDEBAR (مستقل تماماً)
+  // ================================================================
+  (async () => {
+    try {
+      console.log('📂 Loading sidebar module...');
+      await import('./js/sidebar.js');
+      console.log('✅ Sidebar loaded INDEPENDENTLY');
+      logStatus('sidebar', true);
+    } catch (err) {
+      console.error('❌ Sidebar module failed (isolated):', err);
+      logStatus('sidebar', false);
+    }
+  })();
+
+  // ================================================================
+  // 🚀 6. REACT MINI-APP (replaces old bootstrap)
+  // ================================================================
+  // React app will be loaded via separate script tag below
+  console.log('ℹ️  React Mini-App will handle products & cart');
+
+  // ================================================================
+  // 🛒 7. CHECKOUT (Lazy Load - عند الضغط)
+  // ================================================================
+  (function setupLazyCheckout() {
+    let loaded = false;
+    const cartBtn = document.querySelector('.header-cart-btn');
+    
+    if (!cartBtn) {
+      console.warn('⚠️ Cart button not found for lazy-loading checkout');
+      return;
+    }
+
+    cartBtn.addEventListener('click', async (e) => {
+      // فتح السلة مباشرة
+      window.cartModule?.openCartModal?.();
+      
+      // تحميل checkout أول مرة فقط
+      if (loaded) return;
+      loaded = true;
+
+      try {
+        console.log('🛒 Loading checkout on demand...');
+        const checkout = await import('./js/checkout.js');
+        window.checkoutModule = checkout;
+        checkout.initCheckout?.();
+        console.log('✅ Checkout loaded on demand');
+        logStatus('checkout', true);
+      } catch (err) {
+        console.error('⚠️ Checkout failed to load:', err);
+        logStatus('checkout', false);
+      }
+    }, { passive: true });
+  })();
+
+  // ================================================================
+  // 📊 8. FINAL STATUS REPORT (بعد 3 ثواني)
+  // ================================================================
+  setTimeout(() => {
+    console.log('\n═══════════════════════════════════════');
+    console.log('📊 FINAL LOADING STATUS REPORT (V3)');
+    console.log('═══════════════════════════════════════');
+    console.log('Featured Swiper: ', loadingStatus.featuredSwiper ? '✅' : '❌');
+    console.log('Marquee Swiper:  ', loadingStatus.marqueeSwiper ? '✅' : '❌');
+    console.log('Sidebar:         ', loadingStatus.sidebar ? '✅' : '❌');
+    console.log('Bootstrap:       ', loadingStatus.bootstrap ? '✅' : '❌');
+    console.log('Checkout:        ', loadingStatus.checkout ? '✅ (lazy)' : '⏳ (not loaded yet)');
+    console.log('═══════════════════════════════════════\n');
+    
+    // ✅ إذا Hero Section شغال، عرض رسالة نجاح   
+    if (loadingStatus.featuredSwiper && loadingStatus.marqueeSwiper && loadingStatus.sidebar) {
+      console.log('🎉 Hero Section V3 + Core modules loaded successfully!');
+      console.log('ℹ️  Bootstrap errors (if any) are isolated.');
+    } else {
+      console.warn('⚠️ Some core modules failed to load. Check console for details.');
+      
+      // Debug info
+      if (!loadingStatus.featuredSwiper) {
+        console.error('💡 Featured Swiper failed - check ./js/swiper-featured.js exists');
+      }
+      if (!loadingStatus.marqueeSwiper) {
+        console.error('💡 Marquee Swiper failed - check ./js/swiper-marquee.js exists');
+      }
+    }
+  }, 3000);
+
 </script>
 
+<!-- ================================================================
+     🆕 REACT MINI-APP INTEGRATION
+     ================================================================ -->
+<!-- React build files will be injected here by build script -->
+<!-- Placeholder: <script type="module" crossorigin src="./dist/react-app/assets/index-[hash].js"></script> -->
+<!-- Placeholder: <link rel="stylesheet" crossorigin href="./dist/react-app/assets/index-[hash].css"> -->
+<!-- 🆕 React Mini-App Scripts (auto-injected) -->
+<link rel="stylesheet" crossorigin href="./dist/react-app/assets/index-D8bVofb1.css">
+<script type="module" crossorigin src="./dist/react-app/assets/index-C-rjAeRf.js"></script>
 
-		<script>
-			function initCarousel() {
-			  let currentSlide = 0;
-			  const slides = document.querySelectorAll('.carousel-item');
-			  const indicators = document.querySelectorAll('.carousel-container .absolute.bottom-2 button, .carousel-container .absolute.bottom-4 button');
-			  const progressBar = document.querySelector('.carousel-container .progress-bar');
-			  const carousel = document.querySelector('.carousel-track');
-			  let autoAdvanceTimer; let touchStartX = 0; let touchEndX = 0;
-			  if (!slides || slides.length === 0) { console.warn('Carousel: No slides found.'); return; }
-			  if (!indicators || indicators.length !== slides.length) { console.warn('Carousel: Indicators count mismatch or not found.'); }
-			  if (!progressBar) { console.warn('Carousel: Progress bar not found.'); }
-			  if (!carousel) { console.warn('Carousel: Track not found.'); return; }
-			  carousel.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
-			  carousel.addEventListener('touchend', e => { touchEndX = e.changedTouches[0].screenX; handleSwipe(); }, { passive: true });
-			  function handleSwipe() { const swipeThreshold = 50; const diff = touchStartX - touchEndX; if (Math.abs(diff) > swipeThreshold) { if (diff > 0) { nextSlide(); } else { prevSlide(); } } }
-			  function updateSlides() {
-			    slides.forEach((slide, index) => { slide.className = 'carousel-item absolute top-0 left-0 w-full h-full'; if (index === currentSlide) { slide.classList.add('active'); } else if (index === (currentSlide + 1) % slides.length) { slide.classList.add('next'); } else if (index === (currentSlide - 1 + slides.length) % slides.length) { slide.classList.add('prev'); } else { slide.classList.add('hidden'); } });
-			    if (indicators && indicators.length === slides.length) { indicators.forEach((indicator, index) => { indicator.className = `w-8 sm:w-12 h-1 sm:h-1.5 rounded-full transition-colors ${ index === currentSlide ? 'bg-white/40' : 'bg-white/20' } hover:bg-white/60`; }); }
-			    if (progressBar) { requestAnimationFrame(() => { progressBar.style.width = `${((currentSlide + 1) / slides.length) * 100}%`; }); }
-			  }
-			  function resetAutoAdvance() { clearInterval(autoAdvanceTimer); if (slides.length > 1) { autoAdvanceTimer = setInterval(nextSlide, 5000); } }
-			  window.nextSlide = function() { currentSlide = (currentSlide + 1) % slides.length; updateSlides(); resetAutoAdvance(); }
-			  window.prevSlide = function() { currentSlide = (currentSlide - 1 + slides.length) % slides.length; updateSlides(); resetAutoAdvance(); }
-			  if (indicators && indicators.length === slides.length) { indicators.forEach((indicator, index) => { indicator.addEventListener('click', () => { if (index === currentSlide) return; currentSlide = index; updateSlides(); resetAutoAdvance(); }); }); }
-			  updateSlides(); resetAutoAdvance();
-			}
-			document.addEventListener('DOMContentLoaded', initCarousel);
-		</script>
-	</body>
+</body>
 </html>

@@ -258,3 +258,53 @@ const translationsData = {
 // ===== لا تضيف أي logic هنا - البيانات فقط
 // ================================================================
 // ملاحظة: تحميل البيانات يتم في app.js بعد تحميل translations.js
+
+/*
+ const translationsData = {
+            "ar": {
+                "btnPrev": "السابق",
+                "btnNext": "التالي",
+                "orderNow": "اطلب الآن",
+                "tryNow": "جرّبه الآن",
+                "chooseSauce": "اختار صوصك",
+                "product1Title": "آيس كريم فانيليا بصوص كراميل",
+                "product1Desc": "آيس كريم فانيليا كريمي يخطف الأنفاس، تعلوه طبقة سلسة من صوص الكراميل الذهبي، يقدم تجربة تناغم بين نعومة الفانيليا وغنى الكراميل في كل قضمة.",
+                "product2Title": "سوفت مانجو طبيعي",
+                "product2Desc": "سوفت مانجو يختزل جوهر الفاكهة الاستوائية في كل ملعقة. قوام حريري يذوب بلطف، بنقاء ولون طبيعي يعكس طبيعة المانجو الطازج دون أي إضافات صناعية.",
+                "product3Title": "فانيليا بقطع براوني",
+                "product3Desc": "فانيليا كريمية فاخرة تتخللها قطع غنية من البراوني الشوكولاتي، تخلق تناقضاً رائعاً بين نعومة الآيس كريم وقرمشة الشوكولاتة في تجربة لا تقاوم.",
+                "product4Title": "نقاء السوفت آيس كريم",
+                "product4Desc": "تجسيد للنقاء والطبيعة في كل حبة، حيث يبرز السوفت آيس كريم بمكوناته الطبيعية الخالصة، خالي من الألوان الاصطناعية، ليقدم لك جوهر المتعة الحقيقية.",
+                "product5Title": "فلوري أوريو 🍪",
+                "product5Desc": "سوفت آيس كريم فانيليا غني ممزوج ببسكويت أوريو المقرمش — طعم كلاسيكي لا يُنسى في كل ملعقة.",
+                "product6Title": "سوفت كاندي 🍭",
+                "product6Desc": "ألوان نابضة ونكهات حلوة مبهجة — آيس كريم مليان طاقة وسعادة، مثالي لمحبي الحلاوة الملوّنة!",
+                "product7Title": "صنداي لوتس & نوتيلا 🍯",
+                "product7Desc": "فانيليا ناعمة تختلط بصوص لوتس أو نوتيلا لتصنع مزيجاً من الدفء والحلاوة، مثالي لعشاق النكهات الغنية.",
+                "product8Title": "صنداي بيستاشيو 💚",
+                "product8Desc": "سوفت فانيليا كريمي مزين بصوص الفستق الراقي — طعم فخم يليق بعشاق الفستق الحقيقيين."
+            },
+            "en": {
+                "btnPrev": "Previous",
+                "btnNext": "Next",
+                "orderNow": "Order Now",
+                "tryNow": "Try It Now",
+                "chooseSauce": "Choose Your Sauce",
+                "product1Title": "Vanilla Ice Cream with Caramel Sauce",
+                "product1Desc": "Breathtaking creamy vanilla ice cream topped with a smooth layer of golden caramel sauce, offering a harmonious experience between vanilla softness and caramel richness in every bite.",
+                "product2Title": "Natural Mango Soft Serve",
+                "product2Desc": "Mango soft serve captures the essence of tropical fruit in every spoonful. Silky texture that melts gently, with purity and natural color reflecting fresh mango without any artificial additives.",
+                "product3Title": "Vanilla with Brownie Chunks",
+                "product3Desc": "Luxurious creamy vanilla interspersed with rich chocolate brownie chunks, creating a wonderful contrast between ice cream smoothness and chocolate crunchiness in an irresistible experience.",
+                "product4Title": "Pure Soft Serve Ice Cream",
+                "product4Desc": "An embodiment of purity and nature in every bite, where soft serve ice cream shines with its pure natural ingredients, free from artificial colors, to give you the essence of true pleasure.",
+                "product5Title": "Oreo Flurry 🍪",
+                "product5Desc": "Rich vanilla soft serve ice cream mixed with crunchy Oreo cookies — an unforgettable classic taste in every spoonful.",
+                "product6Title": "Candy Soft Serve 🍭",
+                "product6Desc": "Vibrant colors and delightful sweet flavors — ice cream full of energy and happiness, perfect for colorful sweetness lovers!",
+                "product7Title": "Lotus & Nutella Sundae 🍯",
+                "product7Desc": "Smooth vanilla mixed with Lotus or Nutella sauce to create a blend of warmth and sweetness, perfect for rich flavor enthusiasts.",
+                "product8Title": "Pistachio Sundae 💚",
+                "product8Desc": "Creamy vanilla soft serve decorated with elegant pistachio sauce — a luxurious taste worthy of true pistachio lovers."
+            }
+        };*/

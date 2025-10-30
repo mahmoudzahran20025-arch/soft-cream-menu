@@ -503,6 +503,94 @@ class APIService {
     return result.data;
   }
 
+  // ================================================================
+  // Smart Nutrition & Energy APIs
+  // ================================================================
+
+  /**
+   * Smart Discovery - Filter products by nutrition & energy
+   * @param {Object} filters - { category, energyType, minCalories, maxCalories, minProtein, tags, q, limit, offset }
+   * @returns {Promise<{products: Array, total: number, filters: Object}>}
+   */
+  async discoverProducts(filters = {}) {
+    try {
+      console.log('🎯 Discovering products with filters:', filters);
+      const result = await this.request('GET', '/products/discover', filters);
+      console.log(`✅ Found ${result.data?.products?.length || 0} products`);
+      return result.data;
+    } catch (error) {
+      console.error('❌ Product discovery failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get nutrition summary for cart items
+   * @param {Array<string>} productIds - Array of product IDs
+   * @returns {Promise<Object>} Nutrition summary with totals
+   */
+  async getNutritionSummary(productIds) {
+    try {
+      console.log('🧮 Calculating nutrition summary for:', productIds);
+      const result = await this.request('POST', '/products/nutrition-summary', { productIds });
+      console.log('✅ Nutrition summary:', result.data);
+      return result.data;
+    } catch (error) {
+      console.error('❌ Nutrition summary failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get product recommendations (similar products)
+   * @param {string} productId - Product ID
+   * @param {number} limit - Number of recommendations (default: 5)
+   * @returns {Promise<Array>} Array of similar products
+   */
+  async getRecommendations(productId, limit = 5) {
+    try {
+      const result = await this.request('GET', `/products/recommendations/${productId}`, { limit });
+      console.log(`✅ Found ${result.data?.length || 0} recommendations`);
+      return result.data;
+    } catch (error) {
+      console.error('❌ Get recommendations failed:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get products by energy type
+   * @param {string} energyType - 'mental', 'physical', or 'balanced'
+   * @param {number} limit - Number of products (default: 10)
+   * @returns {Promise<Array>} Array of products
+   */
+  async getProductsByEnergy(energyType, limit = 10) {
+    try {
+      const result = await this.request('GET', `/products/by-energy/${energyType}`, { limit });
+      console.log(`✅ Found ${result.data?.length || 0} ${energyType} energy products`);
+      return result.data;
+    } catch (error) {
+      console.error('❌ Get products by energy failed:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get products by category
+   * @param {string} category - Category name (Arabic or English)
+   * @returns {Promise<Array>} Array of products
+   */
+  async getProductsByCategory(category) {
+    try {
+      const result = await this.request('GET', `/products/by-category/${encodeURIComponent(category)}`);
+      console.log(`✅ Found ${result.data?.length || 0} products in ${category}`);
+      return result.data;
+    } catch (error) {
+      console.error('❌ Get products by category failed:', error);
+      return [];
+    }
+  }
+
   async getBranches() {
     const result = await this.request('GET', '/branches');
     return result.data;

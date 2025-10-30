@@ -8,6 +8,7 @@
 const state = {
   scrollTicking: false,
   categoriesOriginalOffset: 0,
+  marqueeOriginalOffset: 0, // ✅ أضف هذا
   snowflakeCount: 0,
   maxSnowflakes: 30, // ✅ حد أقصى لتجنب memory leak
   snowflakeInterval: null
@@ -20,6 +21,7 @@ const config = {
   selectors: {
     header: '#header',
     categoriesSection: '#categoriesSection',
+    marquee: '#text-marquee-swiper', // ✅ أضف هذا
     toast: '#toast',
     categoryGroup: '.category-group',
     categoryTab: '.category-tab',
@@ -40,14 +42,17 @@ export function handleScroll() {
       if (header) {
         if (window.scrollY > config.scrollOffset) {
           header.classList.add('scrolled');
-          document.body.classList.add('scrolled');
+          document.body.classList.add('scrolled'); // ✅ هذا مهم للتقلص
         } else {
           header.classList.remove('scrolled');
           document.body.classList.remove('scrolled');
         }
       }
       
+      // ✅ الترتيب مهم: الماركي أولاً، ثم الكاتيجوري
+      handleMarqueeSticky();
       handleCategoriesSticky();
+      
       state.scrollTicking = false;
     });
     
@@ -61,21 +66,26 @@ export function handleScroll() {
 function handleCategoriesSticky() {
   const header = document.querySelector(config.selectors.header);
   const categories = document.querySelector(config.selectors.categoriesSection);
+  const marquee = document.querySelector(config.selectors.marquee); // ✅ نحتاج الماركي
   
-  if (!header || !categories) return;
+  // ✅ نتأكد من تحميل كل العناصر وحساب الموضع
+  if (!header || !categories || !marquee || state.categoriesOriginalOffset === 0) return;
   
   const headerHeight = header.getBoundingClientRect().height;
+  const marqueeHeight = marquee.getBoundingClientRect().height; // ✅ نحسب ارتفاع الماركي
   const scrollY = window.scrollY;
   
-  // ✅ Debugging (يمكن حذفه بعد التأكد من العمل)
-  // console.log('Scroll:', scrollY, 'Threshold:', state.categoriesOriginalOffset - headerHeight);
+  // ✅ الموضع الجديد: الأصلي - (الهيدر + الماركي)
+  const stickyThreshold = state.categoriesOriginalOffset - headerHeight - marqueeHeight;
   
-  if (scrollY >= state.categoriesOriginalOffset - headerHeight) {
+  if (scrollY >= stickyThreshold) {
     categories.classList.add('visible');
-    categories.style.top = `${headerHeight}px`;
-    updateActiveCategory(); // ✅ تحديث الفئة النشطة
+    // ✅ الالتصاق الجديد: أسفل الهيدر + الماركي
+    categories.style.top = `${headerHeight + marqueeHeight}px`; 
+    updateActiveCategory();
   } else {
     categories.classList.remove('visible');
+    categories.style.top = ''; // ✅ إعادة تعيين
   }
 }
 
@@ -234,13 +244,55 @@ export function initCategoriesOffset() {
 }
 
 // ================================================================
+// ===== Marquee Sticky Handler (NEW) =====
+// ================================================================
+function handleMarqueeSticky() {
+  const header = document.querySelector(config.selectors.header);
+  const marquee = document.querySelector(config.selectors.marquee);
+  
+  if (!header || !marquee || state.marqueeOriginalOffset === 0) return;
+
+  const headerHeight = header.getBoundingClientRect().height;
+  const scrollY = window.scrollY;
+  
+  // ✅ الموضع: الأصلي - الهيدر
+  const stickyThreshold = state.marqueeOriginalOffset - headerHeight;
+  
+  if (scrollY >= stickyThreshold) {
+    marquee.classList.add('sticky');
+    // ✅ الالتصاق: أسفل الهيدر
+    marquee.style.top = `${headerHeight}px`;
+  } else {
+    marquee.classList.remove('sticky');
+    marquee.style.top = '';
+  }
+}
+
+// ================================================================
+// ===== Init Marquee Offset (NEW) =====
+// ================================================================
+export function initMarqueeOffset() {
+  const marquee = document.querySelector(config.selectors.marquee);
+  if (!marquee) {
+    console.warn('⚠️ Marquee section (#text-marquee-swiper) not found');
+    return;
+  }
+  
+  // نستخدم 'load' لضمان حساب الموضع بعد تحميل كل الصور
+  window.addEventListener('load', () => {
+    state.marqueeOriginalOffset = marquee.offsetTop;
+    console.log('📌 Marquee original position:', state.marqueeOriginalOffset);
+    handleMarqueeSticky(); // قم بالتحديث الفوري للحالة الأولية
+  });
+}
+
+// ================================================================
 // ===== تأثيرات بصرية متقدمة - الثلج (محسّنة) =====
 // ✅ إضافة cleanup و max limit
 // ================================================================
 export function createSnowflakes() {
   const snowflakeChars = ['❄', '🌨', '❅', '✨', '💫', '⭐'];
-  const container = document.querySelector(config.selectors.animatedBackground);
-
+  const container = document.querySelector('#snowfall-container'); // ✅ الحل هنا
   if (!container) {
     console.warn('Animated background container not found');
     return;
@@ -302,7 +354,7 @@ export function stopSnowflakes() {
     state.snowflakeInterval = null;
   }
   
-  const container = document.querySelector(config.selectors.animatedBackground);
+  const container = document.querySelector('#snowfall-container'); // ✅ الحل هنا
   if (container) {
     container.querySelectorAll('.snowflake').forEach(flake => flake.remove());
   }
@@ -310,7 +362,6 @@ export function stopSnowflakes() {
   state.snowflakeCount = 0;
   console.log('❄️ Snowflakes stopped and cleaned');
 }
-
 // ================================================================
 // ===== Toast System Class (بديل showToast) =====
 // ================================================================
