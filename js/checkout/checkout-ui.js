@@ -52,26 +52,26 @@ export async function updateOrderSummary() {
       orderSummary.style.display = 'block';
       
       let itemsHtml = `
-        <div class="order-summary-header" style="padding: 12px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px 8px 0 0; color: white; font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 8px;">
+        <div class="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-primary to-secondary rounded-t-lg text-white font-semibold text-sm">
           <i data-lucide="receipt" style="width: 18px; height: 18px;"></i>
           <span>${lang === 'ar' ? 'ملخص الطلب' : 'Order Summary'}</span>
         </div>
-        <div class="order-items-list" style="padding: 16px; background: white; border: 1px solid #e0e0e0; border-top: none;">
+        <div class="p-4 bg-white border border-gray-200 border-t-0">
       `;
       
       if (calculatedPrices.items && calculatedPrices.items.length > 0) {
         calculatedPrices.items.forEach((item, index) => {
           const itemTotal = item.total || (item.price * item.quantity);
           itemsHtml += `
-            <div class="summary-item" style="display: flex; justify-content: space-between; align-items: start; padding: 10px 0; ${index < calculatedPrices.items.length - 1 ? 'border-bottom: 1px solid #f0f0f0;' : ''}">
-              <div class="item-details" style="flex: 1;">
-                <div style="font-weight: 600; color: #333; margin-bottom: 4px; font-size: 14px;">${item.name}</div>
-                <div style="display: flex; align-items: center; gap: 12px; font-size: 13px; color: #666;">
-                  <span style="background: #f5f5f5; padding: 2px 8px; border-radius: 4px;">× ${item.quantity}</span>
+            <div class="flex justify-between items-start py-2.5 ${index < calculatedPrices.items.length - 1 ? 'border-b border-gray-100' : ''}">
+              <div class="flex-1">
+                <div class="font-semibold text-gray-800 dark:text-gray-100 mb-1 text-sm">${item.name}</div>
+                <div class="flex items-center gap-3 text-xs text-gray-600 dark:text-gray-400">
+                  <span class="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded">× ${item.quantity}</span>
                   <span>${item.price.toFixed(2)} EGP</span>
                 </div>
               </div>
-              <div class="item-total" style="font-weight: 700; color: #667eea; font-size: 15px; white-space: nowrap; margin-left: 12px;">
+              <div class="font-bold text-primary text-sm whitespace-nowrap ml-3">
                 ${itemTotal.toFixed(2)} EGP
               </div>
             </div>
@@ -84,79 +84,79 @@ export async function updateOrderSummary() {
       const { subtotal, deliveryFee, discount, total } = calculatedPrices;
       
       let totalsHtml = `
-        <div class="order-totals" style="padding: 16px; background: #fafafa; border: 1px solid #e0e0e0; border-top: none; border-radius: 0 0 8px 8px;">
-          <div class="total-row" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 14px;">
-            <span style="color: #666; display: flex; align-items: center; gap: 6px;">
+        <div class="p-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 border-t-0 rounded-b-lg">
+          <div class="flex justify-between items-center py-2 text-sm">
+            <span class="text-gray-600 dark:text-gray-400 flex items-center gap-1.5">
               <i data-lucide="shopping-bag" style="width: 16px; height: 16px;"></i>
               ${lang === 'ar' ? 'المجموع الفرعي' : 'Subtotal'}
             </span>
-            <span style="font-weight: 600; color: #333;">${subtotal.toFixed(2)} EGP</span>
+            <span class="font-semibold text-gray-800 dark:text-gray-100">${subtotal.toFixed(2)} EGP</span>
           </div>
           
           ${deliveryMethod === 'delivery' ? `
             ${deliveryFee > 0 ? `
-              <div class="total-row" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 14px;">
-                <span style="color: #666; display: flex; align-items: center; gap: 6px;">
+              <div class="flex justify-between items-center py-2 text-sm">
+                <span class="text-gray-600 dark:text-gray-400 flex items-center gap-1.5">
                   <i data-lucide="truck" style="width: 16px; height: 16px;"></i>
                   ${lang === 'ar' ? 'رسوم التوصيل' : 'Delivery Fee'}
                   ${calculatedPrices.deliveryInfo?.isEstimated ? `
-                    <span style="background: #fff3cd; color: #856404; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600;">
+                    <span class="bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded text-[11px] font-semibold">
                       ${lang === 'ar' ? 'تقديري' : 'Estimated'}
                     </span>
                   ` : ''}
                 </span>
-                <span style="font-weight: 600; color: #333;">${deliveryFee.toFixed(2)} EGP</span>
+                <span class="font-semibold text-gray-800 dark:text-gray-100">${deliveryFee.toFixed(2)} EGP</span>
               </div>
               ${calculatedPrices.deliveryInfo?.isEstimated ? `
-                <div class="estimated-fee-warning" style="margin: 8px 0; padding: 10px; background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); border-radius: 6px; border-left: 3px solid #f39c12; font-size: 12px; color: #856404; line-height: 1.4;">
-                  <div style="display: flex; align-items: start; gap: 8px;">
-                    <i data-lucide="info" style="width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px;"></i>
+                <div class="my-2 p-2.5 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-md border-l-3 border-yellow-500 text-xs text-yellow-800 leading-relaxed">
+                  <div class="flex items-start gap-2">
+                    <i data-lucide="info" style="width: 16px; height: 16px;" class="shrink-0 mt-0.5"></i>
                     <div>
-                      <strong style="display: block; margin-bottom: 2px;">${lang === 'ar' ? 'ملاحظة هامة:' : 'Important Note:'}</strong>
+                      <strong class="block mb-0.5">${lang === 'ar' ? 'ملاحظة هامة:' : 'Important Note:'}</strong>
                       ${lang === 'ar' ? 'رسوم التوصيل تقديرية. سيتم التواصل معك لتأكيد الموقع وحساب الرسوم الفعلية.' : 'Delivery fee is estimated. We will contact you to confirm location and calculate actual fee.'}
                     </div>
                   </div>
                 </div>
               ` : ''}
             ` : `
-              <div class="total-row" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 14px;">
-                <span style="color: #666; display: flex; align-items: center; gap: 6px;">
+              <div class="flex justify-between items-center py-2 text-sm">
+                <span class="text-gray-600 dark:text-gray-400 flex items-center gap-1.5">
                   <i data-lucide="truck" style="width: 16px; height: 16px;"></i>
                   ${lang === 'ar' ? 'رسوم التوصيل' : 'Delivery Fee'}
                 </span>
-                <span style="font-weight: 600; color: #4caf50;">${lang === 'ar' ? 'مجاني' : 'FREE'}</span>
+                <span class="font-semibold text-green-600">${lang === 'ar' ? 'مجاني' : 'FREE'}</span>
               </div>
             `}
           ` : ''}
           
           ${discount > 0 ? `
-            <div class="total-row discount" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 14px; background: #fff3e0; margin: 8px -16px; padding-left: 16px; padding-right: 16px;">
-              <span style="color: #f57c00; display: flex; align-items: center; gap: 6px; font-weight: 600;">
+            <div class="flex justify-between items-center py-2 text-sm bg-orange-50 dark:bg-orange-900/20 -mx-4 px-4">
+              <span class="text-orange-600 dark:text-orange-400 flex items-center gap-1.5 font-semibold">
                 <i data-lucide="tag" style="width: 16px; height: 16px;"></i>
                 ${lang === 'ar' ? 'الخصم' : 'Discount'}
               </span>
-              <span style="font-weight: 700; color: #f57c00;">-${discount.toFixed(2)} EGP</span>
+              <span class="font-bold text-orange-600 dark:text-orange-400">-${discount.toFixed(2)} EGP</span>
             </div>
           ` : ''}
           
-          <div style="border-top: 2px dashed #e0e0e0; margin: 12px 0;"></div>
+          <div class="border-t-2 border-dashed border-gray-300 dark:border-gray-600 my-3"></div>
           
-          <div class="total-row final-total" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; margin: 0 -16px -16px -16px;">
-            <span style="color: white; font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+          <div class="flex justify-between items-center px-4 py-3 bg-gradient-to-r from-primary to-secondary rounded-lg -mx-4 -mb-4">
+            <span class="text-white font-bold text-base flex items-center gap-2">
               <i data-lucide="wallet" style="width: 20px; height: 20px;"></i>
               ${lang === 'ar' ? 'الإجمالي النهائي' : 'Total Amount'}
             </span>
-            <span style="font-weight: 700; color: white; font-size: 20px;">${total.toFixed(2)} EGP</span>
+            <span class="font-bold text-white text-xl">${total.toFixed(2)} EGP</span>
           </div>
         </div>
       `;
       
       if (calculatedPrices.isOffline) {
         totalsHtml += `
-          <div class="offline-indicator" style="margin-top: 12px; padding: 12px; background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); border-radius: 8px; border-left: 4px solid #f39c12; display: flex; align-items: center; gap: 10px;">
-            <i data-lucide="wifi-off" style="width: 20px; height: 20px; color: #f39c12; flex-shrink: 0;"></i>
-            <div style="font-size: 13px; color: #856404; line-height: 1.5;">
-              <div style="font-weight: 600; margin-bottom: 2px;">${lang === 'ar' ? '⚠️ وضع عدم الاتصال' : '⚠️ Offline Mode'}</div>
+          <div class="mt-3 p-3 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-lg border-l-4 border-yellow-500 flex items-center gap-2.5">
+            <i data-lucide="wifi-off" style="width: 20px; height: 20px;" class="text-yellow-600 shrink-0"></i>
+            <div class="text-xs text-yellow-800 leading-relaxed">
+              <div class="font-semibold mb-0.5">${lang === 'ar' ? '⚠️ وضع عدم الاتصال' : '⚠️ Offline Mode'}</div>
               <div>${lang === 'ar' ? 'الأسعار تقديرية - سيتم التأكيد عند الاتصال' : 'Prices are estimated - will be confirmed when online'}</div>
             </div>
           </div>
@@ -170,14 +170,14 @@ export async function updateOrderSummary() {
           
           if (branch) {
             totalsHtml += `
-              <div class="selected-branch-info" style="margin-top: 12px; padding: 12px; background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border-radius: 8px; border-left: 4px solid #2196F3;">
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                  <i data-lucide="map-pin" style="width: 18px; height: 18px; color: #1976D2;"></i>
-                  <span style="font-size: 13px; color: #1565c0; font-weight: 600;">${lang === 'ar' ? 'فرع الاستلام' : 'Pickup Branch'}</span>
+              <div class="mt-3 p-3 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg border-l-4 border-blue-500">
+                <div class="flex items-center gap-2 mb-2">
+                  <i data-lucide="map-pin" style="width: 18px; height: 18px;" class="text-blue-700"></i>
+                  <span class="text-xs text-blue-700 font-semibold">${lang === 'ar' ? 'فرع الاستلام' : 'Pickup Branch'}</span>
                 </div>
-                <div style="font-weight: 700; color: #0d47a1; font-size: 15px; margin-bottom: 4px;">${branch.name[lang]}</div>
-                <div style="font-size: 13px; color: #1565c0; display: flex; align-items: start; gap: 6px;">
-                  <i data-lucide="navigation" style="width: 14px; height: 14px; margin-top: 2px; flex-shrink: 0;"></i>
+                <div class="font-bold text-blue-900 text-sm mb-1">${branch.name[lang]}</div>
+                <div class="text-xs text-blue-700 flex items-start gap-1.5">
+                  <i data-lucide="navigation" style="width: 14px; height: 14px;" class="shrink-0 mt-0.5"></i>
                   <span>${branch.address[lang]}</span>
                 </div>
               </div>
@@ -193,12 +193,12 @@ export async function updateOrderSummary() {
     } else if (deliveryMethod && !calculatedPrices) {
       orderSummary.style.display = 'block';
       orderItems.innerHTML = `
-        <div class="calculating-prices" style="padding: 32px; text-align: center; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 8px;">
-          <div class="spinner" style="width: 48px; height: 48px; margin: 0 auto 16px; border: 4px solid #e0e0e0; border-top: 4px solid #667eea; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
-          <div style="font-size: 16px; font-weight: 600; color: #667eea; margin-bottom: 8px;">
+        <div class="p-8 text-center bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-lg">
+          <div class="w-12 h-12 mx-auto mb-4 border-4 border-gray-200 border-t-primary rounded-full animate-spin"></div>
+          <div class="text-base font-semibold text-primary mb-2">
             ${lang === 'ar' ? 'جاري حساب الأسعار...' : 'Calculating Prices...'}
           </div>
-          <div style="font-size: 13px; color: #666;">
+          <div class="text-xs text-gray-600 dark:text-gray-400">
             ${lang === 'ar' ? 'الرجاء الانتظار قليلاً' : 'Please wait a moment'}
           </div>
         </div>
@@ -223,12 +223,12 @@ export async function updateOrderSummary() {
     console.error('❌ Failed to update order summary:', error);
     
     orderItems.innerHTML = `
-      <div class="error-message" style="padding: 24px; text-align: center; background: #ffebee; border-radius: 8px; border-left: 4px solid #f44336;">
-        <i data-lucide="alert-circle" style="width: 48px; height: 48px; color: #f44336; margin-bottom: 12px;"></i>
-        <div style="font-size: 16px; font-weight: 600; color: #c62828; margin-bottom: 8px;">
+      <div class="p-6 text-center bg-red-50 dark:bg-red-900/20 rounded-lg border-l-4 border-red-500">
+        <i data-lucide="alert-circle" style="width: 48px; height: 48px;" class="text-red-500 mx-auto mb-3"></i>
+        <div class="text-base font-semibold text-red-800 dark:text-red-400 mb-2">
           ${lang === 'ar' ? 'خطأ في تحميل الملخص' : 'Error Loading Summary'}
         </div>
-        <div style="font-size: 13px; color: #d32f2f;">
+        <div class="text-xs text-red-700 dark:text-red-500">
           ${lang === 'ar' ? 'حاول مرة أخرى أو تواصل مع الدعم' : 'Try again or contact support'}
         </div>
       </div>
