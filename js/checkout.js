@@ -177,6 +177,12 @@
         showToast('خطأ', 'فشل في تحميل نظام الدفع', 'error');
         return;
       }
+      
+      // ✅ Setup global module after loading
+      if (!window.checkoutModule) {
+        setupGlobalCheckoutModule();
+        console.log('✅ checkoutModule created (on-demand)');
+      }
     }
 
     console.log('🔄 Starting checkout initialization...');
@@ -424,17 +430,17 @@
     console.log('🔄 Initializing checkout system...');
     
     try {
-      // ✅ CRITICAL: Setup global module FIRST (synchronously)
-      if (!window.checkoutModule) {
-        setupGlobalCheckoutModule();
-        console.log('✅ checkoutModule created and available globally');
-      }
-      
-      // Pre-load modules
+      // ✅ STEP 1: Pre-load modules FIRST
       const loaded = await loadCheckoutModules();
       if (!loaded) {
         console.error('❌ Failed to pre-load modules');
         return;
+      }
+      
+      // ✅ STEP 2: Setup global module AFTER modules are loaded
+      if (!window.checkoutModule) {
+        setupGlobalCheckoutModule();
+        console.log('✅ checkoutModule created and available globally');
       }
       
       // Setup event handlers
