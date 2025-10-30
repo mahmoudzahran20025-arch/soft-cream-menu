@@ -457,6 +457,19 @@ if (typeof window !== 'undefined') {
       }
     });
   });
+
+  // 🔗 Listen for React Checkout Click
+  window.addEventListener('react-checkout-clicked', async (event) => {
+    console.log('🛒 Vanilla received: react-checkout-clicked', event.detail);
+    
+    // Use the global initiateCheckout function
+    if (typeof window.initiateCheckout === 'function') {
+      console.log('🔄 Opening checkout modal from React...');
+      window.initiateCheckout();
+    } else {
+      console.error('❌ window.initiateCheckout is not available');
+    }
+  });
 }
 
 // ================================================================
