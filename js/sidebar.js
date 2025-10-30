@@ -493,7 +493,23 @@ if (typeof window !== 'undefined') {
   window.openSettings = openSettings;
   window.showAboutInfo = showAboutInfo;
   window.showContactInfo = showContactInfo;
-  console.log('✅ Sidebar functions exposed globally');
+  
+  // Export as module for global-functions.js
+  window.sidebarModule = {
+    openSidebar,
+    closeSidebar,
+    toggleSidebar,
+    updateSidebarBadges,
+    updateSidebarProfile,
+    syncSidebarTheme,
+    syncSidebarLanguage,
+    openOrdersPage,
+    openSettings,
+    showAboutInfo,
+    showContactInfo
+  };
+  
+  console.log(' Sidebar functions exposed globally');
 }
 
 // ================================================================

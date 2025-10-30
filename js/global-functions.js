@@ -30,18 +30,20 @@ window.toggleLanguage = function() {
   document.documentElement.lang = newLang;
   document.documentElement.dir = newLang === 'ar' ? 'rtl' : 'ltr';
   
-  // Update toggle buttons
-  const langToggle = document.getElementById('langToggle');
-  if (langToggle) {
-    langToggle.textContent = newLang === 'ar' ? 'EN' : 'عربي';
+  // Save to storage
+  if (window.storage) {
+    window.storage.setLang(newLang);
   }
   
-  const sidebarLangToggle = document.getElementById('sidebarLangToggle');
-  if (sidebarLangToggle) {
-    const options = sidebarLangToggle.querySelectorAll('.lang-option');
-    options.forEach(opt => {
-      opt.classList.toggle('hidden', opt.dataset.lang !== newLang);
-    });
+  // Update lang button
+  const langBtn = document.getElementById('langToggle');
+  if (langBtn) {
+    langBtn.textContent = newLang === 'ar' ? 'EN' : 'AR';
+  }
+  
+  // Update sidebar language
+  if (window.sidebarModule && window.sidebarModule.syncSidebarLanguage) {
+    window.sidebarModule.syncSidebarLanguage();
   }
   
   console.log(`🌐 Language switched to: ${newLang}`);
@@ -140,6 +142,11 @@ window.toggleTheme = function() {
     window.storage.setTheme(isDark ? 'dark' : 'light');
   }
   
+  // Update sidebar theme toggle
+  if (window.sidebarModule && window.sidebarModule.syncSidebarTheme) {
+    window.sidebarModule.syncSidebarTheme();
+  }
+  
   console.log(`🎨 Theme switched to: ${isDark ? 'dark' : 'light'}`);
   
   // Dispatch event for React
@@ -159,10 +166,37 @@ window.handleSearch = function() {
   if (!searchInput) return;
   
   const query = searchInput.value.trim();
-  console.log(`🔍 Search query: ${query}`);
+  console.log('🔍 Search query:', query);
   
-  // Dispatch to React
-  window.dispatchEvent(new CustomEvent('vanilla-search', { detail: { query } }));
+  // Dispatch event for React to handle
+  window.dispatchEvent(new CustomEvent('search-query', { detail: { query } }));
+};
+
+// ================================================================
+// 📱 Sidebar Functions
+// ================================================================
+window.openSidebar = function() {
+  if (window.sidebarModule && window.sidebarModule.openSidebar) {
+    window.sidebarModule.openSidebar();
+  } else {
+    console.warn('⚠️ Sidebar module not loaded');
+  }
+};
+
+window.closeSidebar = function() {
+  if (window.sidebarModule && window.sidebarModule.closeSidebar) {
+    window.sidebarModule.closeSidebar();
+  } else {
+    console.warn('⚠️ Sidebar module not loaded');
+  }
+};
+
+window.toggleSidebar = function() {
+  if (window.sidebarModule && window.sidebarModule.toggleSidebar) {
+    window.sidebarModule.toggleSidebar();
+  } else {
+    console.warn('⚠️ Sidebar module not loaded');
+  }
 };
 
 window.clearSearch = function() {

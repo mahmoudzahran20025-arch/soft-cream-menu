@@ -34,6 +34,11 @@ function App() {
       detail: { count: cartCount, cart }
     }));
 
+    // Update sidebar badges
+    if (window.sidebarModule && window.sidebarModule.updateSidebarBadges) {
+      window.sidebarModule.updateSidebarBadges();
+    }
+
     console.log('🆕 React dispatched: react-cart-updated', { count: cartCount });
   }, [cart]);
 
