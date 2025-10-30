@@ -39,6 +39,13 @@ function App() {
       window.sidebarModule.updateSidebarBadges();
     }
 
+    // Update header cart badge
+    const headerBadge = document.getElementById('headerCartBadge');
+    if (headerBadge) {
+      headerBadge.textContent = cartCount;
+      headerBadge.style.display = cartCount > 0 ? 'flex' : 'none';
+    }
+
     console.log('🆕 React dispatched: react-cart-updated', { count: cartCount });
   }, [cart]);
 
