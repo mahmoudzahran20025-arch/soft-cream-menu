@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 
 // Import API from parent directory
 const API_BASE_URL = 'https://softcream-api.mahmoud-zahran20025.workers.dev';
@@ -25,6 +25,15 @@ export const ProductsProvider = ({ children }) => {
     minCalories: null,
     maxCalories: null,
     searchQuery: ''
+  });
+  
+  // ✅ المرحلة 3: إضافة State للغة
+  const [currentLang, setCurrentLang] = useState(() => {
+    // الحصول على اللغة من i18n أو window أو default
+    if (typeof window !== 'undefined') {
+      return window.i18n?.getLang?.() || document.documentElement.lang || 'ar';
+    }
+    return 'ar';
   });
 
   // Fetch products
@@ -163,6 +172,33 @@ export const ProductsProvider = ({ children }) => {
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
+  
+  // ✅ الاستماع لتغيير اللغة من i18n
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.i18n) return;
+    
+    const unsubscribe = window.i18n.on('change', (newLang) => {
+      console.log(`🔄 [React] Language changed to: ${newLang}`);
+      setCurrentLang(newLang);
+    });
+    
+    console.log('✅ [React] Subscribed to i18n language change events');
+    
+    // تنظيف الاشتراك عند إغلاق التطبيق
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, []);
+  
+  // ✅ دالة الترجمة (مع useMemo للأداء)
+  const t = useMemo(() => {
+    return (key, params) => {
+      if (typeof window !== 'undefined' && window.i18n) {
+        return window.i18n.t(key, params);
+      }
+      return key; // fallback
+    };
+  }, [currentLang]);
 
   const value = {
     products,
@@ -171,6 +207,8 @@ export const ProductsProvider = ({ children }) => {
     loading,
     error,
     filters,
+    currentLang, // ✅ تمرير اللغة الحالية
+    t, // ✅ تمرير دالة الترجمة
     fetchProducts,
     discoverProducts,
     searchProducts,

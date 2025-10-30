@@ -39,14 +39,14 @@ window.addEventListener('unhandledrejection', (e) => {
 // ================================================================
 // ===== استيراد الوحدات (فقط ما نحتاجه) =====
 // ================================================================
-import './translations.js'; // ⭐ استيراد لتشغيل الملف فقط (Side Effect)
+import { i18n } from './translations.js'; // ⭐ استيراد i18n manager
+import { translationsData } from './translations-data.js'; // ⭐ استيراد البيانات
 import { handleScroll, initCategoriesOffset, preventImageDrag, initPassiveTouchEvents, setupFocusTrap } from './utils.js';
 import { loadCart, updateCartUI } from './cart.js';
 import { renderCategories } from './categories.js';
 import { initFuse, renderProducts, updateLanguage } from './ui.js';
 import { storage } from './storage.js';
 
-import { i18n } from './translations.js'; // ⭐ رجّع السطر ده هنا
 // ⚠️ لا نستورد carousel.js هنا - يتحمل بشكل مستقل
 
 // ================================================================
@@ -161,10 +161,18 @@ async function initApp() {
   try {
     Logger.log('🚀 Initializing Soft Cream App (without Carousel)...');
 
-    // تحميل الترجمات
-    const translationsData = window.i18n?.tData;
-    if (translationsData && window.translationManager) {
-      window.translationManager.loadTranslations(translationsData);
+    // ✅ المرحلة 1: تحميل بيانات الترجمة (الأهم!)
+    if (i18n && translationsData) {
+      // تغذية i18n manager بالبيانات
+      i18n.loadTranslations?.(translationsData);
+      Logger.log('✅ i18n system initialized with data');
+      
+      // ضبط اللغة المحفوظة
+      const savedLang = storage.getLang?.() || 'ar';
+      i18n.setLang?.(savedLang);
+      Logger.log(`✅ Language set to: ${savedLang}`);
+    } else {
+      Logger.warn('⚠️ i18n or translationsData not available');
     }
 
     // تحميل البيانات المحفوظة

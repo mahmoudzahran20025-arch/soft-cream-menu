@@ -633,7 +633,7 @@ export async function confirmOrder() {
     }));
     
     // ✅ Also clear Vanilla cart directly (as fallback if React is not active)
-    clearCart();
+    //clearCart();
     
     // ✅ Dispatch events to update UI
     window.dispatchEvent(new CustomEvent('cart-updated'));

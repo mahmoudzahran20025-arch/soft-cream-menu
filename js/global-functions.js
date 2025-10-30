@@ -21,35 +21,66 @@ const checkDependencies = () => {
 };
 
 // ================================================================
-// 🌐 Language Toggle
+// 🌍 UPDATE VANILLA UI (المرحلة 2)
+// ================================================================
+/**
+ * دالة تقوم بتحديث كل نصوص الفانيلا
+ * @param {string} lang - اللغة الجديدة (مثل 'ar' أو 'en')
+ */
+function updateVanillaUI(lang) {
+  console.log(`🔄 [Vanilla] Updating UI for language: ${lang}`);
+
+  // 1. تحديث اتجاه الصفحة
+  document.documentElement.lang = lang;
+  document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+
+  // 2. تحديث زر اللغة
+  const langBtn = document.getElementById('langToggle');
+  if (langBtn) {
+    langBtn.textContent = lang === 'ar' ? 'EN' : 'AR';
+  }
+
+  // 3. تحديث السايد بار
+  if (window.sidebarModule && window.sidebarModule.syncSidebarLanguage) {
+    window.sidebarModule.syncSidebarLanguage();
+  }
+
+  // 4. (مهم جداً) إعادة بناء السويبرات (Swipers)
+  // هذا يحل مشكلة اختفاء الصور
+  if (window.featuredSwiperModule?.reInitSwiper) {
+    window.featuredSwiperModule.reInitSwiper();
+    console.log('🔄 [Vanilla] Re-initializing Featured Swiper for new lang.');
+  }
+  if (window.marqueeSwiperModule?.reInitSwiper) {
+    window.marqueeSwiperModule.reInitSwiper();
+    console.log('🔄 [Vanilla] Re-initializing Marquee Swiper for new lang.');
+  }
+
+  console.log(`✅ [Vanilla] UI updated for ${lang}`);
+}
+
+// ================================================================
+// 🌐 Language Toggle (محدث)
 // ================================================================
 window.toggleLanguage = function() {
   const currentLang = document.documentElement.lang || 'ar';
   const newLang = currentLang === 'ar' ? 'en' : 'ar';
-  
-  document.documentElement.lang = newLang;
-  document.documentElement.dir = newLang === 'ar' ? 'rtl' : 'ltr';
   
   // Save to storage
   if (window.storage) {
     window.storage.setLang(newLang);
   }
   
-  // Update lang button
-  const langBtn = document.getElementById('langToggle');
-  if (langBtn) {
-    langBtn.textContent = newLang === 'ar' ? 'EN' : 'AR';
+  // استخدام i18n لتغيير اللغة (سيطلق event تلقائياً)
+  if (window.i18n && window.i18n.setLang) {
+    window.i18n.setLang(newLang);
+    console.log(`🌐 Language switched to: ${newLang} via i18n`);
+  } else {
+    // Fallback: تحديث يدوي
+    updateVanillaUI(newLang);
+    // Dispatch event for React
+    window.dispatchEvent(new CustomEvent('language-changed', { detail: { lang: newLang } }));
   }
-  
-  // Update sidebar language
-  if (window.sidebarModule && window.sidebarModule.syncSidebarLanguage) {
-    window.sidebarModule.syncSidebarLanguage();
-  }
-  
-  console.log(`🌐 Language switched to: ${newLang}`);
-  
-  // Dispatch event for React
-  window.dispatchEvent(new CustomEvent('language-changed', { detail: { lang: newLang } }));
 };
 
 // ================================================================
@@ -233,6 +264,20 @@ function initGlobalFunctions() {
     const savedLang = window.storage.getLang() || 'ar';
     document.documentElement.lang = savedLang;
     document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+  }
+  
+  // ✅ الاستماع لحدث تغيير اللغة من i18n
+  if (window.i18n && window.i18n.on) {
+    window.i18n.on('change', (newLang) => {
+      console.log(`🔔 [Global] Received language change event: ${newLang}`);
+      updateVanillaUI(newLang);
+      
+      // Dispatch event for React
+      window.dispatchEvent(new CustomEvent('language-changed', { detail: { lang: newLang } }));
+    });
+    console.log('✅ Subscribed to i18n language change events');
+  } else {
+    console.warn('⚠️ i18n not available, language changes will not be live');
   }
 }
 

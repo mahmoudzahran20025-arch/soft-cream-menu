@@ -1,14 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
-    // React Mini-App files
     "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-    
-    // 🔗 Vanilla JS files (for unified CSS)
-    "../index.html",
-    "../js/**/*.js",
-    "../styles/**/*.css",
+    "./js/**/*.js",
+    "./styles/**/*.css",
   ],
   theme: {
     extend: {
@@ -73,7 +68,7 @@ export default {
           800: '#FF846F',
           900: '#FF745C',
         },
-        // Energy Colors (للمنتجات) - من react config
+        // Energy Colors (للمنتجات)
         energy: {
           mental: '#8b5cf6',    // Purple for mental energy
           physical: '#f59e0b',  // Orange for physical energy

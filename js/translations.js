@@ -202,6 +202,11 @@ const translationManager = new TranslationManager();
 // ================================================================
 const i18n = {
   /**
+   * تحميل بيانات الترجمات: i18n.loadTranslations(data)
+   */
+  loadTranslations: (data) => translationManager.loadTranslations(data),
+  
+  /**
    * استخدام بسيط: i18n.t('key')
    */
   t: (key, params = {}) => translationManager.get(key, params),
