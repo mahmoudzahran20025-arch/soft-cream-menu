@@ -82,7 +82,7 @@ npm run build:inject
 # افتح index.html في المتصفح
 3. احفظ في Git
 bash
-git add README-dev.md TECHNICAL-DEEP-DIVE.md QUICK-REFERENCE.md
+git add . README-dev.md TECHNICAL-DEEP-DIVE.md QUICK-REFERENCE.md
 git commit -m "docs: Add comprehensive documentation"
 git push origin main
 📊 ملخص التوثيق:
