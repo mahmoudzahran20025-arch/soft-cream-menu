@@ -2,42 +2,70 @@
  * ===================================================================
  * Soft Cream - Main Stylesheet (components.css)
  * ===================================================================
- * ✅ تم نقل جميع الألوان والخطوط إلى tailwind.config.js
- * ✅ هذا الملف يحتوي فقط على الكلاسات المخصصة والـ Keyframes
- * ✅ tailwind.config.js هو المصدر الوحيد للـ Theme
+ * - ✅ محدث بنظام z-index hierarchy الجديد
+ * - ✅ تم تنظيف أكواد الكارسول القديم
+ * - ✅ تم إضافة تنسيقات كارسول Swiper الجديد
  * ===================================================================
  */
 
 /* 1. Tailwind Directives */
 @import "tailwindcss";
 
+/* 2. Theme Configuration (Tailwind v4) */
+@theme {
+  /* ... (كل الأكواد هنا كما هي) ... */
+  --font-family-cairo: "Cairo", sans-serif;
+  --font-family-tajawal: "Tajawal", sans-serif;
+  --color-primary: #FF6B9D;
+  --color-primary-dark: #E85589;
+  --color-primary-light: #FF8FB3;
+  --color-secondary: #C9A0DC;
+  --color-accent: #A8E6CF;
+  --color-cream-50: #FFF9F5;
+  --color-cream-100: #FFF5EE;
+  --color-cream-200: #FFE4E1;
+  --z-base: 0;
+  --z-content: 10;
+  --z-carousel: 5;
+  --z-carousel-controls: 10;
+  --z-products: 2;
+  --z-product-hover: 3;
+  --z-sticky-categories: 90;
+  --z-dropdown: 50;
+  --z-header: 100;
+  --z-header-elements: 101;
+  --z-sidebar-overlay: 900;
+  --z-sidebar: 1000;
+  --z-modal-overlay: 1900;
+  --z-modal-base: 2000;
+  --z-modal-nested: 2100;
+  --z-modal-processing: 2200;
+  --z-modal-close-btn: 2300;
+  --z-toast: 5000;
+}
+
 /* ========================================
- * 2. BASE LAYER
+ * 3. BASE LAYER
  * ======================================== */
 @layer base {
   :root {
-    /* Layout Variables (فقط) */
+    /* Legacy CSS Variables */
+    --color-primary: #FF6B9D;
+    --color-primary-dark: #E85589;
+    --color-primary-light: #FF8FB3;
+    --color-secondary: #C9A0DC;
+    --color-accent: #A8E6CF;
+    --color-cream-50: #FFF9F5;
+    --color-cream-100: #FFF5EE;
+    --color-cream-200: #FFE4E1;
+    
+    /* Layout */
     --sidebar-width: 320px;
     
-    /* Z-Index Variables (للتوافق مع الكود القديم) */
-    --z-base: 0;
-    --z-content: 10;
-    --z-carousel: 5;
-    --z-carousel-controls: 10;
-    --z-products: 2;
-    --z-product-hover: 3;
-    --z-sticky-categories: 90;
-    --z-dropdown: 50;
-    --z-header: 100;
-    --z-header-elements: 101;
-    --z-sidebar-overlay: 900;
-    --z-sidebar: 1000;
-    --z-modal-overlay: 1900;
-    --z-modal-base: 2000;
-    --z-modal-nested: 2100;
-    --z-modal-processing: 2200;
-    --z-modal-close-btn: 2300;
-    --z-toast: 5000;
+    /* ✅ (تم التعديل) 
+      أبعاد الكارسول الجديد لمنع CLS 
+    */
+    
   }
 
   @media (max-width: 768px) {
@@ -54,7 +82,7 @@
 
   /* Body Base Styles */
   body {
-    font-family: theme('fontFamily.cairo');
+    font-family: 'Cairo', sans-serif;
     @apply bg-cream-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 overflow-x-hidden transition-colors duration-300;
   }
 
@@ -119,7 +147,24 @@
   .dark .animated-background::before { background: linear-gradient(180deg, rgba(26, 22, 37, 0) 0%, rgba(26, 22, 37, 0.98) 100%); }
   .page-content { position: relative; z-index: var(--z-content); @apply pr-0 pl-0; }
 
-
+  /* ================================================================
+ * 🎬 HERO SECTION - V4 (Preview Mode)
+ * ================================================================
+ * ✅ Mobile: 1.2 slides (شريحة + 20% preview)
+ * ✅ Tablet: 2.2 slides (شريحتين + 20% preview)
+ * ✅ Desktop: 3.2 slides (3 شرائح + 20% preview)
+ * ✅ استغلال كامل عرض الشاشة (No empty spaces)
+ * ✅ Fade effect على الـ preview slides
+ * ================================================================ */
+/* ================================================================
+ * 🎬 HERO SECTION - ENHANCED V5 (Tailwind v4 Compatible)
+ * ================================================================
+ * ✅ يعمل مع npx tailwindcss --watch
+ * ✅ تحميل صورتين في HTML للأداء
+ * ✅ Preview أصغر وأكثر احترافية
+ * ✅ إزالة المساحات الفارغة
+ * ✅ أزرار شفافة على الموبايل
+ * ================================================================ */
 /* ================================================================
  * 🎬 HERO SECTION - V7 (CLS Score < 0.05)
  * ================================================================
@@ -373,7 +418,7 @@
 }
 
 /* ========================================
- * ⬅️➡️ NAVIGATION ARROWS
+ * ⬅️➡️ NAVIGATION ARROWS (Enhanced Desktop)
  * ======================================== */
 #featured-swiper .swiper-button-prev,
 #featured-swiper .swiper-button-next {
@@ -387,28 +432,69 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   display: flex !important;
   opacity: 0.5;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Tablet (768px+): أزرار أكثر وضوحاً */
 @media (min-width: 768px) {
   #featured-swiper .swiper-button-prev,
   #featured-swiper .swiper-button-next {
-    width: 48px !important;
-    height: 48px !important;
-    background: rgba(255, 255, 255, 0.9) !important;
+    width: 52px !important;
+    height: 52px !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(12px);
+    box-shadow: 
+      0 4px 16px rgba(0, 0, 0, 0.12),
+      0 0 0 1px rgba(255, 107, 157, 0.1);
+    opacity: 0.9;
+    border: 2px solid rgba(255, 107, 157, 0.15);
+  }
+}
+
+/* Desktop (1024px+): تصميم premium */
+@media (min-width: 1024px) {
+  #featured-swiper .swiper-button-prev,
+  #featured-swiper .swiper-button-next {
+    width: 56px !important;
+    height: 56px !important;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.98) 0%,
+      rgba(255, 245, 250, 0.98) 100%
+    ) !important;
+    box-shadow: 
+      0 6px 24px rgba(255, 107, 157, 0.15),
+      0 2px 8px rgba(0, 0, 0, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    border: 2px solid rgba(255, 107, 157, 0.2);
     opacity: 1;
   }
 }
 
+/* Hover States */
 #featured-swiper .swiper-button-prev:hover,
 #featured-swiper .swiper-button-next:hover {
-  background: var(--color-primary) !important;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-primary-dark) 100%
+  ) !important;
   color: white !important;
-  transform: scale(1.1);
+  transform: scale(1.08);
   opacity: 1 !important;
   border-color: var(--color-primary);
+  box-shadow: 
+    0 8px 32px rgba(255, 107, 157, 0.35),
+    0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
+/* Active States */
+#featured-swiper .swiper-button-prev:active,
+#featured-swiper .swiper-button-next:active {
+  transform: scale(0.95);
+}
+
+/* Icon Sizes */
 #featured-swiper .swiper-button-prev:after,
 #featured-swiper .swiper-button-next:after {
   font-size: 16px !important;
@@ -418,10 +504,18 @@
 @media (min-width: 768px) {
   #featured-swiper .swiper-button-prev:after,
   #featured-swiper .swiper-button-next:after {
-    font-size: 20px !important;
+    font-size: 22px !important;
   }
 }
 
+@media (min-width: 1024px) {
+  #featured-swiper .swiper-button-prev:after,
+  #featured-swiper .swiper-button-next:after {
+    font-size: 24px !important;
+  }
+}
+
+/* Dark Mode */
 .dark #featured-swiper .swiper-button-prev,
 .dark #featured-swiper .swiper-button-next {
   background: rgba(0, 0, 0, 0.2) !important;
@@ -433,14 +527,36 @@
 @media (min-width: 768px) {
   .dark #featured-swiper .swiper-button-prev,
   .dark #featured-swiper .swiper-button-next {
-    background: rgba(255, 255, 255, 0.15) !important;
+    background: rgba(30, 30, 40, 0.9) !important;
+    border-color: rgba(255, 107, 157, 0.25);
+    box-shadow: 
+      0 4px 16px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+}
+
+@media (min-width: 1024px) {
+  .dark #featured-swiper .swiper-button-prev,
+  .dark #featured-swiper .swiper-button-next {
+    background: linear-gradient(
+      135deg,
+      rgba(40, 40, 50, 0.95) 0%,
+      rgba(30, 30, 40, 0.95) 100%
+    ) !important;
   }
 }
 
 .dark #featured-swiper .swiper-button-prev:hover,
 .dark #featured-swiper .swiper-button-next:hover {
-  background: var(--color-primary) !important;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-primary-dark) 100%
+  ) !important;
   border-color: var(--color-primary);
+  box-shadow: 
+    0 8px 32px rgba(255, 107, 157, 0.45),
+    0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 /* ========================================
@@ -718,9 +834,7 @@
    * 🏠 HEADER
    * ======================================== */
   /* ... (كل الأكواد هنا كما هي) ... */
-  header#header, .header { position: fixed; top: 0; left: 0; right: 0; z-index: var(--z-header); height: 80px; transition: height 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease; }
-  header#header.scrolled, .header.scrolled { height: 64px; padding-top: 0.5rem; padding-bottom: 0.5rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); }
-  header#header.scrolled .logo, .header.scrolled .logo { height: 40px; transition: height 0.3s ease; }
+  header#header, .header { position: fixed; top: 0; left: 0; right: 0; z-index: var(--z-header); }
   .header-cart-badge, .header .icon-btn { position: relative; z-index: var(--z-header-elements); }
 
   /* ========================================
@@ -742,12 +856,13 @@
   .sidebar-toggle input:checked + .sidebar-toggle-slider { @apply bg-primary; }
   .sidebar-toggle input:checked + .sidebar-toggle-slider:before { transform: translateX(20px); }
   body.sidebar-open { @apply overflow-hidden; }
+
   /* ========================================
    * 📲 MODALS SYSTEM
    * ======================================== */
   /* ... (كل الأكواد هنا كما هي) ... */
   .modal-overlay, .cart-modal-overlay, .checkout-modal-overlay, .permission-modal, .processing-modal, .confirmed-modal, .tracking-modal { position: fixed; inset: 0; z-index: var(--z-modal-overlay); @apply bg-gray-900/80; backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; }
-  .modal-overlay.show, .modal-overlay.active, .cart-modal-overlay.show, .checkout-modal-overlay.show { display: flex !important; animation: fadeInOverlay 0.3s ease; }
+  .modal-overlay.show, .modal-overlay.active, .cart-modal-overlay.show, .checkout-modal-overlay.show { display: flex; animation: fadeInOverlay 0.3s ease; }
   #productModal, #cartModal, #trackingModal, #orderConfirmedModal, #permissionModal { position: relative; z-index: var(--z-modal-base); }
   #checkoutModal { z-index: var(--z-modal-nested); }
   #processingModal { z-index: var(--z-modal-processing); }
@@ -756,19 +871,12 @@
   .modal-content-card { @apply bg-white dark:bg-gray-800 rounded-3xl max-w-[850px] w-full max-h-[90vh] overflow-y-auto shadow-2xl; }
   .cart-modal-overlay { animation: fadeIn 0.3s ease; }
   .cart-modal-overlay.show > div { animation: slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
-  
-  /* تحسينات إضافية للـ Modals */
-  .checkout-modal-overlay.show, .cart-modal-overlay.show { opacity: 1; pointer-events: all; }
-  .checkout-content, .cart-modal-overlay > div { transform: scale(1); opacity: 1; }
-  @media (max-width: 768px) {
-    .cart-modal-overlay { align-items: flex-end !important; }
-    .cart-modal-overlay > div { border-radius: 1.5rem 1.5rem 0 0 !important; max-height: 92vh !important; }
-  }
 
   /* ========================================
-   * TOAST NOTIFICATIONS
+   * 🔔 TOAST NOTIFICATIONS
    * ======================================== */
   /* ... (كل الأكواد هنا كما هي) ... */
+  #toastContainer { position: fixed; z-index: var(--z-toast); pointer-events: none; }
   #toastContainer > * { pointer-events: auto; }
   .toast { @apply flex items-start gap-3 bg-white dark:bg-gray-800 rounded-xl p-4 shadow-lg pointer-events-auto relative overflow-hidden opacity-0 w-full; transform: translateY(-20px); transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); user-select: none; -webkit-user-select: none; touch-action: pan-y; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05); }
   .dark .toast { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1); }
@@ -925,75 +1033,6 @@
 .debug-swiper #featured-swiper .swiper-slide-active {
   outline: 2px solid green;
 }
-
-/* ========================================
- * 🔧 CHECKOUT & DARK MODE FIXES
- * ======================================== */
-
-/* Fix: SVG icons in checkout should be visible */
-#checkoutModal svg,
-#permissionModal svg,
-#processingModal svg,
-#orderConfirmedModal svg {
-  fill: currentColor;
-  color: inherit;
-}
-
-/* Fix: Icons in buttons should inherit button color */
-button svg,
-.btn svg,
-.icon-btn svg {
-  fill: currentColor;
-  color: inherit;
-}
-
-/* Fix: Dark mode - ensure text and icons are visible */
-[data-theme="dark"] .category-tab,
-[data-theme="dark"] .category-item {
-  color: #fff !important;
-  border-color: rgba(255, 255, 255, 0.2) !important;
-}
-
-[data-theme="dark"] .category-tab.active,
-[data-theme="dark"] .category-item.active {
-  background: var(--color-primary) !important;
-  color: #fff !important;
-}
-
-/* Fix: Close button (X) visibility in dark mode */
-[data-theme="dark"] .modal-close-btn,
-[data-theme="dark"] .close-btn,
-[data-theme="dark"] button[aria-label*="close"],
-[data-theme="dark"] button[aria-label*="إغلاق"] {
-  color: #fff !important;
-  background: rgba(255, 255, 255, 0.1) !important;
-}
-
-[data-theme="dark"] .modal-close-btn:hover,
-[data-theme="dark"] .close-btn:hover {
-  background: rgba(255, 255, 255, 0.2) !important;
-}
-
-/* Fix: React cart close button */
-[data-theme="dark"] #react-shopping-app-root button svg {
-  color: currentColor !important;
-}
-
-/* Fix: Mobile - Add button always visible on product cards */
-@media (max-width: 768px) {
-  .product-card .add-to-cart-btn {
-    opacity: 1 !important;
-    transform: translateY(0) !important;
-    position: relative !important;
-    margin-top: 0.5rem;
-  }
-  
-  /* Prevent overlap with nutrition info */
-  .product-card .nutrition-info {
-    margin-bottom: 3rem;
-  }
-}
-
 /* ========================================
  * ✅ END OF STYLESHEET v4.1 (Cleaned)
  * ======================================== */
