@@ -370,6 +370,13 @@ export function loadCart() {
   }
 }
 
+// ✅ Force reload cart from storage (for React sync)
+export function reloadCart() {
+  cartLoaded = false;
+  loadCart();
+  console.log('🔄 Cart reloaded from storage:', cartItems.length, 'items');
+}
+
 // ================================================================
 // Clear Cart
 // ================================================================
@@ -475,11 +482,13 @@ if (typeof window !== 'undefined') {
     updateCartUI,
     clearCart,
     openCartModal,
-    closeCartModal
+    closeCartModal,
+    reloadCart  // ✅ NEW: للمزامنة مع React
   };
   
   window.openCartModal = openCartModal;
   window.closeCartModal = closeCartModal;
+  window.reloadCart = reloadCart;  // ✅ NEW: global access
   window.addToCart = addToCart;
   window.updateQuantity = updateQuantity;
   window.removeFromCart = removeFromCart;

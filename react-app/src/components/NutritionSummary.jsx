@@ -85,6 +85,14 @@ const NutritionSummary = ({ cart, onUpdateQuantity, onRemove, onClose }) => {
     setTimeout(() => {
       console.log('🔄 React: Opening Vanilla checkout...');
       
+      // ✅ CRITICAL: Force Vanilla JS to reload cart from localStorage
+      if (typeof window.reloadCart === 'function') {
+        window.reloadCart();
+        console.log('✅ Vanilla cart reloaded');
+      } else {
+        console.warn('⚠️ window.reloadCart not available');
+      }
+      
       // Use global initiateCheckout directly
       if (typeof window.initiateCheckout === 'function') {
         window.initiateCheckout();
