@@ -33,16 +33,32 @@ export const ProductsProvider = ({ children }) => {
       setLoading(true);
       setError(null);
       
+      console.log('🔄 Fetching products from:', `${API_BASE_URL}?path=/products`);
       const response = await fetch(`${API_BASE_URL}?path=/products`);
-      const result = await response.json();
       
-      if (result.data) {
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const result = await response.json();
+      console.log('📦 API Response:', result);
+      
+      // Validate that result.data is an array
+      if (result.success && Array.isArray(result.data)) {
         setProducts(result.data);
         setFilteredProducts(result.data);
+        console.log('✅ Products loaded:', result.data.length);
+      } else {
+        console.warn('⚠️ Invalid API response format:', result);
+        setProducts([]);
+        setFilteredProducts([]);
+        setError('تنسيق البيانات غير صحيح');
       }
     } catch (err) {
-      console.error('Failed to fetch products:', err);
+      console.error('❌ Failed to fetch products:', err);
       setError('فشل تحميل المنتجات. يرجى المحاولة مرة أخرى.');
+      setProducts([]);
+      setFilteredProducts([]);
     } finally {
       setLoading(false);
     }
