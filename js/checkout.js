@@ -430,17 +430,17 @@
     console.log('🔄 Initializing checkout system...');
     
     try {
-      // ✅ STEP 1: Pre-load modules FIRST
+      // ✅ CRITICAL: Setup global module IMMEDIATELY (before async operations)
+      if (!window.checkoutModule) {
+        setupGlobalCheckoutModule();
+        console.log('✅ checkoutModule created immediately (functions will wait for modules)');
+      }
+      
+      // ✅ STEP 1: Pre-load modules
       const loaded = await loadCheckoutModules();
       if (!loaded) {
         console.error('❌ Failed to pre-load modules');
         return;
-      }
-      
-      // ✅ STEP 2: Setup global module AFTER modules are loaded
-      if (!window.checkoutModule) {
-        setupGlobalCheckoutModule();
-        console.log('✅ checkoutModule created and available globally');
       }
       
       // Setup event handlers
