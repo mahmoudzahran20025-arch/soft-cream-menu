@@ -20,7 +20,8 @@
 
 	<link rel="stylesheet" href="./dist/output.css" />
 	
-	<!-- ✅ Modulepreload للـ Performance (تم إضافة swiper-marquee.js) -->
+	<!-- ✅ Modulepreload للـ Performance -->
+	<link rel="modulepreload" href="./js/global-functions.js">
 	<link rel="modulepreload" href="./js/swiper-featured.js">
 	<link rel="modulepreload" href="./js/swiper-marquee.js">
 	<link rel="modulepreload" href="./js/sidebar.js">
@@ -480,7 +481,8 @@
  تحميل JavaScript (في نهاية الـ body)
  سيتم التحميل من خلال Module Loading Strategy
 ======================================== -->
-			<div class="search-section px-4 mb-8">
+			<!-- ⚠️ Search handled by React FilterBar -->
+			<div class="search-section px-4 mb-8 hidden">
 				<div class="search-container relative max-w-[700px] mx-auto">
 					<svg class="search-icon absolute right-7 top-1/2 -translate-y-1/2 icon-md text-gray-400 pointer-events-none" aria-hidden="true"><use href="#search"></use></svg>
 					<input
@@ -503,8 +505,9 @@
 					</button>
 				</div>
 			</div>
+			<!-- ⚠️ Categories handled by React FilterBar -->
 			<div
-				class="categories-section sticky top-[100px] left-0 right-0 backdrop-blur-2xl bg-cream-50/95 dark:bg-gray-900/95 py-4 border-b border-pink-100 dark:border-gray-800 shadow-md transition-all duration-300"
+				class="categories-section sticky top-[100px] left-0 right-0 backdrop-blur-2xl bg-cream-50/95 dark:bg-gray-900/95 py-4 border-b border-pink-100 dark:border-gray-800 shadow-md transition-all duration-300 hidden"
 				id="categoriesSection"
 			>
 				<div class="categories-scroll relative flex gap-3 overflow-x-auto px-4 scroll-smooth scrollbar-hide" id="categoriesScroll"></div>
@@ -1259,6 +1262,32 @@
 </div>
 
 <!-- ================================================================
+     🔧 CORE UTILITIES (Load in Order)
+     ================================================================ -->
+<!-- 1. Storage Manager (First) -->
+<script type="module">
+  import { storage } from './js/storage.js';
+  window.storage = storage;
+  console.log('✅ Storage loaded');
+</script>
+
+<!-- 2. Utils & Helpers (Second) -->
+<script type="module">
+  import * as utils from './js/utils.js';
+  // Export to window for global access
+  window.showToast = utils.showToast;
+  window.handleScroll = utils.handleScroll;
+  window.scrollToTop = utils.scrollToTop;
+  window.debounce = utils.debounce;
+  window.throttle = utils.throttle;
+  window.formatPrice = utils.formatPrice;
+  console.log('✅ Utils loaded');
+</script>
+
+<!-- 3. Global Functions (Third - depends on storage & utils) -->
+<script src="./js/global-functions.js"></script>
+
+<!-- ================================================================
      ✨ OPTIMIZED MODULE LOADING STRATEGY
      ================================================================ -->
 <script type="module">
@@ -1491,7 +1520,7 @@
 <!-- Placeholder: <link rel="stylesheet" crossorigin href="./dist/react-app/assets/index-[hash].css"> -->
 <!-- 🆕 React Mini-App Scripts (auto-injected) -->
 <link rel="stylesheet" crossorigin href="./dist/react-app/assets/index-D8bVofb1.css">
-<script type="module" crossorigin src="./dist/react-app/assets/index-B5qmlWTz.js"></script>
+<script type="module" crossorigin src="./dist/react-app/assets/index-CN9vJeWn.js"></script>
 
 </body>
 </html>

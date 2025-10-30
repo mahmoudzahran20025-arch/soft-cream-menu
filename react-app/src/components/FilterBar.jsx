@@ -1,14 +1,14 @@
 import React, { useState, useCallback } from 'react';
-import { Search, Filter, X, Brain, Activity, Zap } from 'lucide-react';
+import { Search, Filter, X, Brain, Activity, Zap, IceCream, Apple, Star, Crown, Heart, Grid } from 'lucide-react';
 import { useProducts } from '../context/ProductsContext';
 
 const CATEGORIES = [
-  { value: null, label: 'الكل' },
-  { value: 'كلاسيك', label: 'كلاسيك' },
-  { value: 'فواكه', label: 'فواكه' },
-  { value: 'مميز', label: 'مميز' },
-  { value: 'فاخر', label: 'فاخر' },
-  { value: 'صحي', label: 'صحي' }
+  { value: null, label: 'الكل', icon: Grid },
+  { value: 'كلاسيك', label: 'كلاسيك', icon: IceCream },
+  { value: 'فواكه', label: 'فواكه', icon: Apple },
+  { value: 'مميز', label: 'مميز', icon: Star },
+  { value: 'فاخر', label: 'فاخر', icon: Crown },
+  { value: 'صحي', label: 'صحي', icon: Heart }
 ];
 
 const ENERGY_TYPES = [
@@ -168,21 +168,25 @@ const FilterBar = () => {
                 الفئة
               </label>
               <div className="flex flex-wrap gap-2">
-                {CATEGORIES.map(cat => (
-                  <button
-                    key={cat.value || 'all'}
-                    onClick={() => handleFilterChange('category', cat.value)}
-                    className={`
-                      px-4 py-2 rounded-lg text-sm font-medium transition-all
-                      ${localFilters.category === cat.value
-                        ? 'bg-primary-500 text-white shadow-md'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      }
-                    `}
-                  >
-                    {cat.label}
-                  </button>
-                ))}
+                {CATEGORIES.map(cat => {
+                  const Icon = cat.icon;
+                  return (
+                    <button
+                      key={cat.value || 'all'}
+                      onClick={() => handleFilterChange('category', cat.value)}
+                      className={`
+                        flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all
+                        ${localFilters.category === cat.value
+                          ? 'bg-primary-500 text-white shadow-md'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }
+                      `}
+                    >
+                      {Icon && <Icon className="w-4 h-4" />}
+                      {cat.label}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
