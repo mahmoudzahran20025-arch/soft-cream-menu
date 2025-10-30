@@ -746,7 +746,9 @@
    * 🏠 HEADER
    * ======================================== */
   /* ... (كل الأكواد هنا كما هي) ... */
-  header#header, .header { position: fixed; top: 0; left: 0; right: 0; z-index: var(--z-header); }
+  header#header, .header { position: fixed; top: 0; left: 0; right: 0; z-index: var(--z-header); height: 80px; transition: height 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease; }
+  header#header.scrolled, .header.scrolled { height: 64px; padding-top: 0.5rem; padding-bottom: 0.5rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); }
+  header#header.scrolled .logo, .header.scrolled .logo { height: 40px; transition: height 0.3s ease; }
   .header-cart-badge, .header .icon-btn { position: relative; z-index: var(--z-header-elements); }
 
   /* ========================================

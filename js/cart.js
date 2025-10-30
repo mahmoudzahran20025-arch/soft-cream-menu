@@ -252,13 +252,13 @@ async function updateSingleCartUI(itemsId, totalId, footerId, total, translation
     `;
     
     if (cartFooter) {
-      cartFooter.classList.add('hidden');
+      cartFooter.style.display = 'none';
     }
     return;
   }
   
   if (cartFooter) {
-    cartFooter.classList.remove('hidden');
+    cartFooter.style.display = 'block';
   }
   
   // ✅ Cart Items - Using SVG Sprites

@@ -614,6 +614,10 @@ export async function confirmOrder() {
     const saveSuccess = storage.addOrder(orderToSave);
     if (saveSuccess) {
       console.log('✅ Order saved locally:', orderId);
+      // ✅ Dispatch event to update orders badge
+      window.dispatchEvent(new CustomEvent('ordersUpdated', { 
+        detail: { orderId, action: 'added' } 
+      }));
     } else {
       console.warn('⚠️ Failed to save order locally (non-critical)');
     }
@@ -623,6 +627,10 @@ export async function confirmOrder() {
 
     // ✅ Clear cart
     clearCart();
+    
+    // ✅ Dispatch events to update UI
+    window.dispatchEvent(new CustomEvent('cart-updated'));
+    window.dispatchEvent(new CustomEvent('order-placed', { detail: { orderId, orderData: orderToSave } }));
     
     // ✅ Hide processing modal
     showProcessingModal(false);

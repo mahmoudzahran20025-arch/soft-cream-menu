@@ -805,7 +805,7 @@
 			<svg class="icon-md" aria-hidden="true"><use href="#x"></use></svg>
 		</button>
 		</div>
-		<div class="p-5 min-h-[350px] max-h-[calc(85vh-280px)] overflow-y-auto" id="cartItemsMobile">
+		<div class="p-5 min-h-[350px] max-h-[calc(92vh-240px)] md:max-h-[calc(85vh-280px)] overflow-y-auto" id="cartItemsMobile">
 			<div class="flex flex-col items-center justify-center py-16 text-center">
 				<div class="cart-empty-pulse w-24 h-24 bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-full flex items-center justify-center mb-5">
 					<svg class="w-12 h-12 text-pink-300 dark:text-gray-500" aria-hidden="true"><use href="#shopping-basket"></use></svg>
@@ -815,8 +815,9 @@
 			</div>
 		</div>
 		<div
-			class="hidden p-5 border-t border-pink-100 dark:border-gray-700 space-y-4 sticky bottom-0 bg-gradient-to-t from-white via-white to-transparent dark:from-gray-800 dark:via-gray-800 backdrop-blur-sm"
+			class="p-5 border-t border-pink-100 dark:border-gray-700 space-y-4 sticky bottom-0 bg-white dark:bg-gray-800 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] z-10"
 			id="cartFooterMobile"
+			style="display: none;"
 		>
 			<div class="flex justify-between items-center bg-gradient-to-r from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-2xl p-4 shadow-sm border border-pink-100 dark:border-gray-600">
 				<div class="flex items-center gap-2">
