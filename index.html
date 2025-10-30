@@ -7,11 +7,21 @@
 		<meta name="description" content="استمتع بألذ أنواع الآيس كريم والسوفت كريم. منيو رقمي تفاعلي مع توصيل سريع" />
 		<meta name="theme-color" content="#FF6B9D" />
 		<link rel="icon" href="favicon.ico" type="image/x-icon" />
-		<link rel="icon" href="favicon.ico" type="image/x-icon" />
+	<link rel="icon" href="favicon.ico" type="image/x-icon" />
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 	<link rel="preconnect" href="https://i.ibb.co" />
 	<link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
+	
+	<!-- ✅ Force Scroll to Top on Page Load -->
+	<script>
+		// Disable browser scroll restoration
+		if ('scrollRestoration' in history) {
+			history.scrollRestoration = 'manual';
+		}
+		// Force scroll to top immediately
+		window.scrollTo(0, 0);
+	</script>
 	
 	<!-- ✅ Swiper CSS (Required for Hero Section) -->
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
@@ -597,7 +607,7 @@
 				<a
 					href="#"
 					class="sidebar-nav-item flex items-center gap-3 p-3 rounded-xl text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-colors duration-200 border border-transparent hover:border-pink-100 dark:hover:border-gray-600"
-					onclick="openCartModal(); closeSidebar();"
+					onclick="event.preventDefault(); closeSidebar(); setTimeout(() => openCartModal(), 300);"
 				>
 					<div class="sidebar-nav-icon w-10 h-10 flex items-center justify-center rounded-lg bg-pink-50 dark:bg-gray-700 relative border border-pink-100 dark:border-gray-600">
 						<svg class="icon-md text-primary" aria-hidden="true"><use href="#shopping-cart"></use></svg>
@@ -787,13 +797,13 @@
 				<span class="min-w-[28px] h-6 px-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-full text-sm font-bold flex items-center justify-center shadow-lg" id="cartBadgeMobile">0</span>
 			</div>
 			<button
-				class="w-11 h-11 rounded-xl hover:bg-pink-50 dark:hover:bg-gray-700 flex items-center justify-center transition-[transform,background-color] hover:rotate-90 duration-300 hover:shadow-lg active:scale-95"
-				onclick="closeCartModal()"
-				aria-label="إغلاق السلة"
-				role="button"
-			>
-				<svg class="icon-lg text-gray-700 dark:text-gray-300" aria-hidden="true"><use href="#x"></use></svg>
-			</button>
+			class="w-11 h-11 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-red-500 hover:text-white flex items-center justify-center transition-[transform,background-color] hover:rotate-90 duration-300 hover:shadow-lg active:scale-95 border-2 border-transparent hover:border-red-500"
+			onclick="closeCartModal()"
+			aria-label="إغلاق السلة"
+			role="button"
+		>
+			<svg class="icon-md" aria-hidden="true"><use href="#x"></use></svg>
+		</button>
 		</div>
 		<div class="p-5 min-h-[350px] max-h-[calc(85vh-280px)] overflow-y-auto" id="cartItemsMobile">
 			<div class="flex flex-col items-center justify-center py-16 text-center">
@@ -1519,8 +1529,8 @@
 <!-- Placeholder: <script type="module" crossorigin src="./dist/react-app/assets/index-[hash].js"></script> -->
 <!-- Placeholder: <link rel="stylesheet" crossorigin href="./dist/react-app/assets/index-[hash].css"> -->
 <!-- 🆕 React Mini-App Scripts (auto-injected) -->
-<link rel="stylesheet" crossorigin href="./dist/react-app/assets/index-D8bVofb1.css">
-<script type="module" crossorigin src="./dist/react-app/assets/index-CXqNuWpz.js"></script>
+<link rel="stylesheet" crossorigin href="./dist/react-app/assets/index-C4NLGh3L.css">
+<script type="module" crossorigin src="./dist/react-app/assets/index-wugigpEY.js"></script>
 
 </body>
 </html>
