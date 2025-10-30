@@ -313,7 +313,7 @@
       checkOrderStatus: createSafeWrapper('ui', 'checkOrderStatus'),
       restoreFormData: createSafeWrapper('ui', 'restoreFormData'),
       showProcessingModal: createSafeWrapper('ui', 'showProcessingModal'),
-      closePermissionModal: createSafeWrapper('ui', 'closePermissionModal'),
+      closePermissionModal: createSafeWrapper('delivery', 'closePermissionModal'),
       copyOrderId: createSafeWrapper('ui', 'copyOrderId'),
       shareOnWhatsApp: createSafeWrapper('ui', 'shareOnWhatsApp'),
       

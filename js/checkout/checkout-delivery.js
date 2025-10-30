@@ -506,7 +506,7 @@ function resetLocationButton() {
   }
 }
 
-function closePermissionModal() {
+export function closePermissionModal() {
   const modal = document.getElementById('permissionModal');
   if (modal) {
     modal.classList.remove('show');
