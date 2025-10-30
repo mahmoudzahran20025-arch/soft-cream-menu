@@ -278,18 +278,24 @@
   }
 
   // ================================================================
-  // ✅ Enhanced Global Window Object
+  // ✅ Enhanced Global Window Object (DEFENSIVE VERSION)
   // ================================================================
   function setupGlobalCheckoutModule() {
     console.log('🔄 Setting up global checkout module...');
     
+    // ✅ Check if already exists (prevent overwrite by race condition)
+    if (window.checkoutModule && Object.keys(window.checkoutModule).length > 5) {
+      console.warn('⚠️ checkoutModule already exists with', Object.keys(window.checkoutModule).length, 'methods - skipping setup');
+      return;
+    }
+    
     // Create the global object with safe wrappers
-    window.checkoutModule = {
+    const checkoutModuleObj = {
       // Core functions
       initiateCheckout,
       confirmOrder: createSafeWrapper('core', 'confirmOrder'),
-      applyCoupon: createSafeWrapper('core', 'applyCoupon'), // ✅ Updated
-      removeCoupon: createSafeWrapper('core', 'removeCoupon'), // ✅ Updated
+      applyCoupon: createSafeWrapper('core', 'applyCoupon'),
+      removeCoupon: createSafeWrapper('core', 'removeCoupon'),
       recalculatePrices: createSafeWrapper('core', 'recalculatePrices'),
       
       // Delivery functions
@@ -311,22 +317,50 @@
       copyOrderId: createSafeWrapper('ui', 'copyOrderId'),
       shareOnWhatsApp: createSafeWrapper('ui', 'shareOnWhatsApp'),
       
-      // ⚠️ LOYALTY DISABLED - Functions removed
-      /*
-      getCustomerPhone: createSafeWrapper('loyalty', 'getCustomerPhone'),
-      loadGamificationPage: createSafeWrapper('loyalty', 'loadGamificationPage'),
-      */
-      
       // Utility functions
       isReady: () => isInitialized,
       getModules: () => checkoutModules,
-      reload: loadCheckoutModules
+      reload: loadCheckoutModules,
+      
+      // Metadata for debugging
+      _meta: {
+        version: '1.0.0',
+        createdAt: Date.now(),
+        methodsCount: 0
+      }
     };
-
-    // Also set individual global functions for direct HTML access
+    
+    // Count methods
+    checkoutModuleObj._meta.methodsCount = Object.keys(checkoutModuleObj).length - 1;
+    
+    // ✅ Assign with protection (prevent overwrite)
+    try {
+      Object.defineProperty(window, 'checkoutModule', {
+        value: checkoutModuleObj,
+        writable: false,
+        configurable: true,
+        enumerable: true
+      });
+    } catch (err) {
+      console.warn('⚠️ Could not use defineProperty, falling back to direct assignment:', err);
+      window.checkoutModule = checkoutModuleObj;
+    }
+    
+    // Also set individual global functions
     window.initiateCheckout = initiateCheckout;
     
     console.log('✅ Global checkout module setup completed');
+    console.log('📊 Methods count:', checkoutModuleObj._meta.methodsCount);
+    
+    // Verify critical methods
+    const criticalMethods = ['selectDeliveryMethod', 'selectBranch', 'confirmOrder', 'closeCheckoutModal'];
+    criticalMethods.forEach(method => {
+      if (typeof window.checkoutModule[method] === 'function') {
+        console.log(`✅ ${method} is available`);
+      } else {
+        console.error(`❌ ${method} is NOT available!`);
+      }
+    });
   }
 
   // ================================================================

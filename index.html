@@ -1527,32 +1527,61 @@
      🛒 PRELOAD CART & CHECKOUT (Before React)
      ================================================================ -->
 <script type="module">
-  // ✅ CRITICAL: Import and initialize checkout.js
+  // ✅ CRITICAL FIX: Import checkout WITHOUT overwriting window.checkoutModule
   console.log('🔄 Importing checkout module...');
   
   // Import cart first
   import('./js/cart.js').then(() => {
     console.log('✅ Cart module loaded');
+  }).catch(err => {
+    console.error('❌ Failed to import cart:', err);
   });
   
-  // Import checkout and let it auto-initialize
-  // checkout.js will run its initialization code automatically
+  // Import checkout and PRESERVE window.checkoutModule
   import('./js/checkout.js').then((module) => {
     console.log('✅ Checkout module imported');
-    console.log('📦 Exported from checkout:', Object.keys(module));
+    console.log('📦 Exported functions:', Object.keys(module));
     
-    // The module should have already called initializeCheckout()
-    // and created window.checkoutModule via setupGlobalCheckoutModule()
+    // ✅ CRITICAL: Do NOT reassign window.checkoutModule
+    // setupGlobalCheckoutModule() inside checkout.js already created it
     
-    // Wait for it to be ready
+    // Store module exports separately for debugging
+    window._checkoutModuleExports = module;
+    
+    // Verify window.checkoutModule exists and is complete
     if (window.checkoutModule) {
-      console.log('✅ checkoutModule is available immediately');
+      console.log('✅ checkoutModule is available');
+      console.log('📊 Available methods:', Object.keys(window.checkoutModule).length);
+      
+      // Verify critical methods
+      const criticalMethods = ['selectDeliveryMethod', 'closeCheckoutModal', 'confirmOrder'];
+      criticalMethods.forEach(method => {
+        if (typeof window.checkoutModule[method] === 'function') {
+          console.log(`✅ ${method} is a function`);
+        } else {
+          console.error(`❌ ${method} is NOT a function:`, typeof window.checkoutModule[method]);
+        }
+      });
     } else {
-      console.log('⏳ Waiting for checkoutModule to initialize...');
-      window.addEventListener('checkoutReady', () => {
-        console.log('✅ checkoutModule ready');
-      }, { once: true });
+      console.error('❌ checkoutModule is NOT available on window');
+      
+      // FALLBACK: Call setupGlobalCheckoutModule manually
+      if (module.setupGlobalCheckoutModule) {
+        console.log('🔧 Manually calling setupGlobalCheckoutModule...');
+        module.setupGlobalCheckoutModule();
+      }
     }
+    
+    // Dispatch ready event
+    if (window.checkoutModule) {
+      window.dispatchEvent(new CustomEvent('checkoutReady', { 
+        detail: { 
+          module: window.checkoutModule,
+          timestamp: Date.now()
+        } 
+      }));
+    }
+    
   }).catch(err => {
     console.error('❌ Failed to import checkout:', err);
   });
