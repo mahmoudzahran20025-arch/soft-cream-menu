@@ -126,12 +126,12 @@ function App() {
 
         {/* Nutrition Summary Sidebar */}
         {showCart && (
-          <div className="fixed inset-0 z-50 flex items-start justify-end">
+          <div className="fixed inset-0 z-[9999] flex items-start justify-end">
             <div
-              className="absolute inset-0 bg-black bg-opacity-50"
+              className="absolute inset-0 bg-black bg-opacity-50 z-[9998]"
               onClick={() => setShowCart(false)}
             />
-            <div className="relative bg-white h-full w-full max-w-md shadow-2xl overflow-y-auto">
+            <div className="relative bg-white h-full w-full max-w-md shadow-2xl overflow-y-auto z-[9999]">
               <NutritionSummary
                 cart={cart}
                 onUpdateQuantity={updateQuantity}
