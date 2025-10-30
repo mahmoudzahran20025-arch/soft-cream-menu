@@ -17,9 +17,9 @@ export function updateOrdersBadge() {
   if (sidebarBadge) {
     if (activeCount > 0) {
       sidebarBadge.textContent = activeCount;
-      sidebarBadge.classList.remove('hidden');
+      sidebarBadge.style.display = 'inline-block';
     } else {
-      sidebarBadge.classList.add('hidden');
+      sidebarBadge.style.display = 'none';
     }
   }
   
@@ -28,9 +28,9 @@ export function updateOrdersBadge() {
   if (headerBadge) {
     if (activeCount > 0) {
       headerBadge.textContent = activeCount;
-      headerBadge.classList.remove('hidden');
+      headerBadge.style.display = 'inline-block';
     } else {
-      headerBadge.classList.add('hidden');
+      headerBadge.style.display = 'none';
     }
   }
   
@@ -41,7 +41,7 @@ export function updateOrdersBadge() {
 // Initialize Badge Listener
 // ================================================================
 export function initOrdersBadge() {
-  console.log('📦 Initializing orders badge...');
+  console.log('🔧 Initializing orders badge...');
   
   // Update badge on page load
   updateOrdersBadge();
@@ -79,7 +79,7 @@ export function openOrdersPage() {
 }
 
 // ================================================================
-// Show Orders Modal - 100% Tailwind
+// Show Orders Modal - SVG Sprites Version
 // ================================================================
 function showOrdersModal(orders) {
   const lang = window.currentLang || 'ar';
@@ -90,7 +90,21 @@ function showOrdersModal(orders) {
   if (!modal) {
     modal = document.createElement('div');
     modal.id = 'ordersModal';
-    modal.className = 'fixed inset-0 bg-gray-900/80 backdrop-blur-md flex items-center justify-center z-modal p-5';
+    modal.className = 'modal-overlay orders-modal';
+    modal.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      padding: 20px;
+    `;
     
     document.body.appendChild(modal);
     
@@ -102,51 +116,48 @@ function showOrdersModal(orders) {
     });
   }
   
-  // Build orders list - 100% Tailwind
+  // Build orders list
   const ordersHtml = orders.map(order => {
     const statusInfo = getStatusInfo(order.status, lang);
     const orderDate = new Date(order.createdAt).toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US');
     
     return `
-      <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 mb-3 shadow-lg hover:shadow-xl transition-shadow duration-300">
-        <!-- Header -->
-        <div class="flex justify-between items-start mb-3">
-          <div class="flex-1">
-            <div class="font-bold text-gray-800 dark:text-gray-100 text-base mb-1">
+      <div class="order-card" style="background: white; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+          <div>
+            <div style="font-weight: 700; color: #333; font-size: 16px; margin-bottom: 4px;">
               ${order.id}
             </div>
-            <div class="text-sm text-gray-600 dark:text-gray-400">
+            <div style="font-size: 13px; color: #666;">
               ${orderDate}
             </div>
           </div>
-          <span class="${statusInfo.bgClass} text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-md">
+          <div style="background: ${statusInfo.color}; color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600;">
             ${statusInfo.text}
-          </span>
+          </div>
         </div>
         
-        <!-- Items -->
-        <div class="border-t border-gray-200 dark:border-gray-700 pt-3 mb-3 space-y-2">
+        <div style="border-top: 1px solid #f0f0f0; padding-top: 12px; margin-bottom: 12px;">
           ${order.items.slice(0, 2).map(item => `
-            <div class="flex justify-between items-center text-sm">
-              <span class="text-gray-600 dark:text-gray-400">${item.name} × ${item.quantity}</span>
-              <span class="font-semibold text-gray-800 dark:text-gray-100">${item.total.toFixed(2)} ${lang === 'ar' ? 'ج.م' : 'EGP'}</span>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 14px;">
+              <span style="color: #666;">${item.name} × ${item.quantity}</span>
+              <span style="font-weight: 600; color: #333;">${item.total.toFixed(2)} EGP</span>
             </div>
           `).join('')}
           ${order.items.length > 2 ? `
-            <div class="text-xs text-gray-500 dark:text-gray-500 mt-2">
-              ${lang === 'ar' ? 'و' : '+'} ${order.items.length - 2} ${lang === 'ar' ? 'عنصر آخر' : 'more'}
+            <div style="font-size: 13px; color: #999; margin-top: 4px;">
+              ${lang === 'ar' ? 'و' : 'and'} ${order.items.length - 2} ${lang === 'ar' ? 'عنصر آخر' : 'more items'}
             </div>
           ` : ''}
         </div>
         
-        <!-- Footer -->
-        <div class="flex justify-between items-center pt-3 border-t border-gray-200 dark:border-gray-700">
-          <div class="text-lg font-black text-primary">
-            ${order.totals.total.toFixed(2)} <span class="text-xs">${lang === 'ar' ? 'ج.م' : 'EGP'}</span>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid #f0f0f0;">
+          <div style="font-size: 16px; font-weight: 700; color: #667eea;">
+            ${order.totals.total.toFixed(2)} EGP
           </div>
           <button 
             onclick="trackOrderFromModal('${order.id}')" 
-            class="px-4 py-2 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-bold text-sm shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
+            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px;"
           >
             ${lang === 'ar' ? 'تتبع' : 'Track'}
           </button>
@@ -155,49 +166,47 @@ function showOrdersModal(orders) {
     `;
   }).join('');
   
-  // ✅ Modal - 100% Tailwind
+  // ✅ Modal with SVG Sprites
   modal.innerHTML = `
-    <div class="bg-white dark:bg-gray-800 rounded-3xl max-w-2xl w-full max-h-[85vh] overflow-hidden flex flex-col shadow-2xl">
+    <div style="background: white; border-radius: 16px; max-width: 600px; width: 100%; max-height: 80vh; overflow: hidden; display: flex; flex-direction: column;">
       
       <!-- Header -->
-      <div class="flex justify-between items-center p-5 bg-gradient-to-r from-primary to-secondary">
-        <div class="flex items-center gap-3">
-          <svg class="w-6 h-6 text-white" aria-hidden="true">
+      <div style="padding: 20px; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <svg style="width: 24px; height: 24px; color: white; stroke: currentColor; fill: none;" aria-hidden="true">
             <use href="#package"></use>
           </svg>
-          <h2 class="text-xl font-black text-white">${lang === 'ar' ? 'طلباتي' : 'My Orders'}</h2>
+          <h2 style="margin: 0; color: white; font-size: 20px;">${lang === 'ar' ? 'طلباتي' : 'My Orders'}</h2>
         </div>
         <button 
           onclick="closeOrdersModal()" 
-          class="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-xl flex items-center justify-center transition-colors duration-300 group"
-          aria-label="${lang === 'ar' ? 'إغلاق' : 'Close'}"
+          style="background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center;"
+          aria-label="Close modal"
         >
-          <svg class="w-5 h-5 text-white group-hover:rotate-90 transition-transform duration-300" aria-hidden="true">
+          <svg style="width: 20px; height: 20px; stroke: currentColor; fill: none;" aria-hidden="true">
             <use href="#x"></use>
           </svg>
         </button>
       </div>
       
-      <!-- Summary -->
-      <div class="flex justify-between items-center px-5 py-3 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
-        <div class="text-sm text-gray-600 dark:text-gray-400">
-          ${lang === 'ar' ? 'إجمالي الطلبات:' : 'Total:'} <span class="font-bold text-gray-800 dark:text-gray-100">${orders.length}</span>
-        </div>
-        <div class="text-sm text-gray-600 dark:text-gray-400">
-          ${lang === 'ar' ? 'النشطة:' : 'Active:'} <span class="font-bold text-primary">${storage.getActiveOrdersCount()}</span>
-        </div>
-      </div>
-      
       <!-- Content -->
-      <div class="p-5 overflow-y-auto flex-1">
+      <div style="padding: 20px; overflow-y: auto; flex: 1;">
+        <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+          <div style="font-size: 14px; color: #666;">
+            ${lang === 'ar' ? 'إجمالي الطلبات:' : 'Total Orders:'} <strong>${orders.length}</strong>
+          </div>
+          <div style="font-size: 14px; color: #666;">
+            ${lang === 'ar' ? 'النشطة:' : 'Active:'} <strong style="color: #667eea;">${storage.getActiveOrdersCount()}</strong>
+          </div>
+        </div>
+        
         ${ordersHtml}
       </div>
       
     </div>
   `;
   
-  modal.classList.remove('hidden');
-  modal.classList.add('flex');
+  modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
 
@@ -207,8 +216,7 @@ function showOrdersModal(orders) {
 export function closeOrdersModal() {
   const modal = document.getElementById('ordersModal');
   if (modal) {
-    modal.classList.remove('flex');
-    modal.classList.add('hidden');
+    modal.style.display = 'none';
     document.body.style.overflow = '';
   }
 }
@@ -231,44 +239,44 @@ window.trackOrderFromModal = async function(orderId) {
 };
 
 // ================================================================
-// Get Status Info - 100% Tailwind Colors
+// Get Status Info
 // ================================================================
 function getStatusInfo(status, lang) {
   const statusMap = {
     'pending': {
       ar: 'قيد الانتظار',
       en: 'Pending',
-      bgClass: 'bg-orange-500'
+      color: '#ff9800'
     },
     'confirmed': {
       ar: 'تم التأكيد',
       en: 'Confirmed',
-      bgClass: 'bg-blue-500'
+      color: '#2196F3'
     },
     'preparing': {
       ar: 'قيد التحضير',
       en: 'Preparing',
-      bgClass: 'bg-red-500'
+      color: '#ff5722'
     },
     'ready': {
       ar: 'جاهز',
       en: 'Ready',
-      bgClass: 'bg-green-500'
+      color: '#4caf50'
     },
     'out_for_delivery': {
       ar: 'في الطريق',
       en: 'Out for Delivery',
-      bgClass: 'bg-purple-500'
+      color: '#9c27b0'
     },
     'delivered': {
       ar: 'تم التوصيل',
       en: 'Delivered',
-      bgClass: 'bg-green-600'
+      color: '#4caf50'
     },
     'cancelled': {
       ar: 'ملغي',
       en: 'Cancelled',
-      bgClass: 'bg-red-600'
+      color: '#f44336'
     }
   };
   
@@ -276,7 +284,7 @@ function getStatusInfo(status, lang) {
   
   return {
     text: lang === 'ar' ? info.ar : info.en,
-    bgClass: info.bgClass
+    color: info.color
   };
 }
 
@@ -297,4 +305,4 @@ import('../utils.js').then(module => {
 window.openOrdersPage = openOrdersPage;
 window.closeOrdersModal = closeOrdersModal;
 
-console.log('✅ Orders badge manager loaded (100% Tailwind Compatible)');
+console.log('✅ Orders badge manager loaded (SVG Sprites)');

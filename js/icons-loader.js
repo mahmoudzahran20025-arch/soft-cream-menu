@@ -227,6 +227,53 @@ const secondaryIconsHTML = `
     <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/>
     <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/>
   </symbol>
+  
+   <symbol id="gift" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="8" width="18" height="4" rx="1"/>
+    <path d="M12 8v13"/>
+    <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/>
+    <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/>
+  </symbol>
+  
+  <!-- Additional Icons for Checkout -->
+  <symbol id="shopping-bag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+    <path d="M3 6h18"/>
+    <path d="M16 10a4 4 0 0 1-8 0"/>
+  </symbol>
+  
+  <symbol id="info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <path d="M12 16v-4"/>
+    <path d="M12 8h.01"/>
+  </symbol>
+  
+  <symbol id="wallet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/>
+    <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/>
+    <path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>
+  </symbol>
+  
+  <symbol id="wifi-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="2" x2="22" y1="2" y2="22"/>
+    <path d="M8.5 16.5a5 5 0 0 1 7 0"/>
+    <path d="M2 8.82a15 15 0 0 1 4.17-2.65"/>
+    <path d="M10.66 5c4.01-.36 8.14.9 11.34 3.76"/>
+    <path d="M16.85 11.25a10 10 0 0 1 2.22 1.68"/>
+    <path d="M5 13a10 10 0 0 1 5.24-2.76"/>
+    <line x1="12" x2="12.01" y1="20" y2="20"/>
+  </symbol>
+  
+  <symbol id="loader" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="12" x2="12" y1="2" y2="6"/>
+    <line x1="12" x2="12" y1="18" y2="22"/>
+    <line x1="4.93" x2="7.76" y1="4.93" y2="7.76"/>
+    <line x1="16.24" x2="19.07" y1="16.24" y2="19.07"/>
+    <line x1="2" x2="6" y1="12" y2="12"/>
+    <line x1="18" x2="22" y1="12" y2="12"/>
+    <line x1="4.93" x2="7.76" y1="19.07" y2="16.24"/>
+    <line x1="16.24" x2="19.07" y1="7.76" y2="4.93"/>
+  </symbol>
 `;
 
 let iconsLoaded = false;
