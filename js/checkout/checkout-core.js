@@ -625,7 +625,14 @@ export async function confirmOrder() {
     // ✅ إثراء العناصر للعرض
     const enrichedItemsForDisplay = await enrichCartItemsForDisplay(currentCart);
 
-    // ✅ Clear cart
+    // ✅ CRITICAL: Tell React to clear its cart first
+    // React will then sync to Vanilla via the bridge
+    console.log('🆕 Firing event to clear React cart after order...');
+    window.dispatchEvent(new CustomEvent('clear-react-cart-after-order', {
+      detail: { orderId, timestamp: Date.now() }
+    }));
+    
+    // ✅ Also clear Vanilla cart directly (as fallback if React is not active)
     clearCart();
     
     // ✅ Dispatch events to update UI

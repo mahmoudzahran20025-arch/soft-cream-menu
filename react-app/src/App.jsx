@@ -25,6 +25,22 @@ function App() {
     };
   }, []);
 
+  // 🔗 Listen for clear cart event from Vanilla (after order success)
+  useEffect(() => {
+    const handleClearCart = (event) => {
+      console.log('🆕 React received: clear-react-cart-after-order', event.detail);
+      setCart([]); // Clear React cart
+      setShowCart(false); // Close cart sidebar
+      console.log('✅ React cart cleared after order');
+    };
+
+    window.addEventListener('clear-react-cart-after-order', handleClearCart);
+
+    return () => {
+      window.removeEventListener('clear-react-cart-after-order', handleClearCart);
+    };
+  }, []);
+
   // 🔗 Notify Vanilla JS when cart updates
   useEffect(() => {
     const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
