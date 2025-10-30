@@ -5,15 +5,11 @@
  * - ✅ محدث بنظام z-index hierarchy الجديد
  * - ✅ تم تنظيف أكواد الكارسول القديم
  * - ✅ تم إضافة تنسيقات كارسول Swiper الجديد
+ * - ✅ يتم استيراده من React (react-app/src/styles/index.css)
  * ===================================================================
  */
 
-@config "../tailwind.config.js";
-
-/* 1. Tailwind Directives */
-@import "tailwindcss";
-
-/* 2. Theme Configuration - Moved to tailwind.config.js ✅ */
+/* ⚠️ لا تضف @import "tailwindcss" أو @config هنا - يتم استيراده من React */
 
 /* ========================================
  * 2. BASE LAYER
@@ -871,7 +867,7 @@
   .btn-primary:hover { box-shadow: 0 10px 40px rgba(236, 72, 153, 0.4); }
   .btn-secondary { @apply flex-1 py-4 px-6 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-2xl text-base font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-300 flex items-center justify-center gap-2.5; }
   .btn-ripple { @apply relative overflow-hidden; }
-  .btn-ripple::before { content: ''; @apply absolute top-1/2 left-1/2 w-0 h-0 rounded-full bg-white/30 transform -translate-x-1/2 -translate-y-1/2 transition-[width,height] duration-600; }
+  .btn-ripple::before { content: ''; @apply absolute top-1/2 left-1/2 w-0 h-0 rounded-full bg-white/30 transform -translate-x-1/2 -translate-y-1/2 transition-[width,height]; transition-duration: 600ms; }
   .btn-ripple:active::before { width: 300px; height: 300px; }
   .form-label { @apply flex items-center gap-2 text-sm font-semibold text-gray-800 dark:text-gray-100 mb-2; }
   .form-input { @apply w-full py-3.5 px-4 border-2 border-gray-300 dark:border-gray-600 rounded-xl text-base bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:border-green-500 focus:shadow-lg transition-all duration-300; }
@@ -913,7 +909,7 @@
   .add-to-cart-btn { @apply w-11 h-11 rounded-full text-white border-none cursor-pointer flex items-center justify-center transition-[transform,box-shadow] duration-300 bg-gradient-to-br from-primary to-secondary; box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3); }
   .add-to-cart-btn:hover { @apply scale-110; box-shadow: 0 6px 20px rgba(255, 107, 157, 0.5); }
   .add-to-cart-btn:active { @apply scale-95; }
-  .category-header { @apply flex items-center gap-4 mb-6 pb-4 border-b-3 border-cream-200; }
+  .category-header { @apply flex items-center gap-4 mb-6 pb-4 border-b border-cream-200; border-bottom-width: 3px; }
   .dark .category-header { @apply border-gray-700; }
   .category-icon { @apply w-12 h-12 rounded-2xl flex items-center justify-center text-white bg-gradient-to-br from-primary to-secondary; box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3); }
   .category-name { @apply text-2xl font-black text-gray-800 dark:text-gray-50 m-0; }

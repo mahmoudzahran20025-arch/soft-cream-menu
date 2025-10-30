@@ -1,3 +1,6 @@
+/* ✅ Import must be first */
+@import "../../../styles/components.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -384,8 +384,8 @@ export async function clearCart() {
   cartItems = [];
   cartLoaded = true;
   saveCart();
-  await updateCartUI();
-  console.log('🗑️ Cart cleared');
+  // await updateCartUI(); // ⬅️ تم تعطيله - نستخدم React Cart UI الآن
+  console.log('🗑️ Cart cleared (Vanilla)');
 }
 
 // ================================================================
