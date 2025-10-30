@@ -50,6 +50,22 @@ const NutritionSummary = ({ cart, onUpdateQuantity, onRemove, onClose }) => {
   const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
+  // Handle checkout button click
+  const handleCheckout = () => {
+    console.log('🛒 React: Checkout button clicked');
+    
+    // Close React cart
+    onClose();
+    
+    // Wait for animation to complete, then trigger vanilla checkout
+    setTimeout(() => {
+      console.log('🔄 React: Dispatching checkout event to Vanilla JS');
+      window.dispatchEvent(new CustomEvent('react-checkout-clicked', {
+        detail: { cart, subtotal }
+      }));
+    }, 300);
+  };
+
   // Empty cart state
   if (cart.length === 0) {
     return (
@@ -220,6 +236,7 @@ const NutritionSummary = ({ cart, onUpdateQuantity, onRemove, onClose }) => {
         </div>
 
         <button
+          onClick={handleCheckout}
           className="
             w-full py-4 bg-gradient-to-r from-primary-500 to-primary-600
             hover:from-primary-600 hover:to-primary-700
