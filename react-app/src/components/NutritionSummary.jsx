@@ -52,17 +52,45 @@ const NutritionSummary = ({ cart, onUpdateQuantity, onRemove, onClose }) => {
 
   // Handle checkout button click
   const handleCheckout = () => {
-    console.log('🛒 React: Checkout button clicked');
+    console.log('🛒 React: Checkout button clicked', { cart, subtotal });
+    
+    // ✅ CRITICAL: Sync React cart to Vanilla JS localStorage
+    try {
+      // Convert React cart format to Vanilla JS format
+      const vanillaCart = cart.map(item => ({
+        productId: item.id,
+        quantity: item.quantity,
+        name: item.name,
+        price: item.price,
+        image: item.image,
+        calories: item.calories
+      }));
+      
+      console.log('🔄 Syncing cart to localStorage:', vanillaCart);
+      
+      // Save to localStorage (same key as Vanilla JS)
+      localStorage.setItem('cart', JSON.stringify(vanillaCart));
+      
+      // Also trigger cart-updated event for Vanilla JS
+      window.dispatchEvent(new CustomEvent('cart-updated'));
+      
+    } catch (error) {
+      console.error('❌ Failed to sync cart:', error);
+    }
     
     // Close React cart
     onClose();
     
     // Wait for animation to complete, then trigger vanilla checkout
     setTimeout(() => {
-      console.log('🔄 React: Dispatching checkout event to Vanilla JS');
-      window.dispatchEvent(new CustomEvent('react-checkout-clicked', {
-        detail: { cart, subtotal }
-      }));
+      console.log('🔄 React: Opening Vanilla checkout...');
+      
+      // Use global initiateCheckout directly
+      if (typeof window.initiateCheckout === 'function') {
+        window.initiateCheckout();
+      } else {
+        console.error('❌ window.initiateCheckout not available');
+      }
     }, 300);
   };
 
@@ -245,6 +273,17 @@ const NutritionSummary = ({ cart, onUpdateQuantity, onRemove, onClose }) => {
             transition-all duration-300
             active:scale-95
           "
+          style={{
+            background: 'linear-gradient(to right, #ef4444, #dc2626)',
+            color: 'white',
+            fontWeight: 'bold',
+            padding: '1rem',
+            borderRadius: '0.75rem',
+            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+            transition: 'all 0.3s ease',
+            cursor: 'pointer',
+            border: 'none'
+          }}
         >
           إتمام الطلب
         </button>
