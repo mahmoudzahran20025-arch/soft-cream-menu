@@ -424,6 +424,12 @@
     console.log('🔄 Initializing checkout system...');
     
     try {
+      // ✅ CRITICAL: Setup global module FIRST (synchronously)
+      if (!window.checkoutModule) {
+        setupGlobalCheckoutModule();
+        console.log('✅ checkoutModule created and available globally');
+      }
+      
       // Pre-load modules
       const loaded = await loadCheckoutModules();
       if (!loaded) {
@@ -462,12 +468,6 @@
     }
   }
 
-
-  // ================================================================
-  // ✅ CRITICAL: Setup global module IMMEDIATELY
-  // ================================================================
-  setupGlobalCheckoutModule();
-  console.log('✅ checkoutModule available globally (functions will wait for init)');
 
   // ================================================================
   // ✅ Enhanced Loading Strategy
