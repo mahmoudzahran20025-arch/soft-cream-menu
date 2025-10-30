@@ -53,7 +53,7 @@ const injection = `<!-- 🆕 React Mini-App Scripts (auto-injected) -->
 
 // Check for placeholder or existing injection
 const placeholder = '<div id="react-scripts-placeholder"></div>';
-const existingInjectionRegex = /<!-- 🆕 React Mini-App Scripts \(auto-injected\) -->[\s\S]*?<script type="module"[^>]*><\/script>/;
+const existingInjectionRegex = /<!-- 🆕 React Mini-App Scripts \(auto-injected[^)]*\) -->[\s\S]*?<script type="module"[^>]*><\/script>/;
 
 if (parentIndexContent.includes(placeholder)) {
   // First time injection
