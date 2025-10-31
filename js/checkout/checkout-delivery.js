@@ -341,7 +341,7 @@ export async function selectBranch(branchId) {
 }
 
 // ================================================================
-// Request Location (DELIVERY ONLY)
+// Request Location (DELIVERY ONLY) - FIXED VERSION
 // ================================================================
 export function requestLocation() {
   console.log('🔄 Requesting location...');
@@ -356,11 +356,25 @@ export function requestLocation() {
     return;
   }
   
+  // ✅ CRITICAL: Use proper z-index for Permission Modal
   const modal = document.getElementById('permissionModal');
   if (modal) {
+    console.log('✅ Opening Permission Modal with z-index: 9300');
+    
+    // ✅ Force z-index (must be above Checkout Modal)
+    modal.style.zIndex = '9300';
+    
+    // ✅ Show modal
     modal.classList.remove('hidden');
     modal.classList.add('show');
     modal.style.display = 'flex';
+    
+    // ✅ Prevent body scroll
+    document.body.style.overflow = 'hidden';
+    
+    console.log('✅ Permission Modal opened successfully');
+  } else {
+    console.error('❌ Permission Modal not found in DOM');
   }
 }
 
