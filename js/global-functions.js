@@ -247,13 +247,13 @@ if (document.readyState === 'loading') {
   initGlobalFunctions();
 }
 
-function initGlobalFunctions() {
-  console.log('✅ Global functions initialized');
+async function initGlobalFunctions() {
+  console.log(' Global functions initialized');
   
   // Check dependencies
   checkDependencies();
   
-  // Load saved theme using storage.js
+  // Initialize theme
   if (window.storage) {
     const savedTheme = window.storage.getTheme();
     if (savedTheme === 'dark') {
@@ -266,19 +266,36 @@ function initGlobalFunctions() {
     document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
   }
   
-  // ✅ الاستماع لحدث تغيير اللغة من i18n
-  if (window.i18n && window.i18n.on) {
-    window.i18n.on('change', (newLang) => {
-      console.log(`🔔 [Global] Received language change event: ${newLang}`);
-      updateVanillaUI(newLang);
-      
-      // Dispatch event for React
-      window.dispatchEvent(new CustomEvent('language-changed', { detail: { lang: newLang } }));
-    });
-    console.log('✅ Subscribed to i18n language change events');
+  // CRITICAL: Bootstrap التطبيق أولاً (يحمّل i18n)
+  if (window.appModule && window.appModule.bootstrap) {
+    console.log(' Starting app bootstrap...');
+    await window.appModule.bootstrap();
   } else {
-    console.warn('⚠️ i18n not available, language changes will not be live');
+    console.warn(' appModule.bootstrap not available yet, waiting...');
+    // انتظر قليلاً ثم حاول مرة أخرى
+    setTimeout(async () => {
+      if (window.appModule && window.appModule.bootstrap) {
+        console.log(' Starting app bootstrap (delayed)...');
+        await window.appModule.bootstrap();
+      }
+    }, 100);
   }
+  
+  // الاستماع لحدث تغيير اللغة من i18n (بعد Bootstrap)
+  setTimeout(() => {
+    if (window.i18n && window.i18n.on) {
+      window.i18n.on('change', (newLang) => {
+        console.log(` [Global] Received language change event: ${newLang}`);
+        updateVanillaUI(newLang);
+        
+        // Dispatch event for React
+        window.dispatchEvent(new CustomEvent('language-changed', { detail: { lang: newLang } }));
+      });
+      console.log(' Subscribed to i18n language change events');
+    } else {
+      console.warn(' i18n not available, language changes will not be live');
+    }
+  }, 200);
 }
 
-console.log('✅ global-functions.js loaded successfully');
+console.log(' global-functions.js loaded successfully');

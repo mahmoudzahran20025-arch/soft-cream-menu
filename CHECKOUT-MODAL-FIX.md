@@ -384,3 +384,33 @@ git push
 ---
 
 **🎉 التنسيقات الآن احترافية 100%!** 🚀
+
+// ========================================
+// TEST 1: Check Current State
+// ========================================
+const modal = document.getElementById('permissionModal');
+console.log('Display:', getComputedStyle(modal).display);
+console.log('Opacity:', getComputedStyle(modal).opacity);
+console.log('Visibility:', getComputedStyle(modal).visibility);
+console.log('Transform:', getComputedStyle(modal).transform);
+
+// ========================================
+// TEST 2: Force Completely Visible
+// ========================================
+modal.style.cssText = `
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 999999 !important;
+  background: rgba(0, 0, 0, 0.9) !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+`;
+
+console.log('✅ Force applied - هل تراه الآن؟');

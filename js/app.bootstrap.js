@@ -40,7 +40,8 @@ window.addEventListener('unhandledrejection', (e) => {
 // ===== استيراد الوحدات (فقط ما نحتاجه) =====
 // ================================================================
 import { i18n } from './translations.js'; // ⭐ استيراد i18n manager
-import { translationsData } from './translations-data.js'; // ⭐ استيراد البيانات
+import { translationsData } from './translations-data.js'; // ⭐ استيراد البيانات الأساسية
+import { translationsAdditions } from './translations-data-additions.js'; // ⭐ استيراد الإضافات الجديدة
 import { handleScroll, initCategoriesOffset, preventImageDrag, initPassiveTouchEvents, setupFocusTrap } from './utils.js';
 import { loadCart, updateCartUI } from './cart.js';
 import { renderCategories } from './categories.js';
@@ -163,14 +164,26 @@ async function initApp() {
 
     // ✅ المرحلة 1: تحميل بيانات الترجمة (الأهم!)
     if (i18n && translationsData) {
-      // تغذية i18n manager بالبيانات
+      // تغذية i18n manager بالبيانات الأساسية
       i18n.loadTranslations?.(translationsData);
-      Logger.log('✅ i18n system initialized with data');
+      Logger.log('✅ i18n system initialized with base data');
+      
+      // ✅ إضافة الترجمات الإضافية
+      if (translationsAdditions) {
+        Object.keys(translationsAdditions).forEach(lang => {
+          i18n.addTranslations?.(lang, translationsAdditions[lang]);
+        });
+        Logger.log('✅ i18n additions merged successfully');
+      }
       
       // ضبط اللغة المحفوظة
       const savedLang = storage.getLang?.() || 'ar';
       i18n.setLang?.(savedLang);
       Logger.log(`✅ Language set to: ${savedLang}`);
+      
+      // ✅ عرض إحصائيات الترجمة
+      const totalKeys = Object.keys(i18n.getAll()).length;
+      Logger.log(`📊 Total translation keys loaded: ${totalKeys}`);
     } else {
       Logger.warn('⚠️ i18n or translationsData not available');
     }
