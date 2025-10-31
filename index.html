@@ -26,7 +26,18 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 	
 	<!-- ✅ Unified CSS (React + Vanilla - includes components.css) -->
-	<link rel="stylesheet" crossorigin href="./dist/react-app/assets/index-DOh64BKM.css">
+	<link rel="stylesheet" crossorigin href="./dist/react-app/assets/index-Ckm1kOKL.css">
+	
+	<!-- 🔧 CRITICAL FIX: Modal Visibility Classes -->
+	<style>
+		.checkout-modal-overlay.show,
+		.permission-modal.show,
+		.processing-modal.show,
+		.confirmed-modal.show,
+		.tracking-modal.show {
+			display: flex !important;
+		}
+	</style>
 	
 	<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&family=Tajawal:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
 

@@ -202,7 +202,7 @@ npm run build:inject
 
 # 3. Commit changes
 git add .
-git commit -m "Build: Update React bundle"
+git commit -m "Build: Update React"
 
 # 4. Push to production
 git push origin main
