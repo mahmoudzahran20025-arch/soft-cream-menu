@@ -66,6 +66,7 @@ function updateBodyOverflow() {
 
 /**
  * إظهار modal مع z-index محدد
+ * FIXED: Force all CSS properties for visibility
  */
 function showModal(modalId, zIndex, closeOthers = false) {
   console.log(`📤 Opening modal: ${modalId} with z-index: ${zIndex}`);
@@ -81,18 +82,32 @@ function showModal(modalId, zIndex, closeOthers = false) {
     closeAllModalsExcept(modalId);
   }
   
-  // ✅ تطبيق z-index بقوة
-  modal.style.zIndex = String(zIndex);
+  // ✅ CRITICAL: Force all necessary styles (based on successful test)
+  modal.style.cssText = `
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: ${zIndex} !important;
+    background: rgba(17, 24, 39, 0.85) !important;
+    backdrop-filter: blur(12px) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+  `;
   
-  // ✅ إظهار النافذة
+  // ✅ Add show class
   modal.classList.remove('hidden');
   modal.classList.add('show');
-  modal.style.display = 'flex';
   
   // ✅ تحديث body overflow
   updateBodyOverflow();
   
-  console.log(`✅ Modal ${modalId} opened successfully`);
+  console.log(`✅ Modal ${modalId} opened successfully with z-index: ${zIndex}`);
   return true;
 }
 

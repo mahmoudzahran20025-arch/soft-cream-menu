@@ -361,13 +361,27 @@ export function requestLocation() {
   if (modal) {
     console.log('✅ Opening Permission Modal with z-index: 9300');
     
-    // ✅ Force z-index (must be above Checkout Modal)
-    modal.style.zIndex = '9300';
+    // ✅ Force all necessary styles (based on successful test)
+    modal.style.cssText = `
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      z-index: 9300 !important;
+      background: rgba(17, 24, 39, 0.8) !important;
+      backdrop-filter: blur(12px) !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: none !important;
+    `;
     
-    // ✅ Show modal
+    // ✅ Add show class
     modal.classList.remove('hidden');
     modal.classList.add('show');
-    modal.style.display = 'flex';
     
     // ✅ Prevent body scroll
     document.body.style.overflow = 'hidden';
