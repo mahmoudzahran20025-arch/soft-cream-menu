@@ -28,14 +28,30 @@
 	<!-- ✅ Unified CSS (React + Vanilla - includes components.css) -->
 	<link rel="stylesheet" crossorigin href="./dist/react-app/assets/index-Ckm1kOKL.css">
 	
-	<!-- 🔧 CRITICAL FIX: Modal Visibility Classes -->
+	<!-- 🔧 CRITICAL FIX: Modal Visibility & Z-Index -->
 	<style>
+		/* Modal Visibility */
 		.checkout-modal-overlay.show,
 		.permission-modal.show,
 		.processing-modal.show,
 		.confirmed-modal.show,
 		.tracking-modal.show {
 			display: flex !important;
+		}
+		
+		/* Z-Index Hierarchy - CRITICAL! */
+		.checkout-modal-overlay {
+			z-index: 2000 !important;
+		}
+		.permission-modal {
+			z-index: 2100 !important;
+		}
+		.processing-modal {
+			z-index: 2200 !important;
+		}
+		.confirmed-modal,
+		.tracking-modal {
+			z-index: 2000 !important;
 		}
 	</style>
 	
@@ -928,7 +944,7 @@
 </div>
 
 <div
-	class="checkout-modal-overlay fixed inset-0 bg-gray-900/80 backdrop-blur-md hidden items-center justify-center z-modal-base animate-fade-in overflow-y-auto p-5"
+	class="checkout-modal-overlay fixed inset-0 bg-gray-900/80 backdrop-blur-md hidden items-center justify-center animate-fade-in overflow-y-auto p-5"
 	id="checkoutModal"
 	onclick="checkoutModule.closeCheckoutModal(event)"
 	role="dialog"
@@ -1072,7 +1088,7 @@
 	</div>
 </div>
 
-<div class="permission-modal fixed inset-0 bg-gray-900/80 backdrop-blur-md hidden items-center justify-center z-modal-nested animate-fade-in p-5" id="permissionModal" role="dialog" aria-modal="true" aria-labelledby="permission-title">
+<div class="permission-modal fixed inset-0 bg-gray-900/80 backdrop-blur-md hidden items-center justify-center animate-fade-in p-5" id="permissionModal" role="dialog" aria-modal="true" aria-labelledby="permission-title">
 	<div class="permission-content bg-white dark:bg-gray-800 rounded-3xl p-10 max-w-[480px] w-full text-center shadow-2xl animate-scale-in">
 		<div class="permission-icon w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white animate-pulse-glow">
 			<svg class="w-10 h-10" aria-hidden="true"><use href="#map-pin"></use></svg>
@@ -1110,7 +1126,7 @@
 </div>
 
 <div
-	class="processing-modal fixed inset-0 bg-gray-900/85 backdrop-blur-md hidden items-center justify-center z-modal-processing animate-fade-in"
+	class="processing-modal fixed inset-0 bg-gray-900/85 backdrop-blur-md hidden items-center justify-center animate-fade-in"
 	id="processingModal"
 	style="display: none;"
 	role="alertdialog"
