@@ -3,7 +3,7 @@
 // ================================================================
 // ✅ هذا الملف بيانات فقط - بدون أي logic أو event listeners
 
-const translationsData = {
+export const translationsData = {
   "ar": {
     "headerTitle": "سوفت كريم",
     "headerSubtitle": "أطيب آيس كريم في المدينة 🍦",

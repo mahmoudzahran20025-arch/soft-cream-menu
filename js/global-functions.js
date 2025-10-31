@@ -257,20 +257,40 @@ async function initGlobalFunctions() {
   if (typeof window.i18n === 'undefined') {
     // Dynamic import of i18n modules
     try {
-      const [{ i18n }, { translationsData }, { translationsAdditions }] = await Promise.all([
-        import('./translations.js'),
-        import('./translations-data.js'),
-        import('./translations-data-additions.js')
-      ]);
+      console.log('🔄 Loading i18n modules...');
+      
+      const translationsModule = await import('./translations.js');
+      const dataModule = await import('./translations-data.js');
+      const additionsModule = await import('./translations-data-additions.js');
+      
+      const { i18n } = translationsModule;
+      const { translationsData } = dataModule;
+      const { translationsAdditions } = additionsModule;
+      
+      console.log('📦 Modules loaded:', { 
+        i18n: !!i18n, 
+        data: !!translationsData, 
+        additions: !!translationsAdditions 
+      });
       
       // Load base translations
-      i18n.loadTranslations?.(translationsData);
-      console.log('✅ i18n base data loaded');
+      if (i18n && translationsData) {
+        const success = i18n.loadTranslations?.(translationsData);
+        if (success) {
+          console.log('✅ i18n base data loaded');
+        } else {
+          console.error('❌ Failed to load base translations');
+          return;
+        }
+      } else {
+        console.error('❌ Missing i18n or translationsData');
+        return;
+      }
       
       // Add additional translations
-      if (translationsAdditions) {
+      if (translationsAdditions && i18n.addTranslations) {
         Object.keys(translationsAdditions).forEach(lang => {
-          i18n.addTranslations?.(lang, translationsAdditions[lang]);
+          i18n.addTranslations(lang, translationsAdditions[lang]);
         });
         console.log('✅ i18n additions merged');
       }
@@ -286,7 +306,10 @@ async function initGlobalFunctions() {
       
     } catch (error) {
       console.error('❌ Failed to initialize i18n:', error);
+      console.error('Stack:', error.stack);
     }
+  } else {
+    console.log('✅ i18n already available');
   }
   
   // Load saved theme using storage.js
@@ -300,6 +323,17 @@ async function initGlobalFunctions() {
     const savedLang = window.storage.getLang() || 'ar';
     document.documentElement.lang = savedLang;
     document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+  }
+  
+  // ⚡ CRITICAL: Setup scroll handler for header shrink
+  if (typeof window.handleScroll === 'function') {
+    window.addEventListener('scroll', window.handleScroll, { passive: true });
+    console.log('✅ Scroll handler attached for header shrink');
+    
+    // Initial scroll check
+    window.handleScroll();
+  } else {
+    console.warn('⚠️ handleScroll not available from utils.js');
   }
   
   // ✅ الاستماع لحدث تغيير اللغة من i18n
