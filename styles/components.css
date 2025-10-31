@@ -114,7 +114,7 @@
    * ======================================== */
   .animated-background { @apply fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none bg-cream-50; z-index: var(--z-base); background-image: radial-gradient(at 90% 10%, hsla(339, 100%, 71%, 0.1) 0px, transparent 50%), radial-gradient(at 10% 90%, hsla(271, 91%, 65%, 0.1) 0px, transparent 50%); }
   .animated-background::before { content: ''; @apply absolute inset-0; z-index: 1; background: linear-gradient(180deg, rgba(255, 249, 245, 0) 0%, rgba(255, 249, 245, 0.98) 100%); }
-  .dark .animated-background { background-color: theme('colors.gray.900'); background-image: radial-gradient(at 90% 10%, hsla(339, 100%, 71%, 0.06) 0px, transparent 50%), radial-gradient(at 10% 90%, hsla(271, 91%, 65%, 0.06) 0px, transparent 50%); }
+  .dark .animated-background { @apply bg-gray-900; background-image: radial-gradient(at 90% 10%, hsla(339, 100%, 71%, 0.06) 0px, transparent 50%), radial-gradient(at 10% 90%, hsla(271, 91%, 65%, 0.06) 0px, transparent 50%); }
   .dark .animated-background::before { background: linear-gradient(180deg, rgba(26, 22, 37, 0) 0%, rgba(26, 22, 37, 0.98) 100%); }
   .page-content { position: relative; z-index: var(--z-content); @apply pr-0 pl-0; }
 
@@ -821,7 +821,8 @@
   /* ... (كل الأكواد هنا كما هي) ... */
   .modal-overlay, .cart-modal-overlay, .checkout-modal-overlay, .permission-modal, .processing-modal, .confirmed-modal, .tracking-modal { position: fixed; inset: 0; z-index: var(--z-modal-overlay); @apply bg-gray-900/80; backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; }
   .modal-overlay.show, .modal-overlay.active, .cart-modal-overlay.show, .checkout-modal-overlay.show { display: flex; animation: fadeInOverlay 0.3s ease; }
-  #productModal, #cartModal, #trackingModal, #orderConfirmedModal, #permissionModal { position: relative; z-index: var(--z-modal-base); }
+  #productModal, #cartModal, #trackingModal, #orderConfirmedModal { position: relative; z-index: var(--z-modal-base); }
+  #permissionModal { position: relative; z-index: calc(var(--z-modal-base) - 100); }
   #checkoutModal { z-index: var(--z-modal-nested); }
   #processingModal { z-index: var(--z-modal-processing); }
   .modal-close, .checkout-close, .close-confirmed, .close-tracking, .close-permission { position: absolute; z-index: var(--z-modal-close-btn); }
@@ -845,7 +846,7 @@
   @media (min-width: 768px) { .toast.hide { transform: translateX(20px) scale(0.95); } }
   .toast.success { border-right: 4px solid #10b981; } .toast.error { border-right: 4px solid #ef4444; } .toast.warning { border-right: 4px solid #f59e0b; } .toast.info { border-right: 4px solid #3b82f6; }
   [dir="rtl"] .toast.success { border-right: none; border-left: 4px solid #10b981; } [dir="rtl"] .toast.error { border-right: none; border-left: 4px solid #ef4444; } [dir="rtl"] .toast.warning { border-right: none; border-left: 4px solid #f59e0b; } [dir="rtl"] .toast.info { border-right: none; border-left: 4px solid #3b82f6; }
-  .toast-icon { @apply text-xl flex-shrink-0 mt-0.5; } .toast.success .toast-icon { @apply text-green-500; } .toast.error .toast-icon { @apply text-red-500; } .toast.warning .toast-icon { @apply text-yellow-500; } .toast.info .toast-icon { @apply text-blue-500; }
+  .toast-icon { @apply text-xl flex-shrink-0 mt-0.5; } .toast.success .toast-icon { @apply text-gray-600; } .toast.error .toast-icon { @apply text-red-500; } .toast.warning .toast-icon { @apply text-yellow-500; } .toast.info .toast-icon { @apply text-blue-500; }
   .toast-content { @apply flex-1 min-w-0; }
   .toast-title { @apply font-semibold text-sm text-gray-800 dark:text-gray-50 mb-0.5 leading-tight; }
   .toast-message { @apply text-sm text-gray-600 dark:text-gray-400 leading-normal mt-1; }
@@ -870,13 +871,13 @@
   .btn-ripple::before { content: ''; @apply absolute top-1/2 left-1/2 w-0 h-0 rounded-full bg-white/30 transform -translate-x-1/2 -translate-y-1/2 transition-[width,height]; transition-duration: 600ms; }
   .btn-ripple:active::before { width: 300px; height: 300px; }
   .form-label { @apply flex items-center gap-2 text-sm font-semibold text-gray-800 dark:text-gray-100 mb-2; }
-  .form-input { @apply w-full py-3.5 px-4 border-2 border-gray-300 dark:border-gray-600 rounded-xl text-base bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:border-green-500 focus:shadow-lg transition-all duration-300; }
-  .form-textarea { @apply w-full py-3.5 px-4 border-2 border-gray-300 dark:border-gray-600 rounded-xl text-base bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:border-green-500 focus:shadow-lg transition-all duration-300 resize-y min-h-[80px]; }
+  .form-input { @apply w-full py-3.5 px-4 border-2 border-gray-300 dark:border-gray-600 rounded-xl text-base bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:border-primary focus:shadow-lg transition-all duration-300; }
+  .form-textarea { @apply w-full py-3.5 px-4 border-2 border-gray-300 dark:border-gray-600 rounded-xl text-base bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:border-primary focus:shadow-lg transition-all duration-300 resize-y min-h-[80px]; }
   .gradient-text { @apply bg-gradient-to-br from-primary via-primary-light to-secondary bg-clip-text text-transparent; }
-  .delivery-option.selected { @apply border-green-500 shadow-lg; background: linear-gradient(135deg, #f1f8f4, #e8f5e9); box-shadow: 0 4px 20px rgba(76, 175, 80, 0.25); }
-  .delivery-option.selected .selection-indicator { @apply bg-green-500 border-green-500 text-white; }
-  .branch-card.selected { @apply border-green-500; background: linear-gradient(135deg, #f1f8f4, #e8f5e9); box-shadow: 0 4px 16px rgba(76, 175, 80, 0.2); }
-  .branch-card.selected .branch-check { @apply bg-green-500 border-green-500 text-white; }
+  .delivery-option.selected { @apply border-primary shadow-lg; background: linear-gradient(135deg, #fef7f0, #fef2ed); box-shadow: 0 4px 20px rgba(236, 72, 153, 0.25); }
+  .delivery-option.selected .selection-indicator { @apply bg-primary border-primary text-white; }
+  .branch-card.selected { @apply border-primary; background: linear-gradient(135deg, #fef7f0, #fef2ed); box-shadow: 0 4px 16px rgba(236, 72, 153, 0.2); }
+  .branch-card.selected .branch-check { @apply bg-primary border-primary text-white; }
   .tab-content { display: none; }
   .tab-content.active { display: block; animation: fadeInUp 0.4s ease; }
   .clear-search.show { display: flex; }

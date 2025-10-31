@@ -917,7 +917,7 @@
 </div>
 
 <div
-	class="checkout-modal-overlay fixed inset-0 bg-gray-900/80 backdrop-blur-md hidden items-center justify-center z-modal animate-fade-in overflow-y-auto p-5"
+	class="checkout-modal-overlay fixed inset-0 bg-gray-900/80 backdrop-blur-md hidden items-center justify-center z-modal-base animate-fade-in overflow-y-auto p-5"
 	id="checkoutModal"
 	onclick="checkoutModule.closeCheckoutModal(event)"
 	role="dialog"
@@ -934,7 +934,7 @@
 			<svg class="w-5 h-5" aria-hidden="true"><use href="#x"></use></svg>
 		</button>
 		<div class="checkout-header text-center mb-7">
-			<div class="checkout-icon w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4 text-white shadow-lg">
+			<div class="checkout-icon w-16 h-16 bg-gradient-to-br from-primary to-primary-dark rounded-full flex items-center justify-center mx-auto mb-4 text-white shadow-lg">
 				<svg class="w-8 h-8" aria-hidden="true"><use href="#shopping-cart"></use></svg>
 			</div>
 			<h3 class="checkout-title text-[26px] font-black text-gray-800 dark:text-gray-100 mb-2" id="checkout-title">تأكيد الطلب</h3>
@@ -948,11 +948,11 @@
 		</div>
 		<div class="delivery-options mb-6">
 			<div
-				class="delivery-option flex items-center gap-4 p-4.5 border-2 border-gray-300 dark:border-gray-600 rounded-2xl mb-3 cursor-pointer hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 hover:-translate-x-1 hover:shadow-lg transition-all duration-300 bg-white dark:bg-gray-800 relative"
+				class="delivery-option flex items-center gap-4 p-4.5 border-2 border-gray-300 dark:border-gray-600 rounded-2xl mb-3 cursor-pointer hover:border-primary hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:-translate-x-1 hover:shadow-lg transition-all duration-300 bg-white dark:bg-gray-800 relative"
 				id="pickupOption"
 				onclick="checkoutModule.selectDeliveryMethod('pickup')"
 			>
-				<div class="delivery-option-icon w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center text-white">
+				<div class="delivery-option-icon w-12 h-12 bg-gradient-to-br from-primary to-primary-dark rounded-xl flex items-center justify-center text-white">
 					<svg class="w-6 h-6" aria-hidden="true"><use href="#store"></use></svg>
 				</div>
 				<div class="delivery-option-content flex-1">
@@ -971,11 +971,11 @@
 			</div>
 			<div id="deliveryEstimatedNotice" style="display: none;"></div>
 			<div
-				class="delivery-option flex items-center gap-4 p-4.5 border-2 border-gray-300 dark:border-gray-600 rounded-2xl cursor-pointer hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 hover:-translate-x-1 hover:shadow-lg transition-all duration-300 bg-white dark:bg-gray-800 relative"
+				class="delivery-option flex items-center gap-4 p-4.5 border-2 border-gray-300 dark:border-gray-600 rounded-2xl cursor-pointer hover:border-primary hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:-translate-x-1 hover:shadow-lg transition-all duration-300 bg-white dark:bg-gray-800 relative"
 				id="deliveryOption"
 				onclick="checkoutModule.selectDeliveryMethod('delivery')"
 			>
-				<div class="delivery-option-icon w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center text-white">
+				<div class="delivery-option-icon w-12 h-12 bg-gradient-to-br from-primary to-primary-dark rounded-xl flex items-center justify-center text-white">
 					<svg class="w-6 h-6" aria-hidden="true"><use href="#truck"></use></svg>
 				</div>
 				<div class="delivery-option-content flex-1">
@@ -990,14 +990,14 @@
 		<div class="checkout-form mb-6" id="checkoutForm">
 			<div class="form-group mb-5">
 				<label class="form-label flex items-center gap-2 text-sm font-bold text-gray-700 dark:text-gray-300 mb-2" for="customerName">
-					<svg class="w-4 h-4 text-green-500 shrink-0" aria-hidden="true"><use href="#user"></use></svg>
+					<svg class="w-4 h-4 text-primary shrink-0" aria-hidden="true"><use href="#user"></use></svg>
 					<span>الاسم الكامل *</span>
 				</label>
 				<input type="text" class="form-input" id="customerName" placeholder="أدخل اسمك الكامل" required aria-required="true" />
 			</div>
 			<div class="form-group mb-5">
 				<label class="form-label flex items-center gap-2 text-sm font-bold text-gray-700 dark:text-gray-300 mb-2" for="customerPhone">
-					<svg class="w-4 h-4 text-green-500 shrink-0" aria-hidden="true"><use href="#phone"></use></svg>
+					<svg class="w-4 h-4 text-primary shrink-0" aria-hidden="true"><use href="#phone"></use></svg>
 					<span>رقم الهاتف *</span>
 				</label>
 				<input type="tel" class="form-input" id="customerPhone" placeholder="01234567890" required dir="ltr" aria-required="true" />
@@ -1005,7 +1005,7 @@
 			</div>
 			<div class="form-group mb-5 hidden" id="addressGroup">
 				<label class="form-label flex items-center gap-2 text-sm font-bold text-gray-700 dark:text-gray-300 mb-2" for="customerAddress">
-					<svg class="w-4 h-4 text-green-500 shrink-0" aria-hidden="true"><use href="#map-pin"></use></svg>
+					<svg class="w-4 h-4 text-primary shrink-0" aria-hidden="true"><use href="#map-pin"></use></svg>
 					<span>العنوان التفصيلي *</span>
 				</label>
 				<textarea class="form-textarea min-h-[80px]" id="customerAddress" rows="3" placeholder="الشارع، المنطقة، المدينة، معالم قريبة..." aria-required="true"></textarea>
@@ -1020,21 +1020,21 @@
 			</div>
 			<div class="form-group mb-5">
 				<label class="form-label flex items-center gap-2 text-sm font-bold text-gray-700 dark:text-gray-300 mb-2" for="orderNotes">
-					<svg class="w-4 h-4 text-green-500 shrink-0" aria-hidden="true"><use href="#message-square"></use></svg>
+					<svg class="w-4 h-4 text-primary shrink-0" aria-hidden="true"><use href="#message-square"></use></svg>
 					<span>ملاحظات إضافية</span>
 				</label>
 				<textarea class="form-textarea min-h-[60px]" id="orderNotes" rows="2" placeholder="أي طلبات خاصة (اختياري)"></textarea>
 			</div>
 			<div class="form-group">
 				<label class="form-label flex items-center gap-2 text-sm font-bold text-gray-700 dark:text-gray-300 mb-2" for="couponCodeInput">
-					<svg class="w-4 h-4 text-green-500 shrink-0" aria-hidden="true"><use href="#tag"></use></svg>
+					<svg class="w-4 h-4 text-primary shrink-0" aria-hidden="true"><use href="#tag"></use></svg>
 					<span id="coupon-label">كود الخصم (اختياري)</span>
 				</label>
 				<div class="coupon-input-group flex gap-2">
 					<input type="text" class="form-input flex-1" id="couponCodeInput" placeholder="أدخل كود الخصم" dir="ltr" />
 					<button
 						type="button"
-						class="apply-coupon-btn py-3.5 px-6 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl text-sm font-bold hover:from-green-600 hover:to-green-700 hover:-translate-y-1 hover:shadow-lg active:scale-98 transition-all duration-300"
+						class="apply-coupon-btn py-3.5 px-6 bg-gradient-to-r from-primary to-primary-dark text-white rounded-xl text-sm font-bold hover:from-primary-dark hover:to-primary-800 hover:-translate-y-1 hover:shadow-lg active:scale-98 transition-all duration-300"
 						id="applyPromoBtn"
 						onclick="window.applyCoupon?.() || alert('Loading...')"
 					>
@@ -1050,7 +1050,7 @@
 				<span id="cancel-btn-text">إلغاء</span>
 			</button>
 			<button
-				class="flex-1 py-4 px-6 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-2xl text-base font-bold shadow-lg hover:from-green-600 hover:to-green-700 hover:-translate-y-0.5 hover:shadow-xl active:scale-95 transition-all duration-300 flex items-center justify-center gap-2.5"
+				class="flex-1 py-4 px-6 bg-gradient-to-r from-primary to-primary-dark text-white rounded-2xl text-base font-bold shadow-lg hover:from-primary-dark hover:to-primary-800 hover:-translate-y-0.5 hover:shadow-xl active:scale-95 transition-all duration-300 flex items-center justify-center gap-2.5"
 				onclick="checkoutModule.confirmOrder()"
 				id="confirm-btn"
 			>
@@ -1061,7 +1061,7 @@
 	</div>
 </div>
 
-<div class="permission-modal fixed inset-0 bg-gray-900/80 backdrop-blur-md hidden items-center justify-center z-modal animate-fade-in p-5" id="permissionModal" role="dialog" aria-modal="true" aria-labelledby="permission-title">
+<div class="permission-modal fixed inset-0 bg-gray-900/80 backdrop-blur-md hidden items-center justify-center z-modal-nested animate-fade-in p-5" id="permissionModal" role="dialog" aria-modal="true" aria-labelledby="permission-title">
 	<div class="permission-content bg-white dark:bg-gray-800 rounded-3xl p-10 max-w-[480px] w-full text-center shadow-2xl animate-scale-in">
 		<div class="permission-icon w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white animate-pulse-glow">
 			<svg class="w-10 h-10" aria-hidden="true"><use href="#map-pin"></use></svg>
@@ -1099,7 +1099,7 @@
 </div>
 
 <div
-	class="processing-modal fixed inset-0 bg-gray-900/85 backdrop-blur-md hidden items-center justify-center z-modal animate-fade-in"
+	class="processing-modal fixed inset-0 bg-gray-900/85 backdrop-blur-md hidden items-center justify-center z-modal-processing animate-fade-in"
 	id="processingModal"
 	style="display: none;"
 	role="alertdialog"
@@ -1108,7 +1108,7 @@
 	aria-describedby="processing-subtitle"
 >
 	<div class="processing-content bg-white dark:bg-gray-800 rounded-3xl p-12 max-w-[450px] w-[90%] text-center shadow-2xl animate-scale-in">
-		<div class="spinner-container mb-7"><div class="spinner w-[70px] h-[70px] mx-auto border-[5px] border-gray-200 dark:border-gray-700 border-t-green-500 rounded-full animate-spin" role="status"></div></div>
+		<div class="spinner-container mb-7"><div class="spinner w-[70px] h-[70px] mx-auto border-[5px] border-gray-200 dark:border-gray-700 border-t-primary rounded-full animate-spin" role="status"></div></div>
 		<h3 class="processing-title text-2xl font-black text-gray-800 dark:text-gray-100 mb-2.5" id="processing-title">جاري إرسال طلبك...</h3>
 		<p class="processing-subtitle text-base text-gray-600 dark:text-gray-400" id="processing-subtitle">الرجاء الانتظار، لا تغلق الصفحة</p>
 		<div class="processing-actions hidden mt-8 pt-7 border-t-2 border-gray-200 dark:border-gray-700" id="processingActions">
@@ -1119,7 +1119,7 @@
 			<p class="error-description text-sm text-gray-600 dark:text-gray-400 mb-5" id="errorDescription"></p>
 			<div class="action-buttons flex gap-3 mb-5">
 				<button
-					class="btn-retry flex-1 py-3.5 px-5 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl text-base font-bold shadow-lg hover:from-green-600 hover:to-green-700 hover:-translate-y-0.5 hover:shadow-xl active:scale-95 transition-all duration-300 flex items-center justify-center gap-2"
+					class="btn-retry flex-1 py-3.5 px-5 bg-gradient-to-r from-primary to-primary-dark text-white rounded-xl text-base font-bold shadow-lg hover:from-primary-dark hover:to-primary-800 hover:-translate-y-0.5 hover:shadow-xl active:scale-95 transition-all duration-300 flex items-center justify-center gap-2"
 					id="retryBtn"
 				>
 					<svg class="w-5 h-5" aria-hidden="true"><use href="#refresh-cw"></use></svg><span id="retry-text">إعادة المحاولة</span>
@@ -1481,7 +1481,7 @@
 </script>
 
 <!-- 🆕 React Mini-App Scripts (auto-injected) -->
-<link rel="stylesheet" crossorigin href="./dist/react-app/assets/index-DOh64BKM.css">
-<script type="module" crossorigin src="./dist/react-app/assets/index-BdF7vGxC.js"></script>
+<link rel="stylesheet" crossorigin href="./dist/react-app/assets/index-pl137kuv.css">
+<script type="module" crossorigin src="./dist/react-app/assets/index-DHlzJEqg.js"></script>
 </body>
 </html>
