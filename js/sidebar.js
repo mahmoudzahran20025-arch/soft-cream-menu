@@ -183,7 +183,7 @@ function syncSidebarTheme() {
 function syncSidebarLanguage() {
   if (!sidebarElements.langToggle) return;
   
-  const currentLang = window.currentLang || 'ar';
+  const currentLang = document.documentElement.lang || window.currentLang || 'ar';
   const langOptions = sidebarElements.langToggle.querySelectorAll('.lang-option');
   
   langOptions.forEach(option => {

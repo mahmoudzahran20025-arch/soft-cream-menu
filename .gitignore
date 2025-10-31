@@ -1,19 +1,236 @@
-# Ignore temporary and history files
+# ================================================================
+# 🍦 Soft Cream Menu - .gitignore
+# ================================================================
+# Comprehensive ignore file for React + Vanilla JS + Tailwind project
+# Last updated: 2025-01-31
+# ================================================================
+
+# ================================================================
+# 📦 Dependencies & Packages
+# ================================================================
+node_modules/
+jspm_packages/
+bower_components/
+.pnp/
+.pnp.js
+.yarn/
+.yarn-integrity
+
+# ================================================================
+# 🏗 Build Outputs
+# ================================================================
+dist/
+build/
+out/
+.next/
+.nuxt/
+.cache/
+.parcel-cache/
+.vite/
+*.tsbuildinfo
+
+# React build artifacts
+react-app/dist/
+react-app/build/
+
+# Tailwind output (if not committed)
+# dist/output.css
+
+# ================================================================
+# 🔐 Environment & Secrets
+# ================================================================
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
+.env*.local
+
+# API keys and secrets
+secrets.json
+config.local.js
+*.key
+*.pem
+
+# ================================================================
+# 📝 Logs & Debug
+# ================================================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Debug files
+debug/
+*.debug
+
+# ================================================================
+# 🧪 Testing & Coverage
+# ================================================================
+coverage/
+*.lcov
+.nyc_output/
+.jest/
+.coverage/
+test-results/
+playwright-report/
+cypress/videos/
+cypress/screenshots/
+
+# ================================================================
+# 💻 IDE & Editor
+# ================================================================
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+*.sublime-project
+
+# ================================================================
+# 🖥 Operating System
+# ================================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# ================================================================
+# 📱 Mobile & PWA
+# ================================================================
+.expo/
+.expo-shared/
+*.jks
+*.p8
+*.p12
+*.mobileprovision
+*.orig.*
+web-build/
+
+# ================================================================
+# 🔧 Build Tools & Bundlers
+# ================================================================
+# Webpack
+.webpack/
+webpack-stats.json
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# Rollup
+.rollup.cache/
+
+# ================================================================
+# 📊 Analytics & Monitoring
+# ================================================================
+.vercel/
+.netlify/
+.firebase/
+.serverless/
+
+# ================================================================
+# 🗂 Temporary & Cache Files
+# ================================================================
+*.tmp
+*.temp
+*.cache
+.cache/
+.temp/
+tmp/
+temp/
+
+# npm cache
+.npm/
+.eslintcache
+.stylelintcache
+.prettiercache
+
+# Optional REPL history
+.node_repl_history
+
+# ================================================================
+# 📦 Package Manager Locks (Optional - Uncomment if needed)
+# ================================================================
+# Uncomment if you want to ignore lock files
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# ================================================================
+# 🚫 Project-Specific Ignores
+# ================================================================
+# Old/backup files
+*.old
+*.backup
+*.bak
+_old/
+backup/
+
+# Test files (if not needed in repo)
+test-*.html
+test-*.js
+DEBUG-*.md
+
+# Documentation drafts
+DRAFT-*.md
+TODO-*.md
+
+# History folder (VS Code extension)
+.history/
+
+# ================================================================
+# ✅ DO NOT IGNORE (Explicitly tracked)
+# ================================================================
+# Ensure these are tracked even if parent folder is ignored
+!dist/react-app/assets/*.css
+!dist/react-app/assets/*.js
+!.gitkeep
+
+# ================================================================
+# 📌 Notes
+# ================================================================
+# - dist/react-app/assets/ contains production builds (tracked)
+# - node_modules/ is always ignored
+# - .env files are ignored for security
+# - Lock files are tracked by default (best practice)
+# ================================================================ output
+disty/
+scripts/
+readme_im/
 .history/
 .hist_pro/
-
-# Ignore specific HTML or JS files
 index2.html
 GOOGLE_APP_SCRIPT.JS
-
-# Ignore documentation and notes
 Advanced_soulutions.md
 API_UDATE
 Project Summary.md
-
-
-# Ignore build output
-disty/
-scripts/
-node_modules/
-readme_im/

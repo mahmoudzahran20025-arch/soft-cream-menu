@@ -33,6 +33,7 @@ function updateVanillaUI(lang) {
   // 1. تحديث اتجاه الصفحة
   document.documentElement.lang = lang;
   document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+  window.currentLang = lang; // ⚡ CRITICAL: Update global variable
 
   // 2. تحديث زر اللغة
   const langBtn = document.getElementById('langToggle');
@@ -57,15 +58,11 @@ function updateVanillaUI(lang) {
     window.sidebarModule.syncSidebarLanguage();
   }
 
-  // 5. (مهم جداً) إعادة بناء السويبرات (Swipers)
-  // هذا يحل مشكلة اختفاء الصور
-  if (window.featuredSwiperModule?.reInitSwiper) {
-    window.featuredSwiperModule.reInitSwiper();
-    console.log('🔄 [Vanilla] Re-initializing Featured Swiper for new lang.');
-  }
-  if (window.marqueeSwiperModule?.reInitSwiper) {
-    window.marqueeSwiperModule.reInitSwiper();
-    console.log('🔄 [Vanilla] Re-initializing Marquee Swiper for new lang.');
+  // 5. تحديث Swiper text content (بدون re-init)
+  // Re-init بيمسح الصور، فمش محتاجينه
+  if (window.marqueeSwiperModule?.updateMarqueeText) {
+    window.marqueeSwiperModule.updateMarqueeText(lang);
+    console.log('🔄 [Vanilla] Updated Marquee text for new lang.');
   }
 
   console.log(`✅ [Vanilla] UI updated for ${lang}`);
