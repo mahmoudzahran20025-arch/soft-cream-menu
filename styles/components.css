@@ -951,6 +951,17 @@
 
 /* ✅ (تم الحذف) تم حذف .carousel-item و .carousel-container من هنا */
 
+/* ========================================
+ * MODAL VISIBILITY CLASSES
+ * ======================================== */
+.checkout-modal-overlay.show,
+.permission-modal.show,
+.processing-modal.show,
+.confirmed-modal.show,
+.tracking-modal.show {
+  display: flex !important;
+}
+
 /* Only active elements get will-change */
 .modal-overlay.active,
 .sidebar.show,
