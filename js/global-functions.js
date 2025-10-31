@@ -40,12 +40,24 @@ function updateVanillaUI(lang) {
     langBtn.textContent = lang === 'ar' ? 'EN' : 'AR';
   }
 
-  // 3. تحديث السايد بار
+  // 3. تحديث كل العناصر اللي فيها data-i18n
+  if (window.i18n && window.i18n.t) {
+    document.querySelectorAll('[data-i18n]').forEach(element => {
+      const key = element.getAttribute('data-i18n');
+      const translation = window.i18n.t(key);
+      if (translation && translation !== key) {
+        element.textContent = translation;
+      }
+    });
+    console.log('🔄 [Vanilla] Updated all data-i18n elements');
+  }
+
+  // 4. تحديث السايد بار
   if (window.sidebarModule && window.sidebarModule.syncSidebarLanguage) {
     window.sidebarModule.syncSidebarLanguage();
   }
 
-  // 4. (مهم جداً) إعادة بناء السويبرات (Swipers)
+  // 5. (مهم جداً) إعادة بناء السويبرات (Swipers)
   // هذا يحل مشكلة اختفاء الصور
   if (window.featuredSwiperModule?.reInitSwiper) {
     window.featuredSwiperModule.reInitSwiper();
@@ -335,6 +347,11 @@ async function initGlobalFunctions() {
   } else {
     console.warn('⚠️ handleScroll not available from utils.js');
   }
+  
+  // ⚡ CRITICAL: Apply initial translations to Vanilla UI
+  const currentLang = window.storage?.getLang?.() || 'ar';
+  updateVanillaUI(currentLang);
+  console.log('✅ Initial translations applied to Vanilla UI');
   
   // ✅ الاستماع لحدث تغيير اللغة من i18n (بعد تأخير بسيط)
   setTimeout(() => {
