@@ -336,19 +336,21 @@ async function initGlobalFunctions() {
     console.warn('⚠️ handleScroll not available from utils.js');
   }
   
-  // ✅ الاستماع لحدث تغيير اللغة من i18n
-  if (window.i18n && window.i18n.on) {
-    window.i18n.on('change', (newLang) => {
-      console.log(`🔔 [Global] Received language change event: ${newLang}`);
-      updateVanillaUI(newLang);
-      
-      // Dispatch event for React
-      window.dispatchEvent(new CustomEvent('language-changed', { detail: { lang: newLang } }));
-    });
-    console.log('✅ Subscribed to i18n language change events');
-  } else {
-    console.warn('⚠️ i18n not available, language changes will not be live');
-  }
+  // ✅ الاستماع لحدث تغيير اللغة من i18n (بعد تأخير بسيط)
+  setTimeout(() => {
+    if (window.i18n && window.i18n.on) {
+      window.i18n.on('change', (newLang) => {
+        console.log(`🔔 [Global] Received language change event: ${newLang}`);
+        updateVanillaUI(newLang);
+        
+        // Dispatch event for React
+        window.dispatchEvent(new CustomEvent('language-changed', { detail: { lang: newLang } }));
+      });
+      console.log('✅ Subscribed to i18n language change events');
+    } else {
+      console.warn('⚠️ i18n not available, language changes will not be live');
+    }
+  }, 500); // 500ms delay
 }
 
 console.log('✅ global-functions.js loaded successfully');

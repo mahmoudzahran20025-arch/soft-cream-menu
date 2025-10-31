@@ -56,7 +56,7 @@ const ProductCard = ({ product, onAddToCart }) => {
         )}
         
         <img
-          src={imageError ? '/placeholder-ice-cream.jpg' : product.image}
+          src={imageError ? '/placeholder-ice-cream.svg' : product.image}
           alt={product.name}
           loading="lazy"
           onLoad={() => setImageLoaded(true)}
