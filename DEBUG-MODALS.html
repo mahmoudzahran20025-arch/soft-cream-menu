@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Debug All Modals</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Cairo', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 36px;
+        }
+        .test-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 10px 10px 10px 0;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .status.success { background: #d4edda; color: #155724; border-left: 4px solid #28a745; }
+        .status.error { background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545; }
+        .status.info { background: #d1ecf1; color: #0c5460; border-left: 4px solid #17a2b8; }
+        .status.warning { background: #fff3cd; color: #856404; border-left: 4px solid #ffc107; }
+        #console {
+            background: #1a1a1a;
+            color: #0f0;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        .console-line {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid transparent;
+        }
+        .console-line.info { color: #0ff; border-left-color: #0ff; }
+        .console-line.success { color: #0f0; border-left-color: #0f0; }
+        .console-line.error { color: #f00; border-left-color: #f00; }
+        .console-line.warning { color: #ff0; border-left-color: #ff0; }
+        
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: fadeIn 0.3s;
+        }
+        .modal.show {
+            display: flex !important;
+        }
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            animation: scaleIn 0.3s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        .close-btn:hover {
+            background: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Debug All Modals</h1>
+        
+        <!-- Test 1: Check Elements -->
+        <div class="test-section">
+            <h2>1️⃣ فحص العناصر (Elements Check)</h2>
+            <button onclick="checkElements()">فحص كل العناصر</button>
+            <div id="elementsStatus"></div>
+        </div>
+        
+        <!-- Test 2: Check CSS -->
+        <div class="test-section">
+            <h2>2️⃣ فحص CSS</h2>
+            <button onclick="checkCSS()">فحص CSS Classes</button>
+            <div id="cssStatus"></div>
+        </div>
+        
+        <!-- Test 3: Test Permission Modal -->
+        <div class="test-section">
+            <h2>3️⃣ اختبار Permission Modal</h2>
+            <button onclick="testPermissionModal()">فتح Permission Modal</button>
+            <button onclick="closePermissionModal()">إغلاق</button>
+            <div id="permissionStatus"></div>
+        </div>
+        
+        <!-- Test 4: Test Processing Modal -->
+        <div class="test-section">
+            <h2>4️⃣ اختبار Processing Modal</h2>
+            <button onclick="testProcessingModal()">فتح Processing Modal</button>
+            <button onclick="closeProcessingModal()">إغلاق</button>
+            <div id="processingStatus"></div>
+        </div>
+        
+        <!-- Test 5: Test Confirmed Modal -->
+        <div class="test-section">
+            <h2>5️⃣ اختبار Confirmed Modal</h2>
+            <button onclick="testConfirmedModal()">فتح Confirmed Modal</button>
+            <button onclick="closeConfirmedModal()">إغلاق</button>
+            <div id="confirmedStatus"></div>
+        </div>
+        
+        <!-- Test 6: Test Tracking Modal -->
+        <div class="test-section">
+            <h2>6️⃣ اختبار Tracking Modal</h2>
+            <button onclick="testTrackingModal()">فتح Tracking Modal</button>
+            <button onclick="closeTrackingModal()">إغلاق</button>
+            <div id="trackingStatus"></div>
+        </div>
+        
+        <!-- Test 7: Full Flow -->
+        <div class="test-section">
+            <h2>7️⃣ اختبار Full Flow</h2>
+            <button onclick="testFullFlow()">اختبار كامل (3 ثواني لكل modal)</button>
+            <div id="flowStatus"></div>
+        </div>
+        
+        <!-- Console -->
+        <div id="console">
+            <div style="color: #fff; margin-bottom: 10px; font-weight: bold;">📋 Console Log:</div>
+        </div>
+    </div>
+    
+    <!-- Modals -->
+    <div class="modal" id="permissionModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closePermissionModal()">×</button>
+            <h2 style="color: #667eea; margin-bottom: 20px;">🗺️ Permission Modal</h2>
+            <p>نحتاج موقعك للتوصيل الدقيق</p>
+        </div>
+    </div>
+    
+    <div class="modal" id="processingModal">
+        <div class="modal-content">
+            <h2 style="color: #667eea; margin-bottom: 20px;">⏳ Processing Modal</h2>
+            <p>جاري إرسال طلبك...</p>
+        </div>
+    </div>
+    
+    <div class="modal" id="orderConfirmedModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeConfirmedModal()">×</button>
+            <h2 style="color: #28a745; margin-bottom: 20px;">✅ Confirmed Modal</h2>
+            <p>تم تأكيد طلبك بنجاح!</p>
+        </div>
+    </div>
+    
+    <div class="modal" id="trackingModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeTrackingModal()">×</button>
+            <h2 style="color: #667eea; margin-bottom: 20px;">📦 Tracking Modal</h2>
+            <p>تتبع طلبك</p>
+        </div>
+    </div>
+    
+    <script>
+        function log(message, type = 'info') {
+            const console = document.getElementById('console');
+            const time = new Date().toLocaleTimeString('ar-EG');
+            const line = document.createElement('div');
+            line.className = `console-line ${type}`;
+            line.textContent = `[${time}] ${message}`;
+            console.appendChild(line);
+            console.scrollTop = console.scrollHeight;
+        }
+        
+        function showStatus(elementId, message, type) {
+            const el = document.getElementById(elementId);
+            el.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+        
+        // Test 1: Check Elements
+        function checkElements() {
+            log('🔍 Checking elements...', 'info');
+            const elements = {
+                'permissionModal': document.getElementById('permissionModal'),
+                'processingModal': document.getElementById('processingModal'),
+                'orderConfirmedModal': document.getElementById('orderConfirmedModal'),
+                'trackingModal': document.getElementById('trackingModal')
+            };
+            
+            let html = '<h3>نتائج الفحص:</h3>';
+            let allFound = true;
+            
+            for (const [id, el] of Object.entries(elements)) {
+                if (el) {
+                    html += `<div class="status success">✅ ${id} - موجود</div>`;
+                    log(`✅ ${id} found`, 'success');
+                } else {
+                    html += `<div class="status error">❌ ${id} - غير موجود!</div>`;
+                    log(`❌ ${id} NOT found`, 'error');
+                    allFound = false;
+                }
+            }
+            
+            showStatus('elementsStatus', html, allFound ? 'success' : 'error');
+        }
+        
+        // Test 2: Check CSS
+        function checkCSS() {
+            log('🔍 Checking CSS...', 'info');
+            const modal = document.getElementById('permissionModal');
+            
+            // Test .show class
+            modal.classList.add('show');
+            const display = getComputedStyle(modal).display;
+            const zIndex = getComputedStyle(modal).zIndex;
+            modal.classList.remove('show');
+            
+            let html = '<h3>نتائج CSS:</h3>';
+            html += `<div class="status ${display === 'flex' ? 'success' : 'error'}">
+                Display with .show: ${display} ${display === 'flex' ? '✅' : '❌'}
+            </div>`;
+            html += `<div class="status info">Z-Index: ${zIndex}</div>`;
+            
+            log(`Display: ${display}, Z-Index: ${zIndex}`, display === 'flex' ? 'success' : 'error');
+            showStatus('cssStatus', html, display === 'flex' ? 'success' : 'error');
+        }
+        
+        // Test 3: Permission Modal
+        function testPermissionModal() {
+            log('🔄 Opening Permission Modal...', 'info');
+            const modal = document.getElementById('permissionModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('show');
+            modal.style.display = 'flex';
+            log('✅ Permission Modal opened', 'success');
+            showStatus('permissionStatus', '✅ Modal مفتوح الآن!', 'success');
+        }
+        
+        function closePermissionModal() {
+            const modal = document.getElementById('permissionModal');
+            modal.classList.remove('show');
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+            log('❌ Permission Modal closed', 'warning');
+            showStatus('permissionStatus', '❌ Modal مغلق', 'info');
+        }
+        
+        // Test 4: Processing Modal
+        function testProcessingModal() {
+            log('🔄 Opening Processing Modal...', 'info');
+            const modal = document.getElementById('processingModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('show');
+            modal.style.display = 'flex';
+            log('✅ Processing Modal opened', 'success');
+            showStatus('processingStatus', '✅ Modal مفتوح الآن!', 'success');
+        }
+        
+        function closeProcessingModal() {
+            const modal = document.getElementById('processingModal');
+            modal.classList.remove('show');
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+            log('❌ Processing Modal closed', 'warning');
+            showStatus('processingStatus', '❌ Modal مغلق', 'info');
+        }
+        
+        // Test 5: Confirmed Modal
+        function testConfirmedModal() {
+            log('🔄 Opening Confirmed Modal...', 'info');
+            const modal = document.getElementById('orderConfirmedModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('show');
+            modal.style.display = 'flex';
+            log('✅ Confirmed Modal opened', 'success');
+            showStatus('confirmedStatus', '✅ Modal مفتوح الآن!', 'success');
+        }
+        
+        function closeConfirmedModal() {
+            const modal = document.getElementById('orderConfirmedModal');
+            modal.classList.remove('show');
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+            log('❌ Confirmed Modal closed', 'warning');
+            showStatus('confirmedStatus', '❌ Modal مغلق', 'info');
+        }
+        
+        // Test 6: Tracking Modal
+        function testTrackingModal() {
+            log('🔄 Opening Tracking Modal...', 'info');
+            const modal = document.getElementById('trackingModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('show');
+            modal.style.display = 'flex';
+            log('✅ Tracking Modal opened', 'success');
+            showStatus('trackingStatus', '✅ Modal مفتوح الآن!', 'success');
+        }
+        
+        function closeTrackingModal() {
+            const modal = document.getElementById('trackingModal');
+            modal.classList.remove('show');
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+            log('❌ Tracking Modal closed', 'warning');
+            showStatus('trackingStatus', '❌ Modal مغلق', 'info');
+        }
+        
+        // Test 7: Full Flow
+        async function testFullFlow() {
+            log('🚀 Starting Full Flow Test...', 'info');
+            showStatus('flowStatus', '⏳ جاري الاختبار...', 'info');
+            
+            // Step 1: Permission Modal
+            log('Step 1: Permission Modal', 'info');
+            testPermissionModal();
+            await new Promise(r => setTimeout(r, 3000));
+            closePermissionModal();
+            
+            // Step 2: Processing Modal
+            log('Step 2: Processing Modal', 'info');
+            testProcessingModal();
+            await new Promise(r => setTimeout(r, 3000));
+            closeProcessingModal();
+            
+            // Step 3: Confirmed Modal
+            log('Step 3: Confirmed Modal', 'info');
+            testConfirmedModal();
+            await new Promise(r => setTimeout(r, 3000));
+            closeConfirmedModal();
+            
+            // Step 4: Tracking Modal
+            log('Step 4: Tracking Modal', 'info');
+            testTrackingModal();
+            await new Promise(r => setTimeout(r, 3000));
+            closeTrackingModal();
+            
+            log('✅ Full Flow Test Completed!', 'success');
+            showStatus('flowStatus', '✅ الاختبار اكتمل بنجاح!', 'success');
+        }
+        
+        // Auto-run on load
+        window.addEventListener('load', () => {
+            log('✅ Debug page loaded successfully!', 'success');
+            log('Click buttons above to test modals', 'info');
+            checkElements();
+        });
+    </script>
+</body>
+</html>
