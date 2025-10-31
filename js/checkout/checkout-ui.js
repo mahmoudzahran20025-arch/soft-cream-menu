@@ -1,8 +1,8 @@
 // ================================================================
-// CHECKOUT UI - واجهة المستخدم (100% Tailwind Compatible)
+// CHECKOUT UI - واجهة المستخدم (FIXED Z-INDEX VERSION)
 // ================================================================
 
-console.log('📄 Loading checkout-ui.js (Tailwind Refactored)');
+console.log('🔄 Loading checkout-ui.js (Z-Index Fixed)');
 
 // ================================================================
 // Static Imports
@@ -12,10 +12,114 @@ import { showToast } from '../utils.js';
 import { storage } from '../storage.js';
 
 // ================================================================
-// ✅ updateOrderSummary - 100% Tailwind
+// ✅ Z-INDEX CONSTANTS (مطابقة للـ CSS)
+// ================================================================
+const ZINDEX = {
+  MODAL_BASE: 9000,
+  MODAL_NESTED: 9100,      // Checkout
+  MODAL_PROCESSING: 9200,  // Processing
+  MODAL_PERMISSION: 9300,  // Permission (فوق Checkout)
+  MODAL_CONFIRMED: 9400,   // Confirmed
+  MODAL_TRACKING: 9500     // Tracking (أعلى الكل)
+};
+
+// ================================================================
+// ✅ MODAL MANAGEMENT UTILITIES
+// ================================================================
+
+/**
+ * إغلاق جميع النوافذ المفتوحة (إلا المحددة)
+ */
+function closeAllModalsExcept(exceptId = null) {
+  const allModals = [
+    'checkoutModal',
+    'permissionModal', 
+    'processingModal',
+    'orderConfirmedModal',
+    'trackingModal'
+  ];
+  
+  allModals.forEach(modalId => {
+    if (modalId === exceptId) return;
+    
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.classList.remove('show');
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+    }
+  });
+  
+  console.log('✅ All modals closed except:', exceptId);
+}
+
+/**
+ * إدارة body overflow بناءً على النوافذ المفتوحة
+ */
+function updateBodyOverflow() {
+  const anyModalOpen = document.querySelector(
+    '#checkoutModal.show, #permissionModal.show, #processingModal.show, #orderConfirmedModal.show, #trackingModal.show'
+  );
+  
+  document.body.style.overflow = anyModalOpen ? 'hidden' : '';
+}
+
+/**
+ * إظهار modal مع z-index محدد
+ */
+function showModal(modalId, zIndex, closeOthers = false) {
+  console.log(`📤 Opening modal: ${modalId} with z-index: ${zIndex}`);
+  
+  const modal = document.getElementById(modalId);
+  if (!modal) {
+    console.error(`❌ Modal #${modalId} not found`);
+    return false;
+  }
+  
+  // ✅ إغلاق النوافذ الأخرى إذا لزم الأمر
+  if (closeOthers) {
+    closeAllModalsExcept(modalId);
+  }
+  
+  // ✅ تطبيق z-index بقوة
+  modal.style.zIndex = String(zIndex);
+  
+  // ✅ إظهار النافذة
+  modal.classList.remove('hidden');
+  modal.classList.add('show');
+  modal.style.display = 'flex';
+  
+  // ✅ تحديث body overflow
+  updateBodyOverflow();
+  
+  console.log(`✅ Modal ${modalId} opened successfully`);
+  return true;
+}
+
+/**
+ * إخفاء modal محدد
+ */
+function hideModal(modalId) {
+  console.log(`📥 Closing modal: ${modalId}`);
+  
+  const modal = document.getElementById(modalId);
+  if (!modal) return;
+  
+  modal.classList.remove('show');
+  modal.classList.add('hidden');
+  modal.style.display = 'none';
+  
+  // ✅ تحديث body overflow
+  updateBodyOverflow();
+  
+  console.log(`✅ Modal ${modalId} closed`);
+}
+
+// ================================================================
+// ✅ updateOrderSummary - (UNCHANGED - KEEP AS IS)
 // ================================================================
 export async function updateOrderSummary() {
-  console.log('📄 Updating order summary...');
+  console.log('🔄 Updating order summary...');
   
   const orderSummary = document.getElementById('orderSummary');
   const orderItems = document.getElementById('orderItems');
@@ -39,7 +143,7 @@ export async function updateOrderSummary() {
     const deliveryMethod = getSelectedDeliveryMethod();
     const selectedBranch = getSelectedBranch();
     
-    console.log('📄 Order summary state:', {
+    console.log('🔄 Order summary state:', {
       calculatedPrices: !!calculatedPrices,
       deliveryMethod,
       selectedBranch,
@@ -291,76 +395,35 @@ export async function updateOrderSummary() {
 }
 
 // ================================================================
-// ✅ Modal Management
+// ✅ MODAL MANAGEMENT - FIXED VERSIONS
 // ================================================================
+
 export function closeCheckoutModal(event) {
   if (event && event.target !== event.currentTarget) return;
-  
-  console.log('📄 Closing checkout modal...');
-  
-  const checkoutModal = document.getElementById('checkoutModal');
-  if (checkoutModal) {
-    checkoutModal.classList.remove('show');
-    checkoutModal.classList.add('hidden');
-    checkoutModal.style.display = 'none';
-  }
-  
-  const otherModalsOpen = document.querySelector(
-    '#processingModal.show, #orderConfirmedModal.show, #trackingModal.show, #permissionModal.show'
-  );
-  
-  if (!otherModalsOpen) {
-    document.body.style.overflow = '';
-  }
-  
-  console.log('✅ Checkout modal closed');
+  hideModal('checkoutModal');
 }
 
 export function closeConfirmedModal() {
-  console.log('📄 Closing confirmed modal...');
-  
-  const modal = document.getElementById('orderConfirmedModal');
-  if (modal) {
-    modal.classList.remove('show');
-    modal.classList.add('hidden');
-    modal.style.display = 'none';
-  }
-  
-  console.log('✅ Confirmed modal closed');
+  hideModal('orderConfirmedModal');
 }
 
-export function setupModalCloseHandlers() {
-  console.log('🔧 Setting up modal close handlers...');
-  
-  const closeConfirmedBtn = document.getElementById('closeConfirmedBtn');
-  if (closeConfirmedBtn) {
-    closeConfirmedBtn.onclick = closeConfirmedModal;
-  }
-  
-  document.addEventListener('click', function(e) {
-    const confirmedModal = document.getElementById('orderConfirmedModal');
-    if (confirmedModal && confirmedModal.classList.contains('show')) {
-      const modalContent = confirmedModal.querySelector('.modal-content, .confirmed-content');
-      if (modalContent && !modalContent.contains(e.target)) {
-        closeConfirmedModal();
-      }
-    }
-  });
-  
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      const confirmedModal = document.getElementById('orderConfirmedModal');
-      if (confirmedModal && confirmedModal.classList.contains('show')) {
-        closeConfirmedModal();
-      }
-    }
-  });
-  
-  console.log('✅ Modal close handlers ready');
+export function closePermissionModal() {
+  console.log('🔄 Closing permission modal...');
+  hideModal('permissionModal');
+}
+
+export function closeTrackingModal() {
+  console.log('🔄 Closing tracking modal...');
+  hideModal('trackingModal');
 }
 
 export function showProcessingModal(show = true, showError = false, errorMessage = '') {
-  console.log('📄 Processing modal:', { show, showError, errorMessage });
+  console.log('🔄 Processing modal:', { show, showError, errorMessage });
+  
+  if (!show) {
+    hideModal('processingModal');
+    return;
+  }
   
   const modal = document.getElementById('processingModal');
   if (!modal) {
@@ -370,48 +433,32 @@ export function showProcessingModal(show = true, showError = false, errorMessage
   
   const lang = window.currentLang || 'ar';
   
-  if (show) {
-    modal.classList.remove('hidden');
-    modal.classList.add('show');
-    modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-    
-    const title = modal.querySelector('#processing-title');
-    const subtitle = modal.querySelector('#processing-subtitle');
-    const actions = modal.querySelector('#processingActions');
-    const spinner = modal.querySelector('.spinner-container, .spinner');
-    
-    if (showError) {
-      if (spinner) spinner.style.display = 'none';
-      if (title) title.textContent = lang === 'ar' ? 'فشل في إرسال الطلب' : 'Order Failed';
-      if (subtitle) subtitle.textContent = errorMessage || (lang === 'ar' ? 'حدث خطأ أثناء معالجة طلبك' : 'An error occurred');
-      if (actions) actions.style.display = 'block';
-    } else {
-      if (spinner) spinner.style.display = 'flex';
-      if (title) title.textContent = lang === 'ar' ? 'جاري إرسال طلبك...' : 'Sending your order...';
-      if (subtitle) subtitle.textContent = lang === 'ar' ? 'الرجاء الانتظار، لا تغلق الصفحة' : 'Please wait';
-      if (actions) actions.style.display = 'none';
-    }
+  // ✅ إظهار النافذة مع z-index صحيح
+  showModal('processingModal', ZINDEX.MODAL_PROCESSING, false);
+  
+  const title = modal.querySelector('#processing-title');
+  const subtitle = modal.querySelector('#processing-subtitle');
+  const actions = modal.querySelector('#processingActions');
+  const spinner = modal.querySelector('.spinner-container, .spinner');
+  
+  if (showError) {
+    if (spinner) spinner.style.display = 'none';
+    if (title) title.textContent = lang === 'ar' ? 'فشل في إرسال الطلب' : 'Order Failed';
+    if (subtitle) subtitle.textContent = errorMessage || (lang === 'ar' ? 'حدث خطأ أثناء معالجة طلبك' : 'An error occurred');
+    if (actions) actions.style.display = 'block';
   } else {
-    modal.classList.remove('show');
-    modal.classList.add('hidden');
-    modal.style.display = 'none';
-    
-    const otherModalsOpen = document.querySelector(
-      '#checkoutModal.show, #orderConfirmedModal.show, #trackingModal.show, #permissionModal.show'
-    );
-    
-    if (!otherModalsOpen) {
-      document.body.style.overflow = '';
-    }
+    if (spinner) spinner.style.display = 'flex';
+    if (title) title.textContent = lang === 'ar' ? 'جاري إرسال طلبك...' : 'Sending your order...';
+    if (subtitle) subtitle.textContent = lang === 'ar' ? 'الرجاء الانتظار، لا تغلق الصفحة' : 'Please wait';
+    if (actions) actions.style.display = 'none';
   }
 }
 
 // ================================================================
-// ✅ showConfirmedModal - 100% Tailwind
+// ✅ showConfirmedModal - FIXED VERSION
 // ================================================================
 export function showConfirmedModal(orderId, eta, customerPhone, itemsText, orderData) {
-  console.log('📄 Showing confirmed modal:', { orderId, eta });
+  console.log('🔄 Showing confirmed modal:', { orderId, eta });
   
   const modal = document.getElementById('orderConfirmedModal');
   if (!modal) {
@@ -421,7 +468,10 @@ export function showConfirmedModal(orderId, eta, customerPhone, itemsText, order
   
   const lang = window.currentLang || 'ar';
   
-  // ✅ Update content
+  // ✅ CRITICAL: إظهار النافذة مع z-index صحيح وإغلاق الأخرى
+  showModal('orderConfirmedModal', ZINDEX.MODAL_CONFIRMED, true);
+  
+  // ✅ Update content (unchanged)
   const orderIdEl = modal.querySelector('#confirmedOrderId');
   const etaEl = modal.querySelector('#confirmedEta');
   const branchInfoEl = modal.querySelector('#selectedBranchInfo');
@@ -487,158 +537,27 @@ export function showConfirmedModal(orderId, eta, customerPhone, itemsText, order
   
   if (copyBtn) copyBtn.onclick = () => copyOrderId(orderId);
   if (whatsappBtn) whatsappBtn.onclick = () => shareOnWhatsApp(orderId, itemsText, customerPhone);
-  if (trackBtn) trackBtn.onclick = () => { closeConfirmedModal(); setTimeout(() => showTrackingModal(orderId), 300); };
+  
+  // ✅ CRITICAL FIX: Track button now properly closes confirmed modal and opens tracking
+  if (trackBtn) {
+    trackBtn.onclick = () => {
+      console.log('📊 Track button clicked - switching modals...');
+      hideModal('orderConfirmedModal');
+      setTimeout(() => showTrackingModal(orderId), 300);
+    };
+  }
+  
   if (continueBtn) continueBtn.onclick = () => closeConfirmedModal();
   if (closeBtn) closeBtn.onclick = () => closeConfirmedModal();
   
-  // ✅ Show modal
-  modal.style.display = 'flex';
-  modal.style.opacity = '1';
-  modal.style.visibility = 'visible';
-  modal.classList.remove('hidden');
-  modal.classList.add('show');
-  document.body.style.overflow = 'hidden';
-  
+  // Force a reflow
   void modal.offsetHeight;
   
-  console.log('✅ Confirmed modal shown');
+  console.log('✅ Confirmed modal shown with z-index:', ZINDEX.MODAL_CONFIRMED);
 }
 
 // ================================================================
-// ✅ Form Management
-// ================================================================
-export function resetFormFields() {
-  console.log('📄 Resetting form fields...');
-  
-  const fields = [
-    'customerName',
-    'customerPhone', 
-    'customerAddress',
-    'orderNotes',
-    'couponCodeInput'
-  ];
-  
-  fields.forEach(fieldId => {
-    const field = document.getElementById(fieldId);
-    if (field) {
-      field.value = '';
-      field.disabled = false;
-    }
-  });
-  
-  const couponStatus = document.getElementById('couponStatus');
-  if (couponStatus) {
-    couponStatus.style.display = 'none';
-    couponStatus.innerHTML = '';
-  }
-  
-  const locationBtn = document.getElementById('locationBtn');
-  if (locationBtn) {
-    locationBtn.classList.remove('active');
-    locationBtn.disabled = false;
-    const lang = window.currentLang || 'ar';
-    locationBtn.innerHTML = `
-      <svg class="w-4 h-4" aria-hidden="true"><use href="#navigation"></use></svg>
-      <span>${lang === 'ar' ? 'استخدام الموقع الحالي' : 'Use Current Location'}</span>
-    `;
-  }
-  
-  console.log('✅ Form fields reset');
-}
-
-export function fillSavedUserData() {
-  console.log('📄 Filling saved user data...');
-  
-  const userData = storage.getUserData();
-  if (!userData) return;
-  
-  const nameField = document.getElementById('customerName');
-  if (nameField && userData.name) nameField.value = userData.name;
-  
-  const phoneField = document.getElementById('customerPhone');
-  if (phoneField && userData.phone) phoneField.value = userData.phone;
-  
-  console.log('✅ Saved user data filled');
-}
-
-export function saveFormData() {
-  const nameField = document.getElementById('customerName');
-  const phoneField = document.getElementById('customerPhone');
-  
-  if (nameField?.value || phoneField?.value) {
-    const userData = storage.getUserData() || {};
-    if (nameField?.value) userData.name = nameField.value;
-    if (phoneField?.value) userData.phone = phoneField.value;
-    storage.setUserData(userData);
-  }
-}
-
-export function restoreFormData() {
-  saveFormData();
-}
-
-export function resetCheckoutUI() {
-  console.log('📄 Resetting checkout UI...');
-  
-  document.querySelectorAll('.delivery-option').forEach(option => option.classList.remove('selected'));
-  document.querySelectorAll('.branch-card').forEach(card => card.classList.remove('selected'));
-  
-  const branchSelection = document.getElementById('branchSelection');
-  if (branchSelection) branchSelection.style.display = 'none';
-  
-  const addressGroup = document.getElementById('addressGroup');
-  if (addressGroup) addressGroup.style.display = 'none';
-  
-  const checkoutForm = document.getElementById('checkoutForm');
-  if (checkoutForm) checkoutForm.classList.remove('show');
-  
-  console.log('✅ Checkout UI reset');
-}
-
-// ================================================================
-// ✅ Sharing Functions
-// ================================================================
-export function copyOrderId(orderId) {
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(orderId).then(() => {
-      const lang = window.currentLang || 'ar';
-      showToast(lang === 'ar' ? 'تم النسخ!' : 'Copied!', lang === 'ar' ? 'تم نسخ رقم الطلب' : 'Order ID copied', 'success');
-    }).catch(() => fallbackCopyTextToClipboard(orderId));
-  } else {
-    fallbackCopyTextToClipboard(orderId);
-  }
-}
-
-function fallbackCopyTextToClipboard(text) {
-  const textArea = document.createElement('textarea');
-  textArea.value = text;
-  textArea.className = 'fixed top-0 left-0 w-0 h-0 p-0 opacity-0';
-  document.body.appendChild(textArea);
-  textArea.focus();
-  textArea.select();
-  
-  try {
-    document.execCommand('copy');
-    const lang = window.currentLang || 'ar';
-    showToast(lang === 'ar' ? 'تم النسخ!' : 'Copied!', lang === 'ar' ? 'تم نسخ رقم الطلب' : 'Order ID copied', 'success');
-  } catch (err) {
-    console.error('❌ Copy failed:', err);
-  }
-  
-  document.body.removeChild(textArea);
-}
-
-export function shareOnWhatsApp(orderId, itemsText, customerPhone) {
-  const lang = window.currentLang || 'ar';
-  const message = lang === 'ar' 
-    ? `طلبي من المطعم 🍕\nرقم الطلب: ${orderId}\nالطلبات: ${itemsText}\nللاستفسار: ${customerPhone}`
-    : `My restaurant order 🍕\nOrder ID: ${orderId}\nItems: ${itemsText}\nPhone: ${customerPhone}`;
-  
-  window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
-}
-
-// ================================================================
-// ✅ Tracking Functions - 100% Tailwind
+// ✅ showTrackingModal - FIXED VERSION
 // ================================================================
 export function showTrackingModal(orderId) {
   console.log('🔍 Opening tracking modal for:', orderId);
@@ -649,10 +568,11 @@ export function showTrackingModal(orderId) {
   if (!modal) {
     modal = document.createElement('div');
     modal.id = 'trackingModal';
-    modal.className = 'fixed inset-0 bg-gray-900/80 backdrop-blur-md flex items-center justify-center z-modal p-5';
+    // ✅ NO inline classes - will use showModal() function
+    modal.className = 'modal hidden';
     modal.innerHTML = `
-      <div class="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-lg w-full shadow-2xl relative">
-        <button class="absolute top-4 ${lang === 'ar' ? 'left-4' : 'right-4'} w-10 h-10 bg-gray-100 dark:bg-gray-700 hover:bg-red-500 hover:text-white rounded-full flex items-center justify-center transition-colors duration-300 group" onclick="window.closeTrackingModal?.()">
+      <div class="modal-content tracking-content">
+        <button class="close-modal-btn" onclick="window.closeTrackingModal?.()">
           <svg class="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" aria-hidden="true"><use href="#x"></use></svg>
         </button>
         <div id="trackingContent"></div>
@@ -665,6 +585,7 @@ export function showTrackingModal(orderId) {
   const content = document.getElementById('trackingContent');
   if (!content) return;
   
+  // ✅ Loading state - 100% Tailwind
   content.innerHTML = `
     <div class="flex flex-col items-center justify-center py-8 text-center">
       <div class="w-16 h-16 border-4 border-gray-200 dark:border-gray-600 border-t-primary rounded-full animate-spin mb-4"></div>
@@ -674,9 +595,8 @@ export function showTrackingModal(orderId) {
     </div>
   `;
   
-  modal.classList.add('show');
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
+  // ✅ CRITICAL: Use showModal with highest z-index
+  showModal('trackingModal', ZINDEX.MODAL_TRACKING, false);
   
   fetchOrderStatus(orderId);
 }
@@ -689,6 +609,7 @@ async function fetchOrderStatus(orderId) {
     const { api } = await import('../api.js');
     const result = await api.trackOrder(orderId);
     
+    // ✅ Success state - 100% Tailwind
     content.innerHTML = `
       <div class="flex flex-col items-center text-center">
         <div class="text-7xl mb-6">📦</div>
@@ -739,6 +660,7 @@ async function fetchOrderStatus(orderId) {
     const { api } = await import('../api.js');
     const errorMessage = api.getErrorMessage ? api.getErrorMessage(error, lang) : error.message;
     
+    // ✅ Error state - 100% Tailwind
     content.innerHTML = `
       <div class="flex flex-col items-center text-center">
         <div class="text-7xl mb-6">❌</div>
@@ -756,22 +678,12 @@ async function fetchOrderStatus(orderId) {
   }
 }
 
-export function closeTrackingModal() {
-  console.log('📄 Closing tracking modal...');
-  const modal = document.getElementById('trackingModal');
-  if (modal) {
-    modal.classList.remove('show');
-    modal.style.display = 'none';
-    document.body.style.overflow = '';
-  }
-}
-
 export function openTrackingModal(orderId = '') {
   showTrackingModal(orderId);
 }
 
 export async function checkOrderStatus() {
-  console.log('📄 Checking order status...');
+  console.log('🔄 Checking order status...');
   
   const trackingInput = document.getElementById('trackingInput');
   const trackingResult = document.getElementById('trackingResult');
@@ -898,13 +810,167 @@ export async function checkOrderStatus() {
   }
 }
 
-export function closePermissionModal() {
-  const modal = document.getElementById('permissionModal');
-  if (modal) {
-    modal.classList.remove('show');
-    modal.classList.add('hidden');
-    modal.style.display = 'none';
+// ================================================================
+// ✅ Sharing Functions
+// ================================================================
+export function copyOrderId(orderId) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(orderId).then(() => {
+      const lang = window.currentLang || 'ar';
+      showToast(lang === 'ar' ? 'تم النسخ!' : 'Copied!', lang === 'ar' ? 'تم نسخ رقم الطلب' : 'Order ID copied', 'success');
+    }).catch(() => fallbackCopyTextToClipboard(orderId));
+  } else {
+    fallbackCopyTextToClipboard(orderId);
   }
+}
+
+function fallbackCopyTextToClipboard(text) {
+  const textArea = document.createElement('textarea');
+  textArea.value = text;
+  textArea.className = 'fixed top-0 left-0 w-0 h-0 p-0 opacity-0';
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  
+  try {
+    document.execCommand('copy');
+    const lang = window.currentLang || 'ar';
+    showToast(lang === 'ar' ? 'تم النسخ!' : 'Copied!', lang === 'ar' ? 'تم نسخ رقم الطلب' : 'Order ID copied', 'success');
+  } catch (err) {
+    console.error('❌ Copy failed:', err);
+  }
+  
+  document.body.removeChild(textArea);
+}
+
+export function shareOnWhatsApp(orderId, itemsText, customerPhone) {
+  const lang = window.currentLang || 'ar';
+  const message = lang === 'ar' 
+    ? `طلبي من المطعم 🍕\nرقم الطلب: ${orderId}\nالطلبات: ${itemsText}\nللاستفسار: ${customerPhone}`
+    : `My restaurant order 🍕\nOrder ID: ${orderId}\nItems: ${itemsText}\nPhone: ${customerPhone}`;
+  
+  window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+}
+
+// ================================================================
+// ✅ Form Management Functions
+// ================================================================
+export function resetFormFields() {
+  console.log('🔄 Resetting form fields...');
+  
+  const fields = [
+    'customerName',
+    'customerPhone', 
+    'customerAddress',
+    'orderNotes',
+    'couponCodeInput'
+  ];
+  
+  fields.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field) {
+      field.value = '';
+      field.disabled = false;
+    }
+  });
+  
+  const couponStatus = document.getElementById('couponStatus');
+  if (couponStatus) {
+    couponStatus.style.display = 'none';
+    couponStatus.innerHTML = '';
+  }
+  
+  const locationBtn = document.getElementById('locationBtn');
+  if (locationBtn) {
+    locationBtn.classList.remove('active');
+    locationBtn.disabled = false;
+    const lang = window.currentLang || 'ar';
+    locationBtn.innerHTML = `
+      <svg class="w-4 h-4" aria-hidden="true"><use href="#navigation"></use></svg>
+      <span>${lang === 'ar' ? 'استخدام الموقع الحالي' : 'Use Current Location'}</span>
+    `;
+  }
+  
+  console.log('✅ Form fields reset');
+}
+
+export function fillSavedUserData() {
+  console.log('🔄 Filling saved user data...');
+  
+  const userData = storage.getUserData();
+  if (!userData) return;
+  
+  const nameField = document.getElementById('customerName');
+  if (nameField && userData.name) nameField.value = userData.name;
+  
+  const phoneField = document.getElementById('customerPhone');
+  if (phoneField && userData.phone) phoneField.value = userData.phone;
+  
+  console.log('✅ Saved user data filled');
+}
+
+export function saveFormData() {
+  const nameField = document.getElementById('customerName');
+  const phoneField = document.getElementById('customerPhone');
+  
+  if (nameField?.value || phoneField?.value) {
+    const userData = storage.getUserData() || {};
+    if (nameField?.value) userData.name = nameField.value;
+    if (phoneField?.value) userData.phone = phoneField.value;
+    storage.setUserData(userData);
+  }
+}
+
+export function restoreFormData() {
+  saveFormData();
+}
+
+export function resetCheckoutUI() {
+  console.log('🔄 Resetting checkout UI...');
+  
+  document.querySelectorAll('.delivery-option').forEach(option => option.classList.remove('selected'));
+  document.querySelectorAll('.branch-card').forEach(card => card.classList.remove('selected'));
+  
+  const branchSelection = document.getElementById('branchSelection');
+  if (branchSelection) branchSelection.style.display = 'none';
+  
+  const addressGroup = document.getElementById('addressGroup');
+  if (addressGroup) addressGroup.style.display = 'none';
+  
+  const checkoutForm = document.getElementById('checkoutForm');
+  if (checkoutForm) checkoutForm.classList.remove('show');
+  
+  console.log('✅ Checkout UI reset');
+}
+
+export function setupModalCloseHandlers() {
+  console.log('🔧 Setting up modal close handlers...');
+  
+  const closeConfirmedBtn = document.getElementById('closeConfirmedBtn');
+  if (closeConfirmedBtn) {
+    closeConfirmedBtn.onclick = closeConfirmedModal;
+  }
+  
+  document.addEventListener('click', function(e) {
+    const confirmedModal = document.getElementById('orderConfirmedModal');
+    if (confirmedModal && confirmedModal.classList.contains('show')) {
+      const modalContent = confirmedModal.querySelector('.modal-content, .confirmed-content');
+      if (modalContent && !modalContent.contains(e.target)) {
+        closeConfirmedModal();
+      }
+    }
+  });
+  
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      const confirmedModal = document.getElementById('orderConfirmedModal');
+      if (confirmedModal && confirmedModal.classList.contains('show')) {
+        closeConfirmedModal();
+      }
+    }
+  });
+  
+  console.log('✅ Modal close handlers ready');
 }
 
 // ================================================================
@@ -918,5 +984,6 @@ if (document.readyState === 'loading') {
 
 window.closeTrackingModal = closeTrackingModal;
 window.closeConfirmedModal = closeConfirmedModal;
+window.closePermissionModal = closePermissionModal;
 
-console.log('✅ checkout-ui.js loaded successfully (100% Tailwind Compatible)');
+console.log('✅ checkout-ui.js loaded successfully (Z-Index Fixed Version)');

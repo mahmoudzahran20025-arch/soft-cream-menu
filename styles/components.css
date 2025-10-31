@@ -19,7 +19,12 @@
     /* Layout Variables (فقط) */
     --sidebar-width: 320px;
     
-    /* Z-Index Variables (للتوافق مع الكود القديم) */
+    /* ========================================
+     * Z-INDEX SYSTEM - FIXED HIERARCHY
+     * Strategy: Stacking Context Hierarchy
+     * ======================================== */
+    
+    /* Base Layers */
     --z-base: 0;
     --z-content: 10;
     --z-carousel: 5;
@@ -32,12 +37,19 @@
     --z-header-elements: 101;
     --z-sidebar-overlay: 900;
     --z-sidebar: 1000;
-    --z-modal-overlay: 1900;
-    --z-modal-base: 2000;
-    --z-modal-nested: 2100;
-    --z-modal-processing: 2200;
-    --z-modal-close-btn: 2300;
-    --z-toast: 5000;
+    
+    /* Modal System - UPDATED (9000+ range) */
+    --z-modal-overlay: 8900;        /* خلفية الـ modals */
+    --z-modal-base: 9000;            /* Product/Cart modals */
+    --z-modal-nested: 9100;          /* Checkout Modal */
+    --z-modal-processing: 9200;      /* Processing Modal */
+    --z-modal-permission: 9300;      /* Permission Modal (فوق Checkout) */
+    --z-modal-confirmed: 9400;       /* Confirmed Modal */
+    --z-modal-tracking: 9500;        /* Tracking Modal (أعلى الكل) */
+    --z-modal-close-btn: 9600;       /* Close buttons */
+    
+    /* Toast */
+    --z-toast: 10000;
   }
 
   @media (max-width: 768px) {
@@ -118,24 +130,6 @@
   .dark .animated-background::before { background: linear-gradient(180deg, rgba(26, 22, 37, 0) 0%, rgba(26, 22, 37, 0.98) 100%); }
   .page-content { position: relative; z-index: var(--z-content); @apply pr-0 pl-0; }
 
-  /* ================================================================
- * 🎬 HERO SECTION - V4 (Preview Mode)
- * ================================================================
- * ✅ Mobile: 1.2 slides (شريحة + 20% preview)
- * ✅ Tablet: 2.2 slides (شريحتين + 20% preview)
- * ✅ Desktop: 3.2 slides (3 شرائح + 20% preview)
- * ✅ استغلال كامل عرض الشاشة (No empty spaces)
- * ✅ Fade effect على الـ preview slides
- * ================================================================ */
-/* ================================================================
- * 🎬 HERO SECTION - ENHANCED V5 (Tailwind v4 Compatible)
- * ================================================================
- * ✅ يعمل مع npx tailwindcss --watch
- * ✅ تحميل صورتين في HTML للأداء
- * ✅ Preview أصغر وأكثر احترافية
- * ✅ إزالة المساحات الفارغة
- * ✅ أزرار شفافة على الموبايل
- * ================================================================ */
 /* ================================================================
  * 🎬 HERO SECTION - V7 (CLS Score < 0.05)
  * ================================================================

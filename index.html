@@ -28,9 +28,11 @@
 	<!-- ✅ Unified CSS (React + Vanilla - includes components.css) -->
 	<link rel="stylesheet" crossorigin href="./dist/react-app/assets/index-Ckm1kOKL.css">
 	
-	<!-- 🔧 CRITICAL FIX: Modal Visibility & Z-Index -->
+	<!-- 🔧 CRITICAL FIX: Modal Visibility & Z-Index (UPDATED SYSTEM) -->
 	<style>
-		/* Modal Visibility */
+		/* ========================================
+		 * MODAL VISIBILITY
+		 * ======================================== */
 		.checkout-modal-overlay.show,
 		.permission-modal.show,
 		.processing-modal.show,
@@ -39,19 +41,38 @@
 			display: flex !important;
 		}
 		
-		/* Z-Index Hierarchy - CRITICAL! */
-		.checkout-modal-overlay {
-			z-index: 2000 !important;
+		/* ========================================
+		 * Z-INDEX HIERARCHY - FIXED SYSTEM
+		 * Strategy: 9000+ range for modals
+		 * ======================================== */
+		.checkout-modal-overlay,
+		#checkoutModal {
+			z-index: 9100 !important;  /* Checkout Modal */
 		}
-		.permission-modal {
-			z-index: 2100 !important;
+		
+		.permission-modal,
+		#permissionModal {
+			z-index: 9300 !important;  /* Permission Modal (فوق Checkout) */
 		}
-		.processing-modal {
-			z-index: 2200 !important;
+		
+		.processing-modal,
+		#processingModal {
+			z-index: 9200 !important;  /* Processing Modal */
 		}
+		
 		.confirmed-modal,
-		.tracking-modal {
-			z-index: 2000 !important;
+		#orderConfirmedModal {
+			z-index: 9400 !important;  /* Confirmed Modal */
+		}
+		
+		.tracking-modal,
+		#trackingModal {
+			z-index: 9500 !important;  /* Tracking Modal (أعلى الكل) */
+		}
+		
+		/* Product/CTA Modals */
+		#cta-modal {
+			z-index: 9000 !important;  /* Base modal */
 		}
 	</style>
 	
@@ -1507,7 +1528,7 @@
 </script>
 
 <!-- 🆕 React Mini-App Scripts (auto-injected) -->
-<link rel="stylesheet" crossorigin href="./dist/react-app/assets/index-Ckm1kOKL.css">
-<script type="module" crossorigin src="./dist/react-app/assets/index-CEltfzgg.js"></script>
+<link rel="stylesheet" crossorigin href="./dist/react-app/assets/index-wsoA6iZw.css">
+<script type="module" crossorigin src="./dist/react-app/assets/index-BHoNZQ5n.js"></script>
 </body>
 </html>
