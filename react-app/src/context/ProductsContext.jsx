@@ -134,52 +134,29 @@ export const ProductsProvider = ({ children }) => {
     }
   }, []);
 
-  // Apply filters - FIXED VERSION
+  // Apply filters
   const applyFilters = useCallback((newFilters) => {
-    console.log('🔍 Applying filters:', newFilters);
     setFilters(newFilters);
     
-    // Start with all products
-    let filtered = [...products];
-    
-    // Apply search query (client-side filtering)
-    if (newFilters.searchQuery && newFilters.searchQuery.trim().length > 0) {
-      const query = newFilters.searchQuery.toLowerCase().trim();
-      filtered = filtered.filter(product => 
-        product.name?.toLowerCase().includes(query) ||
-        product.name_en?.toLowerCase().includes(query) ||
-        product.description?.toLowerCase().includes(query) ||
-        product.description_en?.toLowerCase().includes(query)
-      );
-      console.log(`📝 Search "${query}" found ${filtered.length} products`);
+    // If search query exists, use search
+    if (newFilters.searchQuery) {
+      searchProducts(newFilters.searchQuery);
+      return;
     }
     
-    // Apply category filter
-    if (newFilters.category) {
-      filtered = filtered.filter(product => product.category === newFilters.category);
-      console.log(`📂 Category "${newFilters.category}" found ${filtered.length} products`);
-    }
+    // Otherwise use discovery with filters
+    const filterParams = {};
+    if (newFilters.category) filterParams.category = newFilters.category;
+    if (newFilters.energyType) filterParams.energyType = newFilters.energyType;
+    if (newFilters.minCalories) filterParams.minCalories = newFilters.minCalories;
+    if (newFilters.maxCalories) filterParams.maxCalories = newFilters.maxCalories;
     
-    // Apply energy type filter
-    if (newFilters.energyType) {
-      filtered = filtered.filter(product => product.energyType === newFilters.energyType);
-      console.log(`⚡ Energy type "${newFilters.energyType}" found ${filtered.length} products`);
+    if (Object.keys(filterParams).length > 0) {
+      discoverProducts(filterParams);
+    } else {
+      setFilteredProducts(products);
     }
-    
-    // Apply calorie range filter
-    if (newFilters.minCalories !== null || newFilters.maxCalories !== null) {
-      filtered = filtered.filter(product => {
-        const calories = product.nutrition?.calories || 0;
-        const matchesMin = newFilters.minCalories === null || calories >= newFilters.minCalories;
-        const matchesMax = newFilters.maxCalories === null || calories <= newFilters.maxCalories;
-        return matchesMin && matchesMax;
-      });
-      console.log(`🔥 Calorie range found ${filtered.length} products`);
-    }
-    
-    console.log(`✅ Final filtered products: ${filtered.length}`);
-    setFilteredProducts(filtered);
-  }, [products]);
+  }, [products, searchProducts, discoverProducts]);
 
   // Open product modal
   const openProduct = useCallback((product) => {

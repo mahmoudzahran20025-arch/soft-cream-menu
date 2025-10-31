@@ -248,12 +248,48 @@ if (document.readyState === 'loading') {
 }
 
 async function initGlobalFunctions() {
-  console.log(' Global functions initialized');
+  console.log('✅ Global functions initialized');
   
   // Check dependencies
   checkDependencies();
   
-  // Initialize theme
+  // ⚡ CRITICAL: Initialize i18n system
+  if (typeof window.i18n === 'undefined') {
+    // Dynamic import of i18n modules
+    try {
+      const [{ i18n }, { translationsData }, { translationsAdditions }] = await Promise.all([
+        import('./translations.js'),
+        import('./translations-data.js'),
+        import('./translations-data-additions.js')
+      ]);
+      
+      // Load base translations
+      i18n.loadTranslations?.(translationsData);
+      console.log('✅ i18n base data loaded');
+      
+      // Add additional translations
+      if (translationsAdditions) {
+        Object.keys(translationsAdditions).forEach(lang => {
+          i18n.addTranslations?.(lang, translationsAdditions[lang]);
+        });
+        console.log('✅ i18n additions merged');
+      }
+      
+      // Set saved language
+      const savedLang = window.storage?.getLang?.() || 'ar';
+      i18n.setLang?.(savedLang);
+      console.log(`✅ Language set to: ${savedLang}`);
+      
+      // Show total keys
+      const totalKeys = Object.keys(i18n.getAll()).length;
+      console.log(`📊 Total translation keys: ${totalKeys}`);
+      
+    } catch (error) {
+      console.error('❌ Failed to initialize i18n:', error);
+    }
+  }
+  
+  // Load saved theme using storage.js
   if (window.storage) {
     const savedTheme = window.storage.getTheme();
     if (savedTheme === 'dark') {
@@ -266,36 +302,19 @@ async function initGlobalFunctions() {
     document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
   }
   
-  // CRITICAL: Bootstrap التطبيق أولاً (يحمّل i18n)
-  if (window.appModule && window.appModule.bootstrap) {
-    console.log(' Starting app bootstrap...');
-    await window.appModule.bootstrap();
+  // ✅ الاستماع لحدث تغيير اللغة من i18n
+  if (window.i18n && window.i18n.on) {
+    window.i18n.on('change', (newLang) => {
+      console.log(`🔔 [Global] Received language change event: ${newLang}`);
+      updateVanillaUI(newLang);
+      
+      // Dispatch event for React
+      window.dispatchEvent(new CustomEvent('language-changed', { detail: { lang: newLang } }));
+    });
+    console.log('✅ Subscribed to i18n language change events');
   } else {
-    console.warn(' appModule.bootstrap not available yet, waiting...');
-    // انتظر قليلاً ثم حاول مرة أخرى
-    setTimeout(async () => {
-      if (window.appModule && window.appModule.bootstrap) {
-        console.log(' Starting app bootstrap (delayed)...');
-        await window.appModule.bootstrap();
-      }
-    }, 100);
+    console.warn('⚠️ i18n not available, language changes will not be live');
   }
-  
-  // الاستماع لحدث تغيير اللغة من i18n (بعد Bootstrap)
-  setTimeout(() => {
-    if (window.i18n && window.i18n.on) {
-      window.i18n.on('change', (newLang) => {
-        console.log(` [Global] Received language change event: ${newLang}`);
-        updateVanillaUI(newLang);
-        
-        // Dispatch event for React
-        window.dispatchEvent(new CustomEvent('language-changed', { detail: { lang: newLang } }));
-      });
-      console.log(' Subscribed to i18n language change events');
-    } else {
-      console.warn(' i18n not available, language changes will not be live');
-    }
-  }, 200);
 }
 
-console.log(' global-functions.js loaded successfully');
+console.log('✅ global-functions.js loaded successfully');
