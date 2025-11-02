@@ -54,11 +54,9 @@ export async function addToCart(event, productId, quantity = 1) {
   } catch (error) {
     console.error('Failed to get product:', error);
     const lang = window.currentLang || 'ar';
-    showToast(
-      lang === 'ar' ? 'خطأ' : 'Error',
-      lang === 'ar' ? 'فشل إضافة المنتج' : 'Failed to add product',
-      'error'
-    );
+    const errorTitle = window.i18n?.t('errorTitle') || (lang === 'ar' ? 'خطأ' : 'Error');
+    const errorMsg = window.i18n?.t('errorAddToCart') || (lang === 'ar' ? 'فشل إضافة المنتج' : 'Failed to add product');
+    showToast(errorTitle, errorMsg, 'error');
     return;
   }
   
@@ -73,11 +71,9 @@ export async function addToCart(event, productId, quantity = 1) {
   if (existing) {
     if (existing.quantity + quantity > MAX_QUANTITY) {
       const lang = window.currentLang || 'ar';
-      showToast(
-        lang === 'ar' ? 'خطأ' : 'Error',
-        lang === 'ar' ? `الحد الأقصى ${MAX_QUANTITY} قطعة` : `Maximum ${MAX_QUANTITY} items`,
-        'error'
-      );
+      const errorTitle = window.i18n?.t('errorTitle') || (lang === 'ar' ? 'خطأ' : 'Error');
+      const errorMsg = window.i18n?.t('errorMaxQuantity', {max: MAX_QUANTITY}) || (lang === 'ar' ? `الحد الأقصى ${MAX_QUANTITY} قطعة` : `Maximum ${MAX_QUANTITY} items`);
+      showToast(errorTitle, errorMsg, 'error');
       return;
     }
     existing.quantity += quantity;
@@ -94,7 +90,7 @@ export async function addToCart(event, productId, quantity = 1) {
   try {
     const currentLang = window.currentLang || 'ar';
     const name = currentLang === 'ar' ? product.name : product.nameEn;
-    const addedText = currentLang === 'ar' ? 'تمت الإضافة! 🎉' : 'Added! 🎉';
+    const addedText = window.i18n?.t('successAddedToCart') || (currentLang === 'ar' ? 'تمت الإضافة! 🎉' : 'Added! 🎉');
     showToast(addedText, `${name} × ${quantity}`, 'success');
   } catch (e) {
     console.log('Toast error:', e);
@@ -234,10 +230,10 @@ async function updateSingleCartUI(itemsId, totalId, footerId, total, translation
     cartTotal.textContent = `${total.toFixed(2)} ${currency}`;
   }
   
-  // ✅ Empty Cart - Using SVG Sprites
+  // ✅ Empty Cart - Using SVG Sprites + i18n
   if (cartItems.length === 0) {
-    const emptyText = currentLang === 'ar' ? 'سلتك فارغة حالياً' : 'Your cart is empty';
-    const emptySubtext = currentLang === 'ar' ? 'أضف بعض الآيس كريم اللذيذ! 🍦' : 'Add some delicious ice cream! 🍦';
+    const emptyText = window.i18n?.t('cartEmpty') || (currentLang === 'ar' ? 'سلتك فارغة حالياً' : 'Your cart is empty');
+    const emptySubtext = window.i18n?.t('cartEmptySubtitle') || (currentLang === 'ar' ? 'أضف بعض الآيس كريم اللذيذ! 🍦' : 'Add some delicious ice cream! 🍦');
     
     cartItemsEl.innerHTML = `
       <div class="flex flex-col items-center justify-center py-16 text-center">
@@ -494,6 +490,27 @@ if (typeof window !== 'undefined') {
   window.removeFromCart = removeFromCart;
   
   console.log('✅ Cart module initialized with SVG sprites');
+  
+  // ================================================================
+  // 🌐 Language Change Listener
+  // ================================================================
+  window.addEventListener('language-changed', async (event) => {
+    const newLang = event.detail?.lang || 'ar';
+    console.log('🛒 Cart: Language changed to', newLang);
+    
+    // ✅ تحديث window.currentLang
+    window.currentLang = newLang;
+    
+    // ✅ إعادة بناء واجهة السلة
+    try {
+      await updateCartUI();
+      console.log('✅ Cart UI updated for new language');
+    } catch (err) {
+      console.error('❌ Failed to update Cart UI:', err);
+    }
+  });
+  
+  console.log('✅ Cart: Language change listener registered');
 }
 
 console.log('✅ Cart module loaded');

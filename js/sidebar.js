@@ -489,6 +489,24 @@ if (typeof window !== 'undefined') {
 }
 
 // ================================================================
+// ===== Scroll to Element Helper =====
+// ================================================================
+function scrollToElement(selector) {
+  const element = document.querySelector(selector);
+  if (element) {
+    setTimeout(() => {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Highlight the element briefly
+      element.style.transition = 'box-shadow 0.3s ease';
+      element.style.boxShadow = '0 0 20px rgba(255, 107, 157, 0.5)';
+      setTimeout(() => {
+        element.style.boxShadow = '';
+      }, 1500);
+    }, 100);
+  }
+}
+
+// ================================================================
 // ===== Expose Functions Globally =====
 // ================================================================
 if (typeof window !== 'undefined') {
@@ -503,6 +521,7 @@ if (typeof window !== 'undefined') {
   window.openSettings = openSettings;
   window.showAboutInfo = showAboutInfo;
   window.showContactInfo = showContactInfo;
+  window.scrollToElement = scrollToElement;
   
   // Export as module for global-functions.js
   window.sidebarModule = {
@@ -516,7 +535,8 @@ if (typeof window !== 'undefined') {
     openOrdersPage,
     openSettings,
     showAboutInfo,
-    showContactInfo
+    showContactInfo,
+    scrollToElement
   };
   
   console.log(' Sidebar functions exposed globally');

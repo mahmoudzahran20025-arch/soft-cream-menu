@@ -117,6 +117,8 @@ export const translationsAdditions = {
     "errorNetworkFailed": "خطأ في الاتصال بالإنترنت",
     "errorServerFailed": "خطأ في الخادم",
     "errorUnknown": "حدث خطأ غير متوقع",
+    "errorAddToCart": "فشل إضافة المنتج",
+    "errorMaxQuantity": "الحد الأقصى {{max}} قطعة",
     
     // Success
     "successAddedToCart": "تمت الإضافة للسلة",
@@ -166,7 +168,124 @@ export const translationsAdditions = {
     "footerPrivacy": "سياسة الخصوصية",
     "footerTerms": "الشروط والأحكام",
     "footerSocial": "تابعنا",
-    "footerCopyright": "© 2025 سوفت كريم. جميع الحقوق محفوظة."
+    "footerCopyright": "© 2025 سوفت كريم. جميع الحقوق محفوظة.",
+    
+    // Footer New Keys (from Sidebar)
+    "footerNavHealthy": "معلوماتنا الصحية",
+    "footerHealthyDesc": "نحن نؤمن بأن الآيس كريم يمكن أن يكون وقوداً للطاقة. اكتشف منتجاتنا المصممة لتعزيز طاقتك وتركيزك.",
+    "footerFeatureEnergy": "مصدر للطاقة الإيجابية",
+    "footerFeatureFocus": "يدعم التركيز الذهني",
+    "footerFeatureNatural": "مكونات طبيعية 100%",
+    "footerNavHours": "ساعات العمل",
+    "footerWeekDays": "السبت - الخميس",
+    "footerWeekHours": "10:00 ص - 12:00 م",
+    "footerFriday": "الجمعة",
+    "footerFridayHours": "2:00 م - 12:00 م",
+    "footerOpenNow": "مفتوح الآن",
+    "footerNavContact": "تواصل معنا",
+    "footerPhoneLabel": "الهاتف",
+    "footerEmailLabel": "البريد",
+    "footerAddressLabel": "العنوان",
+    "footerAddressText": "شارع الجيزة، أمام المول الكبير، الجيزة، مصر",
+    "footerMadeWith": "صُنع بـ ❤️ بواسطة Zahran",
+    
+    // Consent Banner
+    "consentTitle": "🍪 خصوصيتك تهمنا!",
+    "consentDescription": "نود استخدام بيانات تحليلية **مجهولة المصدر** (مثل نوع الجهاز ونمط الاستخدام) لفهم كيفية استخدامك للتطبيق وتحسينه باستمرار. لا يتم جمع أي معلومات شخصية تحدد هويتك. هل تسمح بذلك؟ يمكنك معرفة المزيد في سياسة الخصوصية.",
+    "privacyPolicy": "سياسة الخصوصية",
+    "consentDeny": "رفض",
+    "consentAccept": "الموافقة",
+    
+    // Marquee
+    "marqueeCaramelOfferTitle": "عرض الكراميل:",
+    "marqueeCaramelOfferText": "اطلب آيس كريم فانيليا واحصل على صوص كراميل مجاناً",
+    "marqueeDeliveryTitle": "توصيل سريع:",
+    "marqueeDeliveryText": "خلال 30 دقيقة - مجاناً للطلبات فوق 100 جنيه",
+    "marqueeEnergyTitle": "طاقة ذكية:",
+    "marqueeEnergyText": "اختر آيس كريمك حسب نوع الطاقة: ذهنية 🧠 | بدنية 💪 | متوازنة ⚖️",
+    "marqueeNaturalTitle": "مكونات طبيعية:",
+    "marqueeNaturalText": "بدون مواد حافظة أو ألوان صناعية - صحة عائلتك أولويتنا",
+    
+    // Trust Banner
+    "trustBannerTitle": "منتجات طبيعية معتمدة",
+    "trustBannerDescription": "جميع منتجاتنا خالية من المواد الحافظة والألوان الصناعية",
+    
+    // Loading
+    "loadingText": "جاري التحميل...",
+    
+    // Sidebar
+    "sidebarAriaLabel": "القائمة الجانبية",
+    "sidebarWelcome": "مرحباً بك! 👋",
+    "sidebarGuest": "زائر",
+    "sidebarNavigationAriaLabel": "التنقل الرئيسي",
+    "sidebarPreferences": "التفضيلات",
+    "sidebarDarkMode": "الوضع الليلي",
+    "sidebarLanguage": "اللغة",
+    "sidebarFollowUs": "تابعنا",
+    "sidebarCopyright": "© 2025 سوفت كريم",
+    "openSidebarAriaLabel": "فتح القائمة",
+    "closeSidebarAriaLabel": "إغلاق القائمة",
+    "toggleLanguageAriaLabel": "تبديل اللغة",
+    
+    // Navigation
+    "navHome": "الرئيسية",
+    "navMenu": "المنيو",
+    "navCart": "السلة",
+    
+    // Sidebar Our Story (Old - kept for compatibility)
+    "sidebarOurStory": "قصتنا",
+    "sidebarOurStoryDesc": "نحن متخصصون في تقديم أفخر أنواع السوفت آيس كريم والديسرت المميز. منذ تأسيسنا ونحن نسعى لتقديم تجربة استثنائية لعملائنا.",
+    "sidebarFeature1": "مكونات طبيعية 100%",
+    "sidebarFeature2": "توصيل سريع خلال 30 دقيقة",
+    "sidebarFeature3": "نكهات حصرية ومتجددة",
+    
+    // Sidebar Healthy Messages (New - Shortcuts)
+    "sidebarHealthyMessages": "رسالتنا الصحية",
+    "sidebarFeatureEnergy": "تعزيز الطاقة الذهنية",
+    "sidebarFeatureFocus": "مكونات لصفاء الذهن",
+    "sidebarFeaturePositive": "طاقة إيجابية بطعم رائع",
+    "sidebarContactShort": "اضغط لعرض الهاتف والعنوان",
+    
+    // Sidebar Opening Hours
+    "sidebarOpeningHours": "ساعات العمل",
+    "sidebarWeekDays": "السبت - الخميس",
+    "sidebarWeekHours": "10:00 ص - 12:00 م",
+    "sidebarFriday": "الجمعة",
+    "sidebarFridayHours": "2:00 م - 12:00 م",
+    "sidebarOpenNow": "مفتوح الآن - اضغط للتفاصيل",
+    
+    // Sidebar Contact
+    "sidebarContactUs": "تواصل معنا",
+    "sidebarPhoneLabel": "الهاتف",
+    "sidebarEmailLabel": "البريد",
+    "sidebarAddressLabel": "العنوان",
+    "sidebarAddressText": "شارع الجيزة، أمام المول الكبير، الجيزة، مصر",
+    
+    // Cart
+    "cartTitle": "سلة الطلبات",
+    "cartEmpty": "سلتك فارغة حالياً",
+    "cartEmptySubtitle": "أضف بعض الآيس كريم اللذيذ! 🍦",
+    "cartTotal": "الإجمالي:",
+    "closeCartAriaLabel": "إغلاق السلة",
+    
+    // Product Modal
+    "closeProductAriaLabel": "إغلاق المنتج",
+    "modalProductName": "اسم المنتج",
+    "modalProductDescription": "وصف المنتج هنا",
+    "modalPriceLabel": "السعر",
+    "decreaseQuantityAriaLabel": "إنقاص الكمية",
+    "increaseQuantityAriaLabel": "زيادة الكمية",
+    "suggestionsTitle": "قد يعجبك أيضاً",
+    "addToCart": "أضف للسلة",
+    
+    // Swiper
+    "swiperPrevAriaLabel": "الشريحة السابقة",
+    "swiperNextAriaLabel": "الشريحة التالية",
+    
+    // Checkout & Cart Actions
+    "checkoutBtn": "إتمام الطلب",
+    "securePayment": "دفع آمن",
+    "fastDelivery": "توصيل سريع"
   },
   
   "en": {
@@ -280,6 +399,8 @@ export const translationsAdditions = {
     "errorNetworkFailed": "Network connection error",
     "errorServerFailed": "Server error",
     "errorUnknown": "An unexpected error occurred",
+    "errorAddToCart": "Failed to add product",
+    "errorMaxQuantity": "Maximum {{max}} items",
     
     // Success
     "successAddedToCart": "Added to cart",
@@ -329,6 +450,123 @@ export const translationsAdditions = {
     "footerPrivacy": "Privacy Policy",
     "footerTerms": "Terms & Conditions",
     "footerSocial": "Follow Us",
-    "footerCopyright": "© 2025 Soft Cream. All rights reserved."
+    "footerCopyright": "© 2025 Soft Cream. All rights reserved.",
+    
+    // Footer New Keys (from Sidebar)
+    "footerNavHealthy": "Our Health Info",
+    "footerHealthyDesc": "We believe ice cream can be fuel for energy. Discover our products designed to boost your energy and focus.",
+    "footerFeatureEnergy": "Source of Positive Energy",
+    "footerFeatureFocus": "Supports Mental Focus",
+    "footerFeatureNatural": "100% Natural Ingredients",
+    "footerNavHours": "Opening Hours",
+    "footerWeekDays": "Sat - Thu",
+    "footerWeekHours": "10:00 AM - 12:00 AM",
+    "footerFriday": "Friday",
+    "footerFridayHours": "2:00 PM - 12:00 AM",
+    "footerOpenNow": "Open Now",
+    "footerNavContact": "Contact Us",
+    "footerPhoneLabel": "Phone",
+    "footerEmailLabel": "Email",
+    "footerAddressLabel": "Address",
+    "footerAddressText": "Giza St, In front of Grand Mall, Giza, Egypt",
+    "footerMadeWith": "Made with ❤️ by Zahran",
+    
+    // Consent Banner
+    "consentTitle": "🍪 Your Privacy Matters!",
+    "consentDescription": "We would like to use **anonymous** analytics data (such as device type and usage patterns) to understand how you use the app and continuously improve it. No personally identifiable information is collected. Do you allow this? Learn more in our Privacy Policy.",
+    "privacyPolicy": "Privacy Policy",
+    "consentDeny": "Deny",
+    "consentAccept": "Accept",
+    
+    // Marquee
+    "marqueeCaramelOfferTitle": "Caramel Offer:",
+    "marqueeCaramelOfferText": "Order vanilla ice cream and get free caramel sauce",
+    "marqueeDeliveryTitle": "Fast Delivery:",
+    "marqueeDeliveryText": "Within 30 minutes - Free for orders over 100 EGP",
+    "marqueeEnergyTitle": "Smart Energy:",
+    "marqueeEnergyText": "Choose your ice cream by energy type: Mental 🧠 | Physical 💪 | Balanced ⚖️",
+    "marqueeNaturalTitle": "Natural Ingredients:",
+    "marqueeNaturalText": "No preservatives or artificial colors - Your family's health is our priority",
+    
+    // Trust Banner
+    "trustBannerTitle": "Certified Natural Products",
+    "trustBannerDescription": "All our products are free from preservatives and artificial colors",
+    
+    // Loading
+    "loadingText": "Loading...",
+    
+    // Sidebar
+    "sidebarAriaLabel": "Sidebar Navigation",
+    "sidebarWelcome": "Welcome! 👋",
+    "sidebarGuest": "Guest",
+    "sidebarNavigationAriaLabel": "Main Navigation",
+    "sidebarPreferences": "Preferences",
+    "sidebarDarkMode": "Dark Mode",
+    "sidebarLanguage": "Language",
+    "sidebarFollowUs": "Follow Us",
+    "sidebarCopyright": "© 2025 Soft Cream",
+    "openSidebarAriaLabel": "Open Menu",
+    "closeSidebarAriaLabel": "Close Menu",
+    "toggleLanguageAriaLabel": "Toggle Language",
+    
+    // Navigation
+    "navHome": "Home",
+    "navMenu": "Menu",
+    "navCart": "Cart",
+    
+    // Sidebar Our Story (Old - kept for compatibility)
+    "sidebarOurStory": "Our Story",
+    "sidebarOurStoryDesc": "We specialize in offering the finest soft ice cream and premium desserts. Since our establishment, we have been striving to provide an exceptional experience for our customers.",
+    "sidebarFeature1": "100% Natural Ingredients",
+    "sidebarFeature2": "Fast Delivery in 30 Minutes",
+    "sidebarFeature3": "Exclusive and Renewed Flavors",
+    
+    // Sidebar Healthy Messages (New - Shortcuts)
+    "sidebarHealthyMessages": "Our Health Message",
+    "sidebarFeatureEnergy": "Boost Mental Energy",
+    "sidebarFeatureFocus": "Ingredients for Clarity",
+    "sidebarFeaturePositive": "Positive Energy, Great Taste",
+    "sidebarContactShort": "Tap for Phone & Address",
+    
+    // Sidebar Opening Hours
+    "sidebarOpeningHours": "Opening Hours",
+    "sidebarWeekDays": "Sat - Thu",
+    "sidebarWeekHours": "10:00 AM - 12:00 AM",
+    "sidebarFriday": "Friday",
+    "sidebarFridayHours": "2:00 PM - 12:00 AM",
+    "sidebarOpenNow": "Open Now - Tap for details",
+    
+    // Sidebar Contact
+    "sidebarContactUs": "Contact Us",
+    "sidebarPhoneLabel": "Phone",
+    "sidebarEmailLabel": "Email",
+    "sidebarAddressLabel": "Address",
+    "sidebarAddressText": "Giza St, In front of Grand Mall, Giza, Egypt",
+    
+    // Cart
+    "cartTitle": "Shopping Cart",
+    "cartEmpty": "Your cart is empty",
+    "cartEmptySubtitle": "Add some delicious ice cream! 🍦",
+    "cartTotal": "Total:",
+    "closeCartAriaLabel": "Close Cart",
+    
+    // Product Modal
+    "closeProductAriaLabel": "Close Product",
+    "modalProductName": "Product Name",
+    "modalProductDescription": "Product description here",
+    "modalPriceLabel": "Price",
+    "decreaseQuantityAriaLabel": "Decrease Quantity",
+    "increaseQuantityAriaLabel": "Increase Quantity",
+    "suggestionsTitle": "You May Also Like",
+    "addToCart": "Add to Cart",
+    
+    // Swiper
+    "swiperPrevAriaLabel": "Previous Slide",
+    "swiperNextAriaLabel": "Next Slide",
+    
+    // Checkout & Cart Actions
+    "checkoutBtn": "Complete Order",
+    "securePayment": "Secure Payment",
+    "fastDelivery": "Fast Delivery"
   }
 };

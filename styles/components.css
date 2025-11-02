@@ -153,29 +153,49 @@
 }
 
 /* ========================================
- * 🎬 FEATURED SWIPER WRAPPER
+ * 🎬 FEATURED SWIPER WRAPPER (CLS + Images Fix)
  * ======================================== */
 #featured-swiper {
   position: relative;
   width: 100%;
-  overflow: visible;
-  margin-bottom: 1.5rem;
+  
+  /* ✅ حجز مساحة ثابتة بدون aspect-ratio - Mobile أكبر */
+  height: 320px;
+  min-height: 320px;
+  
+  /* ✅ overflow: hidden للصور + visible للأزرار عبر wrapper */
+  overflow: hidden;
+  
+  /* ✅ مساحة كافية للـ pagination */
+  margin-bottom: 3rem; /* ✅ مسافة أكبر عن Marquee */
   padding-left: 0.5rem;
   padding-right: 0.5rem;
+  padding-bottom: 3rem; /* ✅ مساحة أكبر للـ pagination - منع النزول تحت Marquee */
 }
 
 @media (min-width: 768px) {
   #featured-swiper {
+    /* ✅ ارتفاع ثابت للشاشات المتوسطة - Tablet أكبر */
+    height: 420px;
+    min-height: 420px;
+    
     padding-left: 1rem;
     padding-right: 1rem;
+    padding-bottom: 2rem; /* مساحة للـ pagination */
     margin-bottom: 2rem;
   }
 }
 
 @media (min-width: 1024px) {
   #featured-swiper {
+    /* ✅ ارتفاع ثابت للشاشات الكبيرة - Desktop أكبر */
+    height: 500px;
+    min-height: 500px;
+    
     padding-left: 1.5rem;
     padding-right: 1.5rem;
+    padding-bottom: 2.5rem; /* مساحة للـ pagination */
+    margin-bottom: 2.5rem;
   }
 }
 
@@ -187,14 +207,27 @@
 }
 
 #featured-swiper .swiper {
+  /* ✅ ملء المساحة المحجوزة */
+  height: 100%;
+  width: 100%;
+  position: relative;
   overflow: visible;
 }
 
+#featured-swiper .swiper-wrapper {
+  /* ✅ ملء المساحة المحجوزة */
+  height: 100%;
+  width: 100%;
+}
+
 /* ========================================
- * 🖼️ SLIDE DIMENSIONS (Fixed)
+ * 🖼️ SLIDE DIMENSIONS (Fixed - No aspect-ratio)
  * ======================================== */
 #featured-swiper .swiper-slide {
-  aspect-ratio: 4 / 3;
+  /* ✅ إزالة aspect-ratio - الاعتماد على container */
+  height: 100%;
+  width: 100%;
+  
   transition: 
     opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
     transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
@@ -206,7 +239,6 @@
 
 @media (min-width: 768px) {
   #featured-swiper .swiper-slide {
-    aspect-ratio: 16 / 9;
     border-radius: 1rem;
   }
 }
@@ -341,32 +373,91 @@
 }
 
 /* ========================================
- * 🎯 PAGINATION
+ * 🎯 PAGINATION (CLS Optimized + Visible Bullets)
  * ======================================== */
 #featured-swiper .swiper-pagination {
   position: static !important;
   margin-top: 1rem;
   display: flex !important;
   justify-content: center;
+  align-items: center;
   gap: 0.5rem;
+  
+  /* ✅ CLS Fix: حجز مساحة ثابتة */
+  height: 32px !important;
+  min-width: 200px !important;
+  width: 100% !important;
+  z-index: 10 !important;
+}
+
+/* ✅ Pagination Bullets Styling */
+#featured-swiper .swiper-pagination-bullet {
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50% !important;
+  background-color: rgb(255 107 157) !important;
+  opacity: 0.25 !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  cursor: pointer !important;
+  border: none !important;
+  margin: 0 4px !important;
+  display: inline-block !important;
+}
+
+#featured-swiper .swiper-pagination-bullet-active {
+  opacity: 1 !important;
+  transform: scale(2) !important;
+  background-color: rgb(255 107 157) !important;
+  width: 12px !important;
+  height: 12px !important;
+}
+
+/* ✅ Mobile-specific - compact grouped pagination */
+@media (max-width: 767px) {
+  #featured-swiper {
+    margin-bottom: 0.5rem !important; /* ✅ 2milli مسافة عن Marquee */
+    padding-bottom: 1rem !important; /* ✅ مساحة بسيطة للـ pagination */
+  }
+  
+  #featured-swiper .swiper-pagination {
+    margin-top: 0.25rem !important; /* ✅ مسافة بسيطة جداً من الصور */
+    height: 16px !important;
+    min-height: 16px !important;
+    padding: 2px 8px !important; /* ✅ padding أفقي للمضمومة */
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-radius: 8px !important;
+    gap: 2px !important; /* ✅ مسافة صغيرة بين الدوت */
+  }
+  
+  #featured-swiper .swiper-pagination-bullet {
+    width: 8px !important;
+    height: 8px !important;
+    margin: 0 1px !important; /* ✅ مسافة صغيرة جداً */
+    opacity: 0.3 !important;
+  }
+  
+  #featured-swiper .swiper-pagination-bullet-active {
+    width: 10px !important;
+    height: 10px !important;
+    opacity: 1 !important;
+    transform: scale(1.2) !important; /* ✅ scale صغير */
+  }
 }
 
 @media (min-width: 768px) {
   #featured-swiper .swiper-pagination {
     margin-top: 1.25rem;
   }
-}
-
-#featured-swiper .swiper-pagination-bullet {
-  width: 8px !important;
-  height: 8px !important;
-  border-radius: 50%;
-  @apply !bg-primary;
-  opacity: 0.25 !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-  border: none;
-  margin: 0 !important;
+  
+  #featured-swiper .swiper-pagination-bullet {
+    width: 10px !important;
+    height: 10px !important;
+  }
+  
+  #featured-swiper .swiper-pagination-bullet-active {
+    width: 14px !important;
+    height: 14px !important;
+  }
 }
 
 #featured-swiper .swiper-pagination-bullet:hover {
@@ -374,21 +465,24 @@
   transform: scale(1.3);
 }
 
-#featured-swiper .swiper-pagination-bullet-active {
-  width: 28px !important;
-  height: 8px !important;
-  opacity: 1 !important;
-  @apply !bg-primary;
-  border-radius: 4px;
-}
-
 /* ========================================
- * ⬅️➡️ NAVIGATION ARROWS (Enhanced Desktop)
+ * ⬅️➡️ NAVIGATION ARROWS (CLS Optimized)
  * ======================================== */
 #featured-swiper .swiper-button-prev,
 #featured-swiper .swiper-button-next {
+  /* ✅ CLS Fix: Position absolute لمنع Layout Shift */
+  position: absolute !important;
+  top: 50% !important;
+  z-index: 10 !important;
+  
+  /* ✅ Base size (Mobile) */
   width: 40px !important;
   height: 40px !important;
+  
+  /* ✅ Transform بدلاً من margin */
+  transform: translateY(-50%) !important;
+  
+  /* Styling */
   background: rgba(255, 255, 255, 0.15) !important;
   backdrop-filter: blur(8px);
   border-radius: 50%;
@@ -400,12 +494,33 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ✅ Position للأزرار */
+#featured-swiper .swiper-button-prev {
+  left: 10px !important;
+}
+
+#featured-swiper .swiper-button-next {
+  right: 10px !important;
+}
+
+/* ✅ RTL Support - الأزرار تظهر في العربية */
+[dir="rtl"] #featured-swiper .swiper-button-prev {
+  right: 10px !important;
+  left: auto !important;
+}
+
+[dir="rtl"] #featured-swiper .swiper-button-next {
+  left: 10px !important;
+  right: auto !important;
+}
+
 /* Tablet (768px+): أزرار أكثر وضوحاً */
 @media (min-width: 768px) {
   #featured-swiper .swiper-button-prev,
   #featured-swiper .swiper-button-next {
-    width: 52px !important;
-    height: 52px !important;
+    /* ✅ استخدام scale بدلاً من تغيير الحجم */
+    transform: translateY(-50%) scale(1.3) !important;
+    
     background: rgba(255, 255, 255, 0.95) !important;
     backdrop-filter: blur(12px);
     box-shadow: 
@@ -420,8 +535,9 @@
 @media (min-width: 1024px) {
   #featured-swiper .swiper-button-prev,
   #featured-swiper .swiper-button-next {
-    width: 56px !important;
-    height: 56px !important;
+    /* ✅ استخدام scale بدلاً من تغيير الحجم */
+    transform: translateY(-50%) scale(1.4) !important;
+    
     background: linear-gradient(
       135deg,
       rgba(255, 255, 255, 0.98) 0%,
@@ -441,7 +557,8 @@
 #featured-swiper .swiper-button-next:hover {
   background: linear-gradient(135deg, #FF6B9D, #E85589) !important;
   color: white !important;
-  transform: scale(1.08);
+  /* ✅ الحفاظ على translateY في hover */
+  transform: translateY(-50%) scale(1.08) !important;
   opacity: 1 !important;
   @apply border-primary;
   box-shadow: 
@@ -452,7 +569,8 @@
 /* Active States */
 #featured-swiper .swiper-button-prev:active,
 #featured-swiper .swiper-button-next:active {
-  transform: scale(0.95);
+  /* ✅ الحفاظ على translateY في active */
+  transform: translateY(-50%) scale(0.95) !important;
 }
 
 /* Icon Sizes */
@@ -790,6 +908,48 @@
   .header-cart-badge, .header .icon-btn { position: relative; z-index: var(--z-header-elements); }
 
   /* ========================================
+   * FOOTER STYLES (معزول تماماً)
+   * ======================================== */
+  footer {
+    position: relative;
+    z-index: var(--z-base);
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  .footer-widget {
+    @apply transition-transform duration-300;
+  }
+  
+  .footer-title {
+    @apply text-sm font-bold uppercase tracking-wider text-primary mb-4;
+  }
+  
+  .footer-card {
+    @apply bg-gradient-to-br rounded-xl p-4 border shadow-sm transition-all duration-200;
+  }
+  
+  .footer-card:hover {
+    @apply shadow-md transform scale-105;
+  }
+  
+  .footer-social-link {
+    @apply w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200;
+  }
+  
+  .footer-social-link:hover {
+    @apply -translate-y-1 shadow-lg scale-110;
+  }
+  
+  /* Footer Grid Responsive */
+  @media (max-width: 768px) {
+    footer .grid {
+      @apply grid-cols-1 gap-6;
+    }
+  }
+
+  /* ========================================
    * 🧾 SIDEBAR SYSTEM
    * ======================================== */
   /* ... (كل الأكواد هنا كما هي) ... */
@@ -826,18 +986,83 @@
   .cart-modal-overlay.show > div { animation: slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
   /* ========================================
-   * 🔔 TOAST NOTIFICATIONS
+   * 🔔 TOAST NOTIFICATIONS (Enhanced - Bottom-Center Mobile)
    * ======================================== */
-  /* ... (كل الأكواد هنا كما هي) ... */
-  #toastContainer { position: fixed; z-index: var(--z-toast); pointer-events: none; }
+  #toastContainer { 
+    position: fixed; 
+    z-index: var(--z-toast); 
+    pointer-events: none;
+    
+    /* ✅ Mobile: Bottom-Center */
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 32px);
+    max-width: 400px;
+    
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  /* ✅ Desktop: Top-Right */
+  @media (min-width: 768px) {
+    #toastContainer {
+      top: 80px;
+      right: 20px;
+      bottom: auto;
+      left: auto;
+      transform: none;
+      width: auto;
+      max-width: 420px;
+    }
+  }
+  
   #toastContainer > * { pointer-events: auto; }
-  .toast { @apply flex items-start gap-3 bg-white dark:bg-gray-800 rounded-xl p-4 shadow-lg pointer-events-auto relative overflow-hidden opacity-0 w-full; transform: translateY(-20px); transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); user-select: none; -webkit-user-select: none; touch-action: pan-y; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05); }
+  
+  .toast { 
+    @apply flex items-start gap-3 bg-white dark:bg-gray-800 rounded-xl p-4 shadow-lg pointer-events-auto relative overflow-hidden opacity-0 w-full; 
+    transform: translateY(20px); /* ✅ من الأسفل للموبايل */
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+    user-select: none; 
+    -webkit-user-select: none; 
+    touch-action: pan-y; 
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(10px);
+  }
+  
   .dark .toast { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1); }
-  @media (min-width: 768px) { .toast { width: auto; min-width: 320px; transform: translateX(20px); } }
-  .toast.show { @apply opacity-100; transform: translateY(0); }
-  @media (min-width: 768px) { .toast.show { transform: translateX(0); } }
-  .toast.hide { @apply opacity-0; transform: translateY(-20px) scale(0.95); }
-  @media (min-width: 768px) { .toast.hide { transform: translateX(20px) scale(0.95); } }
+  
+  /* ✅ Desktop: من اليمين */
+  @media (min-width: 768px) { 
+    .toast { 
+      width: auto; 
+      min-width: 320px; 
+      transform: translateX(20px); 
+    } 
+  }
+  
+  .toast.show { 
+    @apply opacity-100; 
+    transform: translateY(0); 
+  }
+  
+  @media (min-width: 768px) { 
+    .toast.show { 
+      transform: translateX(0); 
+    } 
+  }
+  
+  .toast.hide { 
+    @apply opacity-0; 
+    transform: translateY(20px) scale(0.95); 
+  }
+  
+  @media (min-width: 768px) { 
+    .toast.hide { 
+      transform: translateX(20px) scale(0.95); 
+    } 
+  }
   .toast.success { border-right: 4px solid #10b981; } .toast.error { border-right: 4px solid #ef4444; } .toast.warning { border-right: 4px solid #f59e0b; } .toast.info { border-right: 4px solid #3b82f6; }
   [dir="rtl"] .toast.success { border-right: none; border-left: 4px solid #10b981; } [dir="rtl"] .toast.error { border-right: none; border-left: 4px solid #ef4444; } [dir="rtl"] .toast.warning { border-right: none; border-left: 4px solid #f59e0b; } [dir="rtl"] .toast.info { border-right: none; border-left: 4px solid #3b82f6; }
   .toast-icon { @apply text-xl flex-shrink-0 mt-0.5; } .toast.success .toast-icon { @apply text-gray-600; } .toast.error .toast-icon { @apply text-red-500; } .toast.warning .toast-icon { @apply text-yellow-500; } .toast.info .toast-icon { @apply text-blue-500; }

@@ -10,22 +10,22 @@
 
 import Swiper from 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.mjs';
 
-// ✅ الرسائل الديناميكية (Messages 2-4 فقط)
+// ✅ الرسائل الديناميكية (Messages 2-4 فقط) - i18n keys
 const DYNAMIC_MESSAGES = [
   {
     icon: '🚚',
-    title: 'توصيل سريع',
-    text: 'خلال 30 دقيقة - مجاناً للطلبات فوق 100 جنيه'
+    titleKey: 'marqueeDeliveryTitle',
+    textKey: 'marqueeDeliveryText'
   },
   {
     icon: '⚡',
-    title: 'طاقة ذكية',
-    text: 'اختر آيس كريمك حسب نوع الطاقة: ذهنية 🧠 | بدنية 💪 | متوازنة ⚖️'
+    titleKey: 'marqueeEnergyTitle',
+    textKey: 'marqueeEnergyText'
   },
   {
     icon: '🌿',
-    title: 'مكونات طبيعية',
-    text: 'بدون مواد حافظة أو ألوان صناعية - صحة عائلتك أولويتنا'
+    titleKey: 'marqueeNaturalTitle',
+    textKey: 'marqueeNaturalText'
   }
 ];
 
@@ -42,12 +42,19 @@ function appendDynamicMessages(wrapper) {
       const slide = document.createElement('div');
       slide.className = 'swiper-slide';
       
-      // بناء المحتوى
-      slide.innerHTML = `
-        <span class="marquee-icon">${message.icon}</span>
-        <span class="marquee-title">${message.title}:</span>
-        <span>${message.text}</span>
-      `;
+      // بناء المحتوى مع i18n
+      const title = document.createElement('span');
+      title.className = 'marquee-title';
+      title.setAttribute('data-i18n', message.titleKey);
+      title.textContent = window.i18n?.t(message.titleKey) || message.titleKey;
+      
+      const text = document.createElement('span');
+      text.setAttribute('data-i18n', message.textKey);
+      text.textContent = window.i18n?.t(message.textKey) || message.textKey;
+      
+      slide.innerHTML = `<span class="marquee-icon">${message.icon}</span>`;
+      slide.appendChild(title);
+      slide.appendChild(text);
       
       fragment.appendChild(slide);
     });
@@ -59,6 +66,36 @@ function appendDynamicMessages(wrapper) {
     
   } catch (err) {
     console.error('❌ Failed to append dynamic messages:', err);
+  }
+}
+
+// ✅ حفظ مرجع الـ Swiper للتحديث لاحقاً
+let marqueeSwiperInstance = null;
+
+/**
+ * ✅ تحديث نصوص Marquee عند تغيير اللغة
+ */
+export function updateMarqueeText(lang) {
+  try {
+    // تحديث جميع العناصر التي لها data-i18n داخل الـ Swiper
+    const swiperEl = document.querySelector('#text-marquee-swiper');
+    if (!swiperEl) return;
+    
+    swiperEl.querySelectorAll('[data-i18n]').forEach(element => {
+      const key = element.getAttribute('data-i18n');
+      const translation = window.i18n?.t(key);
+      if (translation && translation !== key) {
+        element.textContent = translation;
+      }
+    });
+    
+    // ✅ تحديث الـ Swiper لإعادة حساب الأبعاد
+    if (marqueeSwiperInstance) {
+      marqueeSwiperInstance.update();
+      console.log('✅ Marquee Swiper updated after language change');
+    }
+  } catch (err) {
+    console.error('❌ Failed to update marquee text:', err);
   }
 }
 
@@ -77,8 +114,8 @@ export function initMarqueeSwiper() {
     // 1. إضافة الرسائل الديناميكية (2-4)
     appendDynamicMessages(swiperWrapper);
 
-    // 2. تهيئة Swiper بحركة خطية مستمرة
-    new Swiper('#text-marquee-swiper', {
+    // 2. تهيئة Swiper بحركة خطية مستمرة وحفظ المرجع
+    marqueeSwiperInstance = new Swiper('#text-marquee-swiper', {
       // ========================================
       // Basic Settings
       // ========================================
@@ -130,6 +167,9 @@ export function initMarqueeSwiper() {
       }
     });
 
+    // ✅ حفظ المرجع للـ language listener
+    window.marqueeSwiperInstance = marqueeSwiperInstance;
+
     return true;
 
   } catch (err) {
@@ -137,3 +177,62 @@ export function initMarqueeSwiper() {
     return false;
   }
 }
+
+/* ================================================================
+ * 🌐 Language Change Listener for Marquee
+ * ================================================================ */
+
+// الاستماع لتغيير اللغة
+window.addEventListener('language-changed', (event) => {
+  const newLang = event.detail?.lang || 'ar';
+  console.log('📢 Marquee: Language changed to', newLang);
+  
+  // ✅ انتظر حتى يتم تحميل DOM
+  setTimeout(() => {
+    // ✅ تحديث فوري وقوي
+    try {
+      const slides = document.querySelectorAll('#text-marquee-swiper .swiper-slide');
+      console.log('📢 Found slides:', slides.length);
+      
+      slides.forEach(slide => {
+        const title = slide.querySelector('[data-i18n]');
+        if (title && window.i18n) {
+          const key = title.getAttribute('data-i18n');
+          const newText = window.i18n.t(key);
+          console.log('📢 Updating:', key, '->', newText);
+          title.textContent = newText;
+        }
+      });
+      
+      // ✅ Force update + restart autoplay
+      if (window.marqueeSwiperInstance) {
+        // Stop current autoplay
+        window.marqueeSwiperInstance.autoplay.stop();
+        
+        // Update slides
+        window.marqueeSwiperInstance.update();
+        window.marqueeSwiperInstance.updateSize();
+        window.marqueeSwiperInstance.updateSlides();
+        
+        // Restart autoplay
+        window.marqueeSwiperInstance.autoplay.start();
+        
+        console.log('✅ Marquee texts updated and restarted');
+      } else {
+        console.warn('⚠️ Marquee instance not found, reinitializing...');
+        initMarqueeSwiper();
+      }
+    } catch (err) {
+      console.warn('⚠️ Failed to update Marquee texts:', err);
+      // Fallback: إعادة تهيئة كاملة
+      if (window.marqueeSwiperInstance && window.marqueeSwiperInstance.destroy) {
+        window.marqueeSwiperInstance.destroy(true, true);
+      }
+      setTimeout(() => {
+        initMarqueeSwiper();
+      }, 100);
+    }
+  }, 50); // ✅ انتظر 50ms للتأكد من تحديث DOM
+});
+
+console.log('✅ Marquee Swiper: Language change listener registered');

@@ -61,8 +61,23 @@ function updateVanillaUI(lang) {
   // 5. تحديث Swiper text content (بدون re-init)
   // Re-init بيمسح الصور، فمش محتاجينه
   if (window.marqueeSwiperModule?.updateMarqueeText) {
-    window.marqueeSwiperModule.updateMarqueeText(lang);
-    console.log('🔄 [Vanilla] Updated Marquee text for new lang.');
+    try {
+      window.marqueeSwiperModule.updateMarqueeText(lang);
+      console.log('🔄 [Vanilla] Updated Marquee text for new lang.');
+    } catch (err) {
+      console.warn('⚠️ Failed to update Marquee:', err);
+      // ✅ Fallback: إعادة تهيئة Marquee
+      if (window.marqueeSwiperModule?.initMarqueeSwiper) {
+        console.log('🔄 Re-initializing Marquee Swiper...');
+        try {
+          window.marqueeSwiperModule.initMarqueeSwiper();
+        } catch (reinitErr) {
+          console.error('❌ Failed to re-initialize Marquee:', reinitErr);
+        }
+      }
+    }
+  } else {
+    console.warn('⚠️ Marquee module not loaded yet');
   }
 
   console.log(`✅ [Vanilla] UI updated for ${lang}`);
@@ -168,6 +183,27 @@ window.openOrdersPage = function() {
 // ================================================================
 window.scrollToTop = function() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+// ================================================================
+// 📍 Scroll to Element
+// ================================================================
+window.scrollToElement = function(selector) {
+  const element = document.querySelector(selector);
+  if (element) {
+    const headerHeight = document.getElementById('header')?.offsetHeight || 100;
+    const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+    const offsetPosition = elementPosition - headerHeight - 20; // 20px extra padding
+    
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: 'smooth'
+    });
+    
+    console.log(`📍 Scrolled to: ${selector}`);
+  } else {
+    console.warn(`⚠️ Element not found: ${selector}`);
+  }
 };
 
 // ================================================================

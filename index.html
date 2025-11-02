@@ -26,7 +26,6 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 	
 	<!-- ✅ Unified CSS (React + Vanilla - includes components.css) -->
-	<link rel="stylesheet" crossorigin href="./dist/react-app/assets/index-BXT1frkt.css">
 	
 	<!-- 🔧 CRITICAL FIX: Modal Visibility & Z-Index (UPDATED SYSTEM) -->
 	<style>
@@ -73,6 +72,27 @@
 		/* Product/CTA Modals */
 		#cta-modal {
 			z-index: 9000 !important;  /* Base modal */
+		}
+		
+		/* ========================================
+		 * SIDEBAR SECTION LINKS (Shortcuts)
+		 * ======================================== */
+		.sidebar-section-link {
+			text-decoration: none;
+			cursor: pointer;
+			transition: transform 0.2s ease, opacity 0.2s ease;
+		}
+		
+		.sidebar-section-link:hover {
+			transform: translateX(-4px);
+			opacity: 0.95;
+		}
+		
+		.sidebar-section-link:hover .sidebar-about-card,
+		.sidebar-section-link:hover .sidebar-hours-card,
+		.sidebar-section-link:hover .sidebar-contact-card {
+			border-color: var(--primary, #FF6B9D);
+			box-shadow: 0 4px 12px rgba(255, 107, 157, 0.15);
 		}
 	</style>
 	
@@ -309,6 +329,54 @@
 	<line x1="10" x2="10" y1="11" y2="17"/>
 	<line x1="14" x2="14" y1="11" y2="17"/>
 	</symbol>
+	<symbol id="sparkles" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+		<path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+		<path d="M5 3v4"/>
+		<path d="M19 17v4"/>
+		<path d="M3 5h4"/>
+		<path d="M17 19h4"/>
+	</symbol>
+	<symbol id="clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+		<circle cx="12" cy="12" r="10"/>
+		<polyline points="12 6 12 12 16 14"/>
+	</symbol>
+	<symbol id="phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+		<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+	</symbol>
+	<symbol id="mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+		<rect width="20" height="16" x="2" y="4" rx="2"/>
+		<path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+	</symbol>
+	<symbol id="facebook" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+		<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+	</symbol>
+	<symbol id="instagram" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+		<rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+		<path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+		<line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+	</symbol>
+	<symbol id="message-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+		<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+	</symbol>
+	<symbol id="twitter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+		<path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/>
+	</symbol>
+	<symbol id="share-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+		<circle cx="18" cy="5" r="3"/>
+		<circle cx="6" cy="12" r="3"/>
+		<circle cx="18" cy="19" r="3"/>
+		<line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/>
+		<line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/>
+	</symbol>
+	<symbol id="utensils" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+		<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
+		<path d="M7 2v20"/>
+		<path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
+	</symbol>
+	<symbol id="chef-hat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+		<path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/>
+		<line x1="6" x2="18" y1="17" y2="17"/>
+	</symbol>
 </svg>
 
 <div class="animated-background" aria-hidden="true">
@@ -319,7 +387,7 @@
 		class="fixed z-toast flex flex-col gap-3 pointer-events-none top-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-md md:top-6 md:right-6 md:left-auto md:translate-x-0 md:w-auto md:max-w-[420px]"
 	></div>
 <header
-    class="header fixed top-0 left-0 right-0 z-header backdrop-blur-2xl bg-cream-50/90 dark:bg-gray-900/90 border-b border-pink-100 dark:border-gray-800 shadow-lg transition-[height,background-color,box-shadow] duration-300 h-[100px] [.scrolled_&]:h-[72px]"
+    class="header fixed top-0 left-0 right-0 z-header backdrop-blur-2xl bg-cream-50/90 dark:bg-gray-900/90 border-b border-pink-100 dark:border-gray-800 shadow-lg transition-[height,background-color,box-shadow] duration-300 h-[90px] [.scrolled_&]:h-[72px]"
     id="header"
 >
     <div class="header-content max-w-[1600px] mx-auto px-6 h-full flex items-center justify-between">
@@ -336,7 +404,6 @@
             </div>
             <div class="logo-text">
                 <h1 id="header-title" class="text-3xl font-black gradient-text leading-tight tracking-tight transition-all duration-300 [.scrolled_&]:text-2xl" data-i18n="headerTitle">سوفت كريم</h1>
-                <p id="header-subtitle" class="text-sm font-semibold text-gray-600 dark:text-gray-400 transition-all duration-300 [.scrolled_&]:text-xs" data-i18n="headerSubtitle">اصل الايس كريم 🍦</p>
             </div>
         </div>
         <div class="header-actions flex items-center gap-2">
@@ -412,7 +479,7 @@
          📸 FEATURED SWIPER (Images Carousel)
          ✅ Slides 1-2 في HTML + Skeleton 3-8
         ======================================== -->
-        <div id="featured-swiper" class="swiper" style="min-height: 220px;">
+        <div id="featured-swiper" class="swiper" dir="ltr" style="min-height: 220px;">
           
           <div class="swiper-wrapper">
             
@@ -504,8 +571,8 @@
             <!-- Message 1 (Loaded) -->
             <div class="swiper-slide">
               <span class="marquee-icon">🎁</span>
-              <span class="marquee-title">عرض الكراميل:</span>
-              <span>اطلب آيس كريم فانيليا واحصل على صوص كراميل مجاناً</span>
+              <span class="marquee-title" data-i18n="marqueeCaramelOfferTitle">عرض الكراميل:</span>
+              <span data-i18n="marqueeCaramelOfferText">اطلب آيس كريم فانيليا واحصل على صوص كراميل مجاناً</span>
             </div>
             
             <!-- Messages 2-4 سيتم إضافتها بواسطة JavaScript -->
@@ -525,8 +592,8 @@
           </div>
           
           <div class="trust-text">
-            <h3>منتجات طبيعية معتمدة</h3>
-            <p>جميع منتجاتنا خالية من المواد الحافظة والألوان الصناعية</p>
+            <h3 data-i18n="trustBannerTitle">منتجات طبيعية معتمدة</h3>
+            <p data-i18n="trustBannerDescription">جميع منتجاتنا خالية من المواد الحافظة والألوان الصناعية</p>
           </div>
           
         </div>
@@ -625,8 +692,8 @@
 					<svg class="icon-lg" aria-hidden="true"><use href="#user"></use></svg>
 				</div>
 				<div class="sidebar-profile-info">
-					<div class="sidebar-profile-name text-sm font-semibold text-gray-800 dark:text-gray-100 mb-0.5" id="sidebarProfileName">مرحباً بك! 👋</div>
-					<div class="sidebar-profile-status text-xs text-gray-500 dark:text-gray-400" id="sidebarProfileStatus">زائر</div>
+					<div class="sidebar-profile-name text-sm font-semibold text-gray-800 dark:text-gray-100 mb-0.5" id="sidebarProfileName" data-i18n="sidebarWelcome">مرحباً بك! 👋</div>
+					<div class="sidebar-profile-status text-xs text-gray-500 dark:text-gray-400" id="sidebarProfileStatus" data-i18n="sidebarGuest">زائر</div>
 				</div>
 			</div>
 		</div>
@@ -640,7 +707,7 @@
 					<div class="sidebar-nav-icon w-10 h-10 flex items-center justify-center rounded-lg bg-gradient-to-br from-primary to-secondary text-white shadow-md">
 						<svg class="icon-md" aria-hidden="true"><use href="#home"></use></svg>
 					</div>
-					<span class="sidebar-nav-text flex-1">الرئيسية</span>
+					<span class="sidebar-nav-text flex-1" data-i18n="navHome">الرئيسية</span>
 				</a>
 				<a
 					href="#"
@@ -650,7 +717,7 @@
 					<div class="sidebar-nav-icon w-10 h-10 flex items-center justify-center rounded-lg bg-pink-50 dark:bg-gray-700 border border-pink-100 dark:border-gray-600">
 						<svg class="icon-md text-primary" aria-hidden="true"><use href="#utensils"></use></svg>
 					</div>
-					<span class="sidebar-nav-text flex-1">المنيو</span>
+					<span class="sidebar-nav-text flex-1" data-i18n="navMenu">المنيو</span>
 				</a>
 				<a
 					href="#"
@@ -661,7 +728,7 @@
 						<svg class="icon-md text-primary" aria-hidden="true"><use href="#shopping-cart"></use></svg>
 						<span class="sidebar-badge-dot absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-gray-700 animate-pulse"></span>
 					</div>
-					<span class="sidebar-nav-text flex-1">السلة</span>
+					<span class="sidebar-nav-text flex-1" data-i18n="navCart">السلة</span>
 					<span class="sidebar-badge min-w-[22px] h-5 px-2 bg-gradient-to-r from-primary to-secondary text-white rounded-full text-xs font-bold flex items-center justify-center shadow-sm" id="sidebarCartBadge">0</span>
 				</a>
 				<a
@@ -672,91 +739,55 @@
 					<div class="sidebar-nav-icon w-10 h-10 flex items-center justify-center rounded-lg bg-pink-50 dark:bg-gray-700 border border-pink-100 dark:border-gray-600">
 						<svg class="icon-md text-primary" aria-hidden="true"><use href="#package"></use></svg>
 					</div>
-					<span class="sidebar-nav-text flex-1">طلباتي</span>
+					<span class="sidebar-nav-text flex-1" data-i18n="navOrders">طلباتي</span>
 					<span class="sidebar-badge sidebar-badge-danger min-w-[22px] h-5 px-2 bg-red-500 text-white rounded-full text-xs font-bold items-center justify-center hidden" id="sidebarOrdersBadge">0</span>
 				</a>
 			</nav>
 		</div>
 		<div class="sidebar-divider h-px bg-gradient-to-r from-transparent via-pink-200 to-transparent dark:via-gray-600 my-3" role="separator"></div>
-		<div class="sidebar-section mb-3">
+		<a href="#footer-health-info" onclick="closeSidebar(); scrollToElement('#footer-health-info')" class="sidebar-section-link sidebar-section mb-3 block">
 			<div class="sidebar-section-title text-xs font-bold uppercase tracking-wider text-primary mb-2 px-2 flex items-center gap-2">
-				<svg class="w-3 h-3" aria-hidden="true"><use href="#sparkles"></use></svg><span>قصتنا</span>
+				<svg class="w-3 h-3" aria-hidden="true"><use href="#sparkles"></use></svg><span data-i18n="sidebarHealthyMessages">رسالتنا الصحية</span>
 			</div>
-			<div class="sidebar-about-card bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-800 rounded-xl p-4 border border-pink-100 dark:border-gray-600 shadow-sm">
-				<p class="text-xs text-gray-600 dark:text-gray-300 leading-relaxed mb-3">نحن متخصصون في تقديم أفخر أنواع السوفت آيس كريم والديسرت المميز. منذ تأسيسنا ونحن نسعى لتقديم تجربة استثنائية لعملائنا.</p>
+			<div class="sidebar-about-card bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-800 rounded-xl p-4 border border-pink-100 dark:border-gray-600 shadow-sm hover:shadow-md transition-shadow duration-200">
 				<div class="space-y-2">
-					<div class="flex items-start gap-2"><span class="text-primary text-sm mt-0.5">✓</span><span class="text-xs text-gray-700 dark:text-gray-300 font-medium">مكونات طبيعية 100%</span></div>
-					<div class="flex items-start gap-2"><span class="text-primary text-sm mt-0.5">✓</span><span class="text-xs text-gray-700 dark:text-gray-300 font-medium">توصيل سريع خلال 30 دقيقة</span></div>
-					<div class="flex items-start gap-2"><span class="text-primary text-sm mt-0.5">✓</span><span class="text-xs text-gray-700 dark:text-gray-300 font-medium">نكهات حصرية ومتجددة</span></div>
+					<div class="flex items-start gap-2"><span class="text-primary text-sm mt-0.5">✓</span><span class="text-xs text-gray-700 dark:text-gray-300 font-medium" data-i18n="sidebarFeatureEnergy">تعزيز الطاقة الذهنية</span></div>
+					<div class="flex items-start gap-2"><span class="text-primary text-sm mt-0.5">✓</span><span class="text-xs text-gray-700 dark:text-gray-300 font-medium" data-i18n="sidebarFeatureFocus">مكونات لصفاء الذهن</span></div>
+					<div class="flex items-start gap-2"><span class="text-primary text-sm mt-0.5">✓</span><span class="text-xs text-gray-700 dark:text-gray-300 font-medium" data-i18n="sidebarFeaturePositive">طاقة إيجابية بطعم رائع</span></div>
 				</div>
 			</div>
-		</div>
-		<div class="sidebar-section mb-3">
+		</a>
+		<a href="#footer-hours" onclick="closeSidebar(); scrollToElement('#footer-hours')" class="sidebar-section-link sidebar-section mb-3 block">
 			<div class="sidebar-section-title text-xs font-bold uppercase tracking-wider text-primary mb-2 px-2 flex items-center gap-2">
-				<svg class="w-3 h-3" aria-hidden="true"><use href="#clock"></use></svg><span>ساعات العمل</span>
+				<svg class="w-3 h-3" aria-hidden="true"><use href="#clock"></use></svg><span data-i18n="sidebarOpeningHours">ساعات العمل</span>
 			</div>
-			<div class="sidebar-hours-card bg-gradient-to-br from-green-50 to-blue-50 dark:from-gray-700 dark:to-gray-800 rounded-xl p-4 border border-green-100 dark:border-gray-600 shadow-sm">
-				<div class="space-y-2.5">
-					<div class="flex justify-between items-center">
-						<span class="text-xs font-semibold text-gray-700 dark:text-gray-300">السبت - الخميس</span>
-						<span class="text-xs font-bold text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded-lg">10:00 ص - 12:00 م</span>
-					</div>
-					<div class="flex justify-between items-center">
-						<span class="text-xs font-semibold text-gray-700 dark:text-gray-300">الجمعة</span>
-						<span class="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded-lg">2:00 م - 12:00 م</span>
-					</div>
-				</div>
-				<div class="mt-3 pt-3 border-t border-green-200 dark:border-gray-600">
-					<div class="flex items-center gap-2">
-						<span class="relative flex h-2 w-2">
-							<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-						</span>
-						<span class="text-xs font-bold text-green-600 dark:text-green-400">مفتوح الآن</span>
-					</div>
+			<div class="sidebar-hours-card bg-gradient-to-br from-green-50 to-blue-50 dark:from-gray-700 dark:to-gray-800 rounded-xl p-4 border border-green-100 dark:border-gray-600 shadow-sm hover:shadow-md transition-shadow duration-200">
+				<div class="flex items-center gap-2">
+					<span class="relative flex h-2 w-2">
+						<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+					</span>
+					<span class="text-xs font-bold text-green-600 dark:text-green-400" data-i18n="sidebarOpenNow">مفتوح الآن - اضغط للتفاصيل</span>
 				</div>
 			</div>
-		</div>
+		</a>
+		<div class="sidebar-divider h-px bg-gradient-to-r from-transparent via-pink-200 to-transparent dark:via-gray-600 my-3" role="separator"></div>
+		<a href="#footer-contact" onclick="closeSidebar(); scrollToElement('#footer-contact')" class="sidebar-section-link sidebar-section mb-3 block">
+			<div class="sidebar-section-title text-xs font-bold uppercase tracking-wider text-primary mb-2 px-2 flex items-center gap-2">
+				<svg class="w-3 h-3" aria-hidden="true"><use href="#phone"></use></svg><span data-i18n="sidebarContactUs">تواصل معنا</span>
+			</div>
+			<div class="sidebar-contact-card bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-800 rounded-xl p-4 border border-blue-100 dark:border-gray-600 shadow-sm hover:shadow-md transition-shadow duration-200">
+				<div class="flex items-center gap-2">
+					<svg class="w-4 h-4 text-primary" aria-hidden="true"><use href="#phone"></use></svg>
+					<span class="text-xs font-semibold text-gray-700 dark:text-gray-300" data-i18n="sidebarContactShort">اضغط لعرض الهاتف والعنوان</span>
+				</div>
+			</div>
+		</a>
 		<div class="sidebar-divider h-px bg-gradient-to-r from-transparent via-pink-200 to-transparent dark:via-gray-600 my-3" role="separator"></div>
 		<div class="sidebar-section mb-3">
-			<div class="sidebar-section-title text-xs font-bold uppercase tracking-wider text-primary mb-2 px-2 flex items-center gap-2">
-				<svg class="w-3 h-3" aria-hidden="true"><use href="#phone"></use></svg><span>تواصل معنا</span>
-			</div>
-			<div class="sidebar-contact-card bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-800 rounded-xl p-4 border border-blue-100 dark:border-gray-600 shadow-sm space-y-3">
-				<a href="tel:+201234567890" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white dark:hover:bg-gray-700 transition-colors group">
-					<div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition-transform">
-						<svg class="icon-sm" aria-hidden="true"><use href="#phone"></use></svg>
-					</div>
-					<div class="flex-1">
-						<div class="text-[10px] text-gray-500 dark:text-gray-400 font-medium">الهاتف</div>
-						<div class="text-xs font-bold text-gray-800 dark:text-gray-100 direction-ltr">+20 123 456 7890</div>
-					</div>
-				</a>
-				<a href="mailto:info@softcream.com" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white dark:hover:bg-gray-700 transition-colors group">
-					<div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition-transform">
-						<svg class="icon-sm" aria-hidden="true"><use href="#mail"></use></svg>
-					</div>
-					<div class="flex-1">
-						<div class="text-[10px] text-gray-500 dark:text-gray-400 font-medium">البريد</div>
-						<div class="text-xs font-bold text-gray-800 dark:text-gray-100">info@softcream.com</div>
-					</div>
-				</a>
-				<div class="flex items-start gap-3 p-2">
-					<div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white shadow-sm flex-shrink-0">
-						<svg class="icon-sm" aria-hidden="true"><use href="#map-pin"></use></svg>
-					</div>
-					<div class="flex-1">
-						<div class="text-[10px] text-gray-500 dark:text-gray-400 font-medium mb-1">العنوان</div>
-						<div class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">شارع الجيزة، أمام المول الكبير، الجيزة، مصر</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="sidebar-divider h-px bg-gradient-to-r from-transparent via-pink-200 to-transparent dark:via-gray-600 my-3" role="separator"></div>
-		<div class="sidebar-section mb-3">
-			<div class="sidebar-section-title text-xs font-bold uppercase tracking-wider text-gray-400 mb-2 px-2">التفضيلات</div>
+			<div class="sidebar-section-title text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2 px-2" data-i18n="sidebarPreferences">التفضيلات</div>
 			<div class="sidebar-setting-item flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 mb-2 border border-pink-100 dark:border-gray-600">
 				<label for="sidebarThemeToggle" class="sidebar-setting-label flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
-					<svg class="icon-md text-primary" aria-hidden="true"><use href="#moon"></use></svg><span>الوضع الليلي</span>
+					<svg class="icon-md text-primary" aria-hidden="true"><use href="#moon"></use></svg><span data-i18n="sidebarDarkMode">الوضع الليلي</span>
 				</label>
 				<label class="sidebar-toggle relative w-11 h-6 inline-block cursor-pointer">
 					<input type="checkbox" id="sidebarThemeToggle" class="opacity-0 w-0 h-0" onchange="toggleTheme()" />
@@ -767,7 +798,7 @@
 			</div>
 			<div class="sidebar-setting-item flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 border border-pink-100 dark:border-gray-600">
 				<div class="sidebar-setting-label flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-					<svg class="icon-md text-primary" aria-hidden="true"><use href="#globe"></use></svg><span>اللغة</span>
+					<svg class="icon-md text-primary" aria-hidden="true"><use href="#globe"></use></svg><span data-i18n="sidebarLanguage">اللغة</span>
 				</div>
 				<button
 					class="sidebar-lang-btn py-1.5 px-3 bg-white dark:bg-gray-600 border border-pink-200 dark:border-gray-500 rounded-lg text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-pink-100 dark:hover:bg-gray-500 transition-colors duration-300 shadow-sm"
@@ -782,7 +813,7 @@
 		<div class="sidebar-divider h-px bg-gradient-to-r from-transparent via-pink-200 to-transparent dark:via-gray-600 my-3" role="separator"></div>
 		<div class="sidebar-section mb-3">
 			<div class="sidebar-section-title text-xs font-bold uppercase tracking-wider text-primary mb-2 px-2 flex items-center gap-2">
-				<svg class="w-3 h-3" aria-hidden="true"><use href="#share-2"></use></svg><span>تابعنا</span>
+				<svg class="w-3 h-3" aria-hidden="true"><use href="#share-2"></use></svg><span data-i18n="sidebarFollowUs">تابعنا</span>
 			</div>
 			<div class="sidebar-social grid grid-cols-4 gap-2">
 				<a
@@ -894,7 +925,7 @@
 </div>
 
 <div
-	class="modal-overlay fixed inset-0 bg-gray-900/80 backdrop-blur-md z-modal hidden items-center justify-center p-4 animate-fade-in"
+	class="modal-overlay fixed inset-0 bg-gray-900/80 backdrop-blur-md z-modal hidden items-center justify-center animate-fade-in overflow-y-auto p-5"
 	id="productModal"
 	onclick="closeProductModal(event)"
 	role="dialog"
@@ -1414,22 +1445,24 @@
    // 📢 4. MARQUEE SWIPER (Text Ticker)
    // ================================================================
    (async () => {
-     try {
-       console.log('📢 Loading Marquee Swiper module...');
-       
-       const marqueeModule = await import('./js/swiper-marquee.js');
-       
-       if (marqueeModule.initMarqueeSwiper && typeof marqueeModule.initMarqueeSwiper === 'function') {
-         const success = marqueeModule.initMarqueeSwiper();
-         if (success) {
-           console.log('✅ Marquee Swiper loaded INDEPENDENTLY');
-         } else {
-           console.error('❌ Marquee Swiper failed initialization');
-         }
-         window.marqueeSwiperModule = marqueeModule;
-       } else {
-         console.error('❌ initMarqueeSwiper function not found');
-       }
+     try {
+       console.log('📢 Loading Marquee Swiper module...');
+       
+       const marqueeModule = await import('./js/swiper-marquee.js');
+       
+       // ✅ حفظ المرجع في window للاستخدام في تحديث اللغة
+       window.marqueeSwiperModule = marqueeModule;
+       
+       if (marqueeModule.initMarqueeSwiper && typeof marqueeModule.initMarqueeSwiper === 'function') {
+         const success = marqueeModule.initMarqueeSwiper();
+         if (success) {
+           console.log('✅ Marquee Swiper loaded INDEPENDENTLY');
+         } else {
+           console.error('❌ Marquee Swiper failed initialization');
+         }
+       } else {
+         console.error('❌ initMarqueeSwiper function not found');
+       }
      } catch (err) {
        console.error('❌ Marquee Swiper module failed (isolated):', err);
      }
@@ -1528,7 +1561,124 @@
 </script>
 
 <!-- 🆕 React Mini-App Scripts (auto-injected) -->
-<link rel="stylesheet" crossorigin href="./dist/react-app/assets/index-BXT1frkt.css">
-<script type="module" crossorigin src="./dist/react-app/assets/index-t1rwjryR.js"></script>
+<link rel="stylesheet" crossorigin href="./dist/react-app/assets/index-BnY5uibP.css">
+<script type="module" crossorigin src="./dist/react-app/assets/index-B-Uh7QPh.js"></script>
+
+<!-- ========================================
+ 🦶 FOOTER (Detailed Information)
+ ======================================== -->
+<footer class="bg-gradient-to-t from-pink-50 to-white dark:from-gray-900 dark:to-gray-800 border-t border-pink-100 dark:border-gray-700 pt-16 pb-8 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <!-- معلوماتنا الصحية -->
+            <div class="footer-widget" id="footer-health-info">
+                <div class="footer-title flex items-center gap-2 mb-4">
+                    <svg class="w-4 h-4 text-primary" aria-hidden="true"><use href="#sparkles"></use></svg>
+                    <span class="text-sm font-bold uppercase tracking-wider text-primary" data-i18n="footerNavHealthy"></span>
+                </div>
+                <div class="footer-card bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-800 rounded-xl p-4 border border-pink-100 dark:border-gray-600 shadow-sm">
+                    <p class="text-xs text-gray-600 dark:text-gray-300 leading-relaxed mb-3" data-i18n="footerHealthyDesc"></p>
+                    <div class="space-y-2">
+                        <div class="flex items-start gap-2">
+                            <span class="text-primary text-sm mt-0.5">✓</span>
+                            <span class="text-xs text-gray-700 dark:text-gray-300 font-medium" data-i18n="footerFeatureEnergy"></span>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <span class="text-primary text-sm mt-0.5">✓</span>
+                            <span class="text-xs text-gray-700 dark:text-gray-300 font-medium" data-i18n="footerFeatureFocus"></span>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <span class="text-primary text-sm mt-0.5">✓</span>
+                            <span class="text-xs text-gray-700 dark:text-gray-300 font-medium" data-i18n="footerFeatureNatural"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ساعات العمل -->
+            <div class="footer-widget" id="footer-hours">
+                <div class="footer-title flex items-center gap-2 mb-4">
+                    <svg class="w-4 h-4 text-primary" aria-hidden="true"><use href="#clock"></use></svg>
+                    <span class="text-sm font-bold uppercase tracking-wider text-primary" data-i18n="footerNavHours"></span>
+                </div>
+                <div class="footer-card bg-gradient-to-br from-green-50 to-blue-50 dark:from-gray-700 dark:to-gray-800 rounded-xl p-4 border border-green-100 dark:border-gray-600 shadow-sm">
+                    <div class="space-y-2.5">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-semibold text-gray-700 dark:text-gray-300" data-i18n="footerWeekDays"></span>
+                            <span class="text-xs font-bold text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded-lg" data-i18n="footerWeekHours"></span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-semibold text-gray-700 dark:text-gray-300" data-i18n="footerFriday"></span>
+                            <span class="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded-lg" data-i18n="footerFridayHours"></span>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-green-200 dark:border-gray-600">
+                        <div class="flex items-center gap-2">
+                            <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                            </span>
+                            <span class="text-xs font-bold text-green-600 dark:text-green-400" data-i18n="footerOpenNow"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- تواصل معنا -->
+            <div class="footer-widget" id="footer-contact">
+                <div class="footer-title flex items-center gap-2 mb-4">
+                    <svg class="w-4 h-4 text-primary" aria-hidden="true"><use href="#phone"></use></svg>
+                    <span class="text-sm font-bold uppercase tracking-wider text-primary" data-i18n="footerNavContact"></span>
+                </div>
+                <div class="footer-card bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-800 rounded-xl p-4 border border-blue-100 dark:border-gray-600 shadow-sm space-y-3">
+                    <a href="tel:+201234567890" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white dark:hover:bg-gray-700 transition-colors group">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition-transform">
+                            <svg class="icon-sm" aria-hidden="true"><use href="#phone"></use></svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-[10px] text-gray-500 dark:text-gray-400 font-medium" data-i18n="footerPhoneLabel"></div>
+                            <div class="text-xs font-bold text-gray-800 dark:text-gray-100 direction-ltr">+20 123 456 7890</div>
+                        </div>
+                    </a>
+                    <a href="mailto:info@softcream.com" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white dark:hover:bg-gray-700 transition-colors group">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition-transform">
+                            <svg class="icon-sm" aria-hidden="true"><use href="#mail"></use></svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-[10px] text-gray-500 dark:text-gray-400 font-medium" data-i18n="footerEmailLabel"></div>
+                            <div class="text-xs font-bold text-gray-800 dark:text-gray-100">info@softcream.com</div>
+                        </div>
+                    </a>
+                    <div class="flex items-start gap-3 p-2">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white shadow-sm flex-shrink-0">
+                            <svg class="icon-sm" aria-hidden="true"><use href="#map-pin"></use></svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-[10px] text-gray-500 dark:text-gray-400 font-medium mb-1" data-i18n="footerAddressLabel"></div>
+                            <div class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed" data-i18n="footerAddressText"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer Bottom: Social Links & Copyright -->
+        <div class="mt-12 pt-8 border-t border-pink-100 dark:border-gray-700 text-center">
+            <div class="flex items-center justify-center gap-3 mb-4">
+                <a href="https://facebook.com" target="_blank" class="footer-social-link w-10 h-10 rounded-lg bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:from-primary hover:to-secondary hover:text-white hover:-translate-y-1 hover:shadow-lg transition-all duration-200 border border-pink-100 dark:border-gray-600" aria-label="Facebook">
+                    <svg class="icon-md" aria-hidden="true"><use href="#facebook"></use></svg>
+                </a>
+                <a href="https://instagram.com" target="_blank" class="footer-social-link w-10 h-10 rounded-lg bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:from-primary hover:to-secondary hover:text-white hover:-translate-y-1 hover:shadow-lg transition-all duration-200 border border-pink-100 dark:border-gray-600" aria-label="Instagram">
+                    <svg class="icon-md" aria-hidden="true"><use href="#instagram"></use></svg>
+                </a>
+                <a href="https://wa.me/201234567890" target="_blank" class="footer-social-link w-10 h-10 rounded-lg bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:from-primary hover:to-secondary hover:text-white hover:-translate-y-1 hover:shadow-lg transition-all duration-200 border border-pink-100 dark:border-gray-600" aria-label="WhatsApp">
+                    <svg class="icon-md" aria-hidden="true"><use href="#message-circle"></use></svg>
+                </a>
+            </div>
+            <span class="text-sm text-gray-600 dark:text-gray-400 font-medium" data-i18n="footerCopyright"></span>
+            <span class="block text-xs text-gray-500 dark:text-gray-500 mt-2" data-i18n="footerMadeWith"></span>
+        </div>
+    </div>
+</footer>
+
 </body>
 </html>

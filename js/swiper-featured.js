@@ -83,14 +83,16 @@ function replaceSkeletonSlidesWithImages(wrapper) {
 }
 
 /**
- * ✅ تهيئة Featured Swiper مع Enhanced Centered Mode
+ * تهيئة Featured Swiper مع Enhanced Centered Mode
  */
+let swiperInstanceRef = null;
+
 export function initFeaturedSwiper() {
   try {
     const swiperWrapper = document.querySelector('#featured-swiper .swiper-wrapper');
 
     if (!swiperWrapper) {
-      console.error('❌ Swiper wrapper not found');
+      console.error('Swiper wrapper not found');
       return false;
     }
 
@@ -278,6 +280,7 @@ export function initFeaturedSwiper() {
     });
 
     window.featuredSwiperInstance = swiperInstance;
+    swiperInstanceRef = swiperInstance; // ✅ حفظ المرجع للـ listener
 
     // ✅ إظهار الأزرار عند hover على الشاشات الكبيرة
     const container = document.querySelector('#featured-swiper');
@@ -293,7 +296,7 @@ export function initFeaturedSwiper() {
       });
     }
 
-    return true;
+    return swiperInstance;
 
   } catch (err) {
     console.error('❌ Swiper initialization failed:', err);
@@ -350,3 +353,9 @@ export function goToSlide(index) {
   }
   return false;
 }
+
+/* ================================================================
+ * 🌐 Swiper Direction: LTR دائماً (لا يتغير مع اللغة)
+ * ================================================================ */
+// ✅ الصور لا تحتاج RTL/LTR - نبقيها LTR دائماً
+console.log('✅ Featured Swiper: Direction locked to LTR (images only)');
