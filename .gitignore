@@ -19,7 +19,7 @@ bower_components/
 # ================================================================
 # 🏗 Build Outputs
 # ================================================================
-dist/
+# dist/  # COMMENTED OUT - We need dist/react-app for GitHub Pages
 build/
 out/
 .next/
@@ -29,8 +29,8 @@ out/
 .vite/
 *.tsbuildinfo
 
-# React build artifacts
-react-app/dist/
+# React build artifacts - Allow dist/react-app for deployment
+react-app/dist/index.html
 react-app/build/
 
 # Tailwind output (if not committed)
